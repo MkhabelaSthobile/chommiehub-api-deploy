@@ -1,0 +1,45 @@
+*.iml
+.gradle
+/local.properties
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+
+# -----------------------------
+# Visual Studio / ASP.NET Core
+# -----------------------------
+.vs/
+**/.vs/
+**/bin/
+**/obj/
+*.user
+*.suo
+
+# -----------------------------
+# Android Studio / Gradle
+# -----------------------------
+.gradle/
+**/build/
+local.properties
+.idea/
+*.iml
+captures/
+.externalNativeBuild/
+.cxx/
+
+# -----------------------------
+# Local secrets / credentials
+# -----------------------------
+.env
+**/*service-account*.json
+**/*firebase-adminsdk*.json
+**/secrets.json
