@@ -1,4 +1,6 @@
 using ChommieHub.Api.Configuration;
+using ChommieHub.Api.Repositories;
+using ChommieHub.Api.Services;
 using Google.Cloud.Firestore;
 using Microsoft.Extensions.Options;
 
@@ -12,10 +14,9 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 // Bind the Firestore section from appsettings.json.
-builder.Services.Configure<FirestoreOptions>(
-    builder.Configuration.GetSection(FirestoreOptions.SectionName));
+builder.Services.Configure<FirestoreOptions>(builder.Configuration.GetSection(FirestoreOptions.SectionName));
 
-// Register one Firestore database connection for the application.
+//Register one Firestore database connection for the application
 builder.Services.AddSingleton(sp =>
 {
     var options = sp
@@ -24,12 +25,21 @@ builder.Services.AddSingleton(sp =>
 
     if (string.IsNullOrWhiteSpace(options.ProjectId))
     {
-        throw new InvalidOperationException(
-            "Firestore:ProjectId has not been configured.");
+        throw new InvalidOperationException("Firestore:ProjectId has not been configured.");
     }
 
     return FirestoreDb.Create(options.ProjectId);
 });
+
+// Firestore persistence repositories
+builder.Services.AddScoped<IAccommodationRepository, FirestoreAccommodationRepository>();
+
+builder.Services.AddScoped<IRoomRepository, FirestoreRoomRepository>();
+
+//Application business services
+builder.Services.AddScoped<IAccommodationService, AccommodationService>();
+
+builder.Services.AddScoped<IRoomService, RoomService>();
 
 var app = builder.Build();
 

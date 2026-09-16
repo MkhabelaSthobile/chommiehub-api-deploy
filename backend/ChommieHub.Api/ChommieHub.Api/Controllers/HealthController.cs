@@ -22,9 +22,7 @@ namespace ChommieHub.Api.Controllers
         [HttpGet]
         public IActionResult GetHealth()
         {
-            _logger.LogInformation(
-                "ChommieHub API health check requested at {TimeUtc}",
-                DateTime.UtcNow);
+            _logger.LogInformation("ChommieHub API health check requested at {TimeUtc}", DateTime.UtcNow);
 
             return Ok(new
             {
