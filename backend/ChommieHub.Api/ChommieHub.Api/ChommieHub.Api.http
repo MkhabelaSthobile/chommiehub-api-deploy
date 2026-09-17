@@ -1,12 +1,17 @@
 @ChommieHub.Api_HostAddress = http://localhost:5154
 
-GET {{ChommieHub.Api_HostAddress}}/api/health
-Accept: application/json
+###########################################################
+### HEALTH
+###########################################################
 
 ### API health
 GET {{ChommieHub.Api_HostAddress}}/api/health
 Accept: application/json
 
+
+###########################################################
+### ACCOMMODATION
+###########################################################
 
 ### Create accommodation
 POST {{ChommieHub.Api_HostAddress}}/api/accommodations
@@ -27,19 +32,24 @@ Content-Type: application/json
   "institutionArea": "Johannesburg"
 }
 
+
 ### Get all accommodation
 GET {{ChommieHub.Api_HostAddress}}/api/accommodations
 Accept: application/json
 
 
-### Replace this value after creating an accommodation
-@accommodationId = LDQ1pVJtCJKfTPDpiYDm
+### Replace with an accommodation document ID returned by Firestore/API
+@accommodationId = REPLACE_WITH_ACCOMMODATION_ID
 
 
-### Get accommodation
+### Get accommodation by ID
 GET {{ChommieHub.Api_HostAddress}}/api/accommodations/{{accommodationId}}
 Accept: application/json
 
+
+###########################################################
+### ROOMS
+###########################################################
 
 ### Create room
 POST {{ChommieHub.Api_HostAddress}}/api/accommodations/{{accommodationId}}/rooms
@@ -58,23 +68,43 @@ GET {{ChommieHub.Api_HostAddress}}/api/accommodations/{{accommodationId}}/rooms
 Accept: application/json
 
 
-### RESIDENCE MANAGER TESTS
+### Replace with a real room document ID
+@roomId = REPLACE_WITH_ROOM_ID
 
-### Use an existing accommodation ID
-@managerAccommodationId = LDQ1pVJtCJKfTPDpiYDm
+
+### Get room by ID
+GET {{ChommieHub.Api_HostAddress}}/api/rooms/{{roomId}}
+Accept: application/json
+
+
+### Update room
+PUT {{ChommieHub.Api_HostAddress}}/api/rooms/{{roomId}}
+Content-Type: application/json
+
+{
+  "roomType": "Single Room",
+  "price": 5500,
+  "capacity": 1,
+  "availability": true
+}
+
+
+###########################################################
+### RESIDENCE MANAGER
+###########################################################
 
 ### Manager dashboard
-GET {{ChommieHub.Api_HostAddress}}/api/manager/accommodations/{{managerAccommodationId}}/dashboard
+GET {{ChommieHub.Api_HostAddress}}/api/manager/accommodations/{{accommodationId}}/dashboard
 Accept: application/json
 
 
 ### Applications for accommodation
-GET {{ChommieHub.Api_HostAddress}}/api/manager/accommodations/{{managerAccommodationId}}/applications
+GET {{ChommieHub.Api_HostAddress}}/api/manager/accommodations/{{accommodationId}}/applications
 Accept: application/json
 
 
-### Replace after an application exists
-@applicationId = FoNMutDocJdWoPaWqHxh
+### Replace with a real application document ID
+@applicationId = REPLACE_WITH_APPLICATION_ID
 
 
 ### View application details
@@ -92,21 +122,25 @@ Content-Type: application/json
 }
 
 
-### Existing available room ID
-@managerRoomId = IW6RHQsabu4m01C4lSYN
+### Decline application
+PATCH {{ChommieHub.Api_HostAddress}}/api/manager/applications/{{applicationId}}/review
+Content-Type: application/json
+
+{
+  "decision": "Declined",
+  "reviewNotes": "Application does not currently meet the residence requirements."
+}
 
 
-### Assign room
+### Assign room to approved application
 POST {{ChommieHub.Api_HostAddress}}/api/manager/applications/{{applicationId}}/assign-room
 Content-Type: application/json
 
 {
-  "roomId": "{{managerRoomId}}"
+  "roomId": "{{roomId}}"
 }
 
 
 ### View residents
-GET {{ChommieHub.Api_HostAddress}}/api/manager/accommodations/{{managerAccommodationId}}/residents
+GET {{ChommieHub.Api_HostAddress}}/api/manager/accommodations/{{accommodationId}}/residents
 Accept: application/json
-
-###
