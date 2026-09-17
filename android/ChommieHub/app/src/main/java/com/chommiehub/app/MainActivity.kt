@@ -12,13 +12,12 @@ import androidx.lifecycle.lifecycleScope
 import com.chommiehub.app.data.remote.ApiClient
 import com.chommiehub.app.data.repository.HealthRepository
 import kotlinx.coroutines.launch
+import android.content.Intent
+import com.chommiehub.app.ui.manager.ManagerActivity
 
 /**
- * Temporary integration screen used to verify communication between
- * the native Android application and the custom ChommieHub REST API.
- *
- * This screen will be replaced by the role-based application flow once
- * backend connectivity has been verified.
+ * Temporary integration screen used to verify communication between the native Android application and the custom ChommieHub REST API.
+ * This screen will be replaced by the role-based application flow once backend connectivity has been verified.
  */
 class MainActivity : AppCompatActivity() {
 
@@ -28,6 +27,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var tvApiStatus: TextView
     private lateinit var btnRetry: Button
+
+    private lateinit var btnOpenManager: Button
 
     private val healthRepository by lazy {
         HealthRepository(ApiClient.api)
@@ -61,18 +62,32 @@ class MainActivity : AppCompatActivity() {
 
         tvApiStatus = findViewById(R.id.tvApiStatus)
         btnRetry = findViewById(R.id.btnRetry)
+        btnOpenManager = findViewById(R.id.btnOpenManager)
 
         btnRetry.setOnClickListener {
             Log.d(TAG, "Manual API connection retry requested.")
             checkApiConnection()
         }
 
+        btnOpenManager.setOnClickListener {
+            Log.d(
+                TAG,
+                "Opening residence manager feature area."
+            )
+
+            startActivity(
+                Intent(
+                    this,
+                    ManagerActivity::class.java
+                )
+            )
+        }
+
         checkApiConnection()
     }
 
     /**
-     * Calls the custom backend health endpoint without blocking the UI thread
-     * and provides visible and logged connection feedback.
+     * Calls the custom backend health endpoint without blocking the UI thread and provides visible and logged connection feedback.
      */
     private fun checkApiConnection() {
         tvApiStatus.text = getString(R.string.api_checking)
