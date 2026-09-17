@@ -14,6 +14,7 @@ android {
         targetSdk = 37
         versionCode = 1
         versionName = "1.0"
+
         // Local development URL used by the Android emulator.
         // 10.0.2.2 maps from the emulator back to the host computer.
         buildConfigField(
@@ -49,11 +50,12 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.core.ktx)
     implementation(libs.material)
+
     // REST API communication.
     implementation(libs.retrofit)
     implementation(libs.retrofit.gson)
 
-    // Lifecycle-aware Android state management.
+// Lifecycle-aware Android state management.
     implementation(libs.androidx.lifecycle.viewmodel)
     implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
