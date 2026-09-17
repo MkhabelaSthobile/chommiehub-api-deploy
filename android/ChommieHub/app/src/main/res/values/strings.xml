@@ -25,4 +25,9 @@
 
     <string name="room_price">R %1$.2f per month</string>
     <string name="room_capacity">Capacity: %1$d</string>
+
+    <string name="resident_student">Student: %1$s</string>
+    <string name="resident_room">Room ID: %1$s</string>
+    <string name="resident_active">Status: Active</string>
+    <string name="resident_inactive">Status: Inactive</string>
 </resources>

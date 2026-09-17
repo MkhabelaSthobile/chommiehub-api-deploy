@@ -76,6 +76,17 @@ class ManagerDashboardFragment : Fragment() {
                 .commit()
         }
 
+        view.findViewById<Button>(R.id.btnViewResidents).setOnClickListener {
+            parentFragmentManager
+                .beginTransaction()
+                .replace(
+                    R.id.managerFragmentContainer,
+                    ManagerResidentsFragment()
+                )
+                .addToBackStack(null)
+                .commit()
+        }
+
         observeDashboard()
     }
 
