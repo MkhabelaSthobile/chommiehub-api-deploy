@@ -3,4 +3,58 @@
 GET {{ChommieHub.Api_HostAddress}}/api/health
 Accept: application/json
 
+### API health
+GET {{ChommieHub.Api_HostAddress}}/api/health
+Accept: application/json
+
+
+### Create accommodation
+POST {{ChommieHub.Api_HostAddress}}/api/accommodations
+Content-Type: application/json
+
+{
+  "name": "ChommieHub Student Residence",
+  "address": "1 Example Street, Johannesburg",
+  "latitude": -26.2041,
+  "longitude": 28.0473,
+  "description": "Student accommodation used for ChommieHub prototype testing.",
+  "phoneNumber": "0115550100",
+  "amenities": [
+    "Wi-Fi",
+    "Laundry",
+    "Study Area"
+  ],
+  "institutionArea": "Johannesburg"
+}
+
+### Get all accommodation
+GET {{ChommieHub.Api_HostAddress}}/api/accommodations
+Accept: application/json
+
+
+### Replace this value after creating an accommodation
+@accommodationId = TIliENohJOvVmK9dI8LN
+
+
+### Get accommodation
+GET {{ChommieHub.Api_HostAddress}}/api/accommodations/{{accommodationId}}
+Accept: application/json
+
+
+### Create room
+POST {{ChommieHub.Api_HostAddress}}/api/accommodations/{{accommodationId}}/rooms
+Content-Type: application/json
+
+{
+  "roomType": "Single Room",
+  "price": 5500,
+  "capacity": 1,
+  "availability": true
+}
+
+
+### Get rooms for accommodation
+GET {{ChommieHub.Api_HostAddress}}/api/accommodations/{{accommodationId}}/rooms
+Accept: application/json
+
 ###
