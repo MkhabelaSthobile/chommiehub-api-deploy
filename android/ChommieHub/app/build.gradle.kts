@@ -28,7 +28,7 @@ android {
         buildConfigField(
             "String",
             "MANAGER_ACCOMMODATION_ID",
-            "\"LDQ1pVJtCJKfTPDpiYDm\""
+            "\"TIliENohJOvVmK9dI8LN\""
         )
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

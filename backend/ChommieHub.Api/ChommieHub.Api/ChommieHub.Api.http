@@ -39,7 +39,7 @@ Accept: application/json
 
 
 ### Replace with an accommodation document ID returned by Firestore/API
-@accommodationId = 2o6i4gks2vJ4aluegnFQ
+@accommodationId = TIliENohJOvVmK9dI8LN
 
 
 ### Get accommodation by ID
@@ -69,7 +69,7 @@ Accept: application/json
 
 
 ### Replace with a real room document ID
-@roomId = j6clhoVyy2U97uHhIo9j
+@roomId = REPLACE_WITH_ROOM_ID
 
 
 ### Get room by ID

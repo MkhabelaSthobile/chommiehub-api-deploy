@@ -23,7 +23,9 @@ import com.chommiehub.app.ui.manager.adapter.ManagerApplicationAdapter
 class ManagerApplicationsFragment : Fragment() {
 
     private lateinit var viewModel: ManagerApplicationsViewModel
-    private val adapter = ManagerApplicationAdapter()
+    private val adapter = ManagerApplicationAdapter { application ->
+            openApplication(application.id)
+        }
     private lateinit var progressBar: ProgressBar
     private lateinit var recyclerView: RecyclerView
     private lateinit var tvEmpty: TextView
@@ -144,5 +146,21 @@ class ManagerApplicationsFragment : Fragment() {
         tvError.text = message
         tvError.visibility = View.VISIBLE
         btnRetry.visibility = View.VISIBLE
+    }
+
+    /**
+     * Opens the selected application for full manager review.
+     */
+    private fun openApplication(applicationId: String)
+    {
+        parentFragmentManager
+            .beginTransaction()
+            .replace(
+                R.id.managerFragmentContainer,
+                ManagerApplicationDetailFragment
+                    .newInstance(applicationId)
+            )
+            .addToBackStack(null)
+            .commit()
     }
 }
