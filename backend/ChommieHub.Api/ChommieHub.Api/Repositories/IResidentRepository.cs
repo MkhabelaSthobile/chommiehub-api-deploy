@@ -6,7 +6,7 @@ namespace ChommieHub.Api.Repositories
     {
         Task<IReadOnlyList<Resident>> GetByAccommodationIdAsync(string accommodationId, CancellationToken cancellationToken = default);
 
-        Task<Resident?> GetByStudentIdAsync(string studentId, CancellationToken cancellationToken = default);
+        Task<Resident?> GetByApplicationIdAsync(string applicationId, CancellationToken cancellationToken = default);
 
         Task<Resident> CreateAsync(Resident resident, CancellationToken cancellationToken = default);
     }

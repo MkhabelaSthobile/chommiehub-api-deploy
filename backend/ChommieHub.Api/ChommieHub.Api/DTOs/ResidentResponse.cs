@@ -14,6 +14,6 @@
 
         public bool IsActive { get; init; }
 
-        public DateTime MoveInDateUtc { get; init; }
+        public DateTime CreatedAtUtc { get; init; }
     }
 }

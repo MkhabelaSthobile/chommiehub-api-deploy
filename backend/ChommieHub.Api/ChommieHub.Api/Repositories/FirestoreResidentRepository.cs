@@ -14,34 +14,36 @@ namespace ChommieHub.Api.Repositories
             _firestore = firestore;
         }
 
-        public async Task<IReadOnlyList<Resident>> GetByAccommodationIdAsync(string accommodationId, CancellationToken cancellationToken = default)
+        public async Task<IReadOnlyList<Resident>> GetByAccommodationIdAsync(string accommodationId,  CancellationToken cancellationToken = default)
         {
-            QuerySnapshot snapshot = await _firestore
+            Query query = _firestore
                 .Collection(CollectionName)
-                .WhereEqualTo("AccommodationId", accommodationId)
-                .GetSnapshotAsync(cancellationToken);
+                .WhereEqualTo("AccommodationId", accommodationId);
+
+            QuerySnapshot snapshot = await query.GetSnapshotAsync(cancellationToken);
 
             return snapshot.Documents
                 .Select(document => document.ConvertTo<Resident>())
                 .ToList();
         }
 
-        public async Task<Resident?> GetByStudentIdAsync(string studentId, CancellationToken cancellationToken = default)
+        public async Task<Resident?> GetByApplicationIdAsync(string applicationId,
+            CancellationToken cancellationToken = default)
         {
             QuerySnapshot snapshot = await _firestore
                 .Collection(CollectionName)
-                .WhereEqualTo("StudentId", studentId)
-                .Limit(1)
+                .WhereEqualTo("ApplicationId", applicationId)
                 .GetSnapshotAsync(cancellationToken);
 
             DocumentSnapshot? document = snapshot.Documents.FirstOrDefault();
 
-            return document?.ConvertTo<Resident>();
+            return document is null
+                ? null : document.ConvertTo<Resident>();
         }
 
         public async Task<Resident> CreateAsync(Resident resident, CancellationToken cancellationToken = default)
         {
-            DocumentReference documentReference = _firestore
+            DocumentReference documentReference =  _firestore
                 .Collection(CollectionName)
                 .Document();
 
@@ -49,7 +51,7 @@ namespace ChommieHub.Api.Repositories
 
             await documentReference.SetAsync(
                 resident,
-                cancellationToken: cancellationToken);
+                cancellationToken : cancellationToken);
 
             return resident;
         }

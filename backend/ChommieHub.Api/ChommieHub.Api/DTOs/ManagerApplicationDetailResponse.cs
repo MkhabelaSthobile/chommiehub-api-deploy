@@ -1,6 +1,6 @@
 ﻿namespace ChommieHub.Api.DTOs
 {
-    public sealed class ApplicationResponse
+    public sealed class ManagerApplicationDetailResponse
     {
         public string Id { get; init; } = string.Empty;
 

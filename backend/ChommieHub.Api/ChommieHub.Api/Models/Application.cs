@@ -37,8 +37,5 @@ namespace ChommieHub.Api.Models
 
         [FirestoreProperty]
         public DateTime? DateReviewedUtc { get; set; }
-
-        [FirestoreProperty]
-        public DateTime UpdatedAtUtc { get; set; } = DateTime.UtcNow;
     }
 }

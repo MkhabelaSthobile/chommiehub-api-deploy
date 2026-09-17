@@ -21,15 +21,9 @@ namespace ChommieHub.Api.Models
         public string ApplicationId { get; set; } = string.Empty;
 
         [FirestoreProperty]
-        public DateTime MoveInDateUtc { get; set; } = DateTime.UtcNow;
-
-        [FirestoreProperty]
         public bool IsActive { get; set; } = true;
 
         [FirestoreProperty]
         public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
-
-        [FirestoreProperty]
-        public DateTime UpdatedAtUtc { get; set; } = DateTime.UtcNow;
     }
 }
