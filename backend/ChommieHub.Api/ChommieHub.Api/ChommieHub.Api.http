@@ -57,4 +57,56 @@ Content-Type: application/json
 GET {{ChommieHub.Api_HostAddress}}/api/accommodations/{{accommodationId}}/rooms
 Accept: application/json
 
+
+### RESIDENCE MANAGER TESTS
+
+### Use an existing accommodation ID
+@managerAccommodationId = LDQ1pVJtCJKfTPDpiYDm
+
+### Manager dashboard
+GET {{ChommieHub.Api_HostAddress}}/api/manager/accommodations/{{managerAccommodationId}}/dashboard
+Accept: application/json
+
+
+### Applications for accommodation
+GET {{ChommieHub.Api_HostAddress}}/api/manager/accommodations/{{managerAccommodationId}}/applications
+Accept: application/json
+
+
+### Replace after an application exists
+@applicationId = FoNMutDocJdWoPaWqHxh
+
+
+### View application details
+GET {{ChommieHub.Api_HostAddress}}/api/manager/applications/{{applicationId}}
+Accept: application/json
+
+
+### Approve application
+PATCH {{ChommieHub.Api_HostAddress}}/api/manager/applications/{{applicationId}}/review
+Content-Type: application/json
+
+{
+  "decision": "Approved",
+  "reviewNotes": "Application information verified and approved."
+}
+
+
+### Existing available room ID
+@managerRoomId = IW6RHQsabu4m01C4lSYN
+
+
+### Assign room
+POST {{ChommieHub.Api_HostAddress}}/api/manager/applications/{{applicationId}}/assign-room
+Content-Type: application/json
+
+{
+  "roomId": "{{managerRoomId}}"
+}
+
+
+### View residents
+GET {{ChommieHub.Api_HostAddress}}/api/manager/accommodations/{{managerAccommodationId}}/residents
+Accept: application/json
+
 ###
