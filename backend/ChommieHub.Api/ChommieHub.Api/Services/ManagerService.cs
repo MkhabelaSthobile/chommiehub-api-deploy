@@ -4,6 +4,9 @@ using ChommieHub.Api.Repositories;
 
 namespace ChommieHub.Api.Services
 {
+    /// <summary>
+    /// Implements the core residence-manager workflow including application review, room assignment, resident creation and dashboard statistics
+    /// </summary>
     public sealed class ManagerService : IManagerService
     {
         private readonly IApplicationRepository _applicationRepository;
@@ -51,6 +54,7 @@ namespace ChommieHub.Api.Services
 
             string decision = request.Decision.Trim();
 
+            //Only final manager decisions are accepted by this operation.
             bool approved = decision.Equals(ApplicationStatuses.Approved, StringComparison.OrdinalIgnoreCase);
 
             bool declined = decision.Equals(ApplicationStatuses.Declined, StringComparison.OrdinalIgnoreCase);
@@ -60,6 +64,7 @@ namespace ChommieHub.Api.Services
                 throw new InvalidOperationException( "Decision must be either Approved or Declined.");
             }
 
+            //Prevent an already-finalised application from being reviewed a second time
             if (application.Status == ApplicationStatuses.Approved || application.Status == ApplicationStatuses.Declined)
             {
                 throw new InvalidOperationException("This application has already been reviewed.");
@@ -91,6 +96,7 @@ namespace ChommieHub.Api.Services
                 return null;
             }
 
+            // A student cannot receive a room until the manager has approved the application
             if (application.Status != ApplicationStatuses.Approved)
             {
                 throw new InvalidOperationException("Only approved applications can receive a room assignment.");
@@ -114,11 +120,13 @@ namespace ChommieHub.Api.Services
                 throw new KeyNotFoundException("The selected room was not found.");
             }
 
+            //Prevent a manager from assigning a room belonging to another residence
             if (room.AccommodationId != application.AccommodationId)
             {
                 throw new InvalidOperationException("The selected room does not belong to the application's accommodation.");
             }
 
+            // Protect against assigning a room that is already occupied or otherwise unavailable
             if (!room.Availability)
             {
                 throw new InvalidOperationException("The selected room is not available.");
@@ -165,6 +173,9 @@ namespace ChommieHub.Api.Services
                 .ToList();
         }
 
+        /// <summary>
+        /// Calculates live dashboard totals from applications, residents and rooms belonging to the selected accommodation
+        /// </summary>
         public async Task<ManagerDashboardResponse> GetDashboardAsync(string accommodationId, CancellationToken cancellationToken = default)
         {
             IReadOnlyList<Application> applications = await _applicationRepository.GetByAccommodationIdAsync(

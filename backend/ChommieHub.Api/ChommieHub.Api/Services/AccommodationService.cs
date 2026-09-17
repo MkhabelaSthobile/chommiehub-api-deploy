@@ -4,6 +4,9 @@ using ChommieHub.Api.Repositories;
 
 namespace ChommieHub.Api.Services
 {
+    /// <summary>
+    /// Coordinates accommodation business logic and maps Firestore domain models into API response DTOs
+    /// </summary>
     public sealed class AccommodationService : IAccommodationService
     {
         private readonly IAccommodationRepository _repository;
@@ -79,6 +82,9 @@ namespace ChommieHub.Api.Services
             return MapToResponse(accommodation);
         }
 
+        /// <summary>
+        ///Maps the internal accommodation domain model to the public API response model
+        /// </summary>
         private static AccommodationResponse MapToResponse(Accommodation accommodation)
         {
             return new AccommodationResponse

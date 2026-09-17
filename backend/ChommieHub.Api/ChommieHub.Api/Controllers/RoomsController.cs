@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ChommieHub.Api.Controllers
 {
+    /// <summary>
+    /// Provides REST endpoints for retrieving and updating individual rooms
+    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     public sealed class RoomsController : ControllerBase
@@ -35,6 +38,9 @@ namespace ChommieHub.Api.Controllers
             return Ok(room);
         }
 
+        /// <summary>
+        ///updates room information such as type, price, capacity and availability.
+        /// </summary>
         [HttpPut("{id}")]
         public async Task<ActionResult<RoomResponse>> Update(string id, UpdateRoomRequest request, CancellationToken cancellationToken)
         {

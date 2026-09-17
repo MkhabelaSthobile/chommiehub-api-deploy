@@ -3,6 +3,10 @@ using Google.Cloud.Firestore;
 
 namespace ChommieHub.Api.Repositories
 {
+    /// <summary>
+    /// Firestore implementation of accommodation persistence.
+    /// Database-specific operations remain isolated from controllers and services.
+    /// </summary>
     public sealed class FirestoreAccommodationRepository : IAccommodationRepository
     {
         private const string CollectionName = "accommodations";

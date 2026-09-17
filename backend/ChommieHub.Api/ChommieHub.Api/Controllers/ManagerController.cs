@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ChommieHub.Api.Controllers
 {
+    /// <summary>
+    /// Exposes residence-manager operations including dashboard statistics, application review, room assignment and resident retrieval
+    /// </summary>
     [ApiController]
     [Route("api/manager")]
     public sealed class ManagerController : ControllerBase
@@ -55,6 +58,9 @@ namespace ChommieHub.Api.Controllers
             return Ok(application);
         }
 
+        /// <summary>
+        ///Records a manager's approval or decline decision for an accommodation application.
+        /// </summary>
         [HttpPatch("applications/{applicationId}/review")]
         public async Task<ActionResult<ManagerApplicationDetailResponse>> ReviewApplication(string applicationId, ReviewApplicationRequest request, CancellationToken cancellationToken)
         {
@@ -87,6 +93,9 @@ namespace ChommieHub.Api.Controllers
             }
         }
 
+        /// <summary>
+        /// Assigns an available room to an approved application and creates the corresponding resident record
+        /// </summary>
         [HttpPost("applications/{applicationId}/assign-room")]
         public async Task<ActionResult<ResidentResponse>> AssignRoom(string applicationId, AssignRoomRequest request, CancellationToken cancellationToken)
         {

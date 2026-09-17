@@ -3,6 +3,9 @@ using Google.Cloud.Firestore;
 
 namespace ChommieHub.Api.Repositories
 {
+    /// <summary>
+    /// Firestore implementation used to retrieve and update student accommodation applications
+    /// </summary>
     public sealed class FirestoreApplicationRepository : IApplicationRepository
     {
         private const string CollectionName = "applications";

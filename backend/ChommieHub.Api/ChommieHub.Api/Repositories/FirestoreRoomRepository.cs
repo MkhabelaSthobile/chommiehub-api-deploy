@@ -3,6 +3,9 @@ using Google.Cloud.Firestore;
 
 namespace ChommieHub.Api.Repositories
 {
+    /// <summary>
+    ///Firestore implementation responsible for room persistence and accommodation-specific room queries.
+    /// </summary>
     public sealed class FirestoreRoomRepository : IRoomRepository
     {
         private const string CollectionName = "rooms";

@@ -4,6 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ChommieHub.Api.Controllers
 {
+    /// <summary>
+    /// Exposes REST endpoints for accommodation and room discovery and management
+    ///The controller delegates business logic to the service layer rather than communicating with Firestore directly
+    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     public sealed class AccommodationsController : ControllerBase
@@ -45,6 +49,9 @@ namespace ChommieHub.Api.Controllers
             return Ok(accommodation);
         }
 
+        /// <summary>
+        /// Creates a new accommodation after ASP.NET Core validates the incoming request
+        /// </summary>
         [HttpPost]
         public async Task<ActionResult<AccommodationResponse>> Create(CreateAccommodationRequest request, CancellationToken cancellationToken)
         {
@@ -103,6 +110,10 @@ namespace ChommieHub.Api.Controllers
             return Ok(rooms);
         }
 
+        /// <summary>
+        /// Creates a room under an existing accommodation.
+        ///a room cannot be created when the parent accommodation does not exist.
+        /// </summary>
         [HttpPost("{id}/rooms")]
         public async Task<ActionResult<RoomResponse>> CreateRoom(string id, CreateRoomRequest request, CancellationToken cancellationToken)
         {

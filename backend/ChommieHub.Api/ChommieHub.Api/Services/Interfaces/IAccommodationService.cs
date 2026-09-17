@@ -2,6 +2,9 @@
 
 namespace ChommieHub.Api.Services
 {
+    /// <summary>
+    ///Defines the business operations available for accommodation management
+    /// </summary>
     public interface IAccommodationService
     {
         Task<IReadOnlyList<AccommodationResponse>> GetAllAsync(CancellationToken cancellationToken = default);

@@ -2,6 +2,9 @@
 
 namespace ChommieHub.Api.Services
 {
+    /// <summary>
+    /// Defines business operations for retrieving, creating and updating rooms
+    /// </summary>
     public interface IRoomService
     {
         Task<IReadOnlyList<RoomResponse>> GetByAccommodationIdAsync(string accommodationId, CancellationToken cancellationToken = default);

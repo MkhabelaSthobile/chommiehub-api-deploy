@@ -2,6 +2,9 @@
 
 namespace ChommieHub.Api.Models
 {
+    /// <summary>
+    /// Represents a room belonging to a specific accommodation property
+    /// </summary>
     [FirestoreData]
     public sealed class Room
     {

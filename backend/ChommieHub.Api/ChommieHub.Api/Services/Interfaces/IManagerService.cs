@@ -2,6 +2,9 @@
 
 namespace ChommieHub.Api.Services
 {
+    /// <summary>
+    /// Defines residence-manager business operations including application review, room assignment, resident management and dashboard reporting
+    /// </summary>
     public interface IManagerService
     {
         Task<IReadOnlyList<ManagerApplicationSummaryResponse>> GetApplicationsAsync(string accommodationId, CancellationToken cancellationToken = default);

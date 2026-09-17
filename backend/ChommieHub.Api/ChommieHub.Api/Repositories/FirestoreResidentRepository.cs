@@ -3,6 +3,9 @@ using Google.Cloud.Firestore;
 
 namespace ChommieHub.Api.Repositories
 {
+    /// <summary>
+    /// Firestore implementation used to store and retrieve resident records.
+    /// </summary>
     public sealed class FirestoreResidentRepository : IResidentRepository
     {
         private const string CollectionName = "residents";

@@ -3,6 +3,9 @@ using Google.Cloud.Firestore;
 
 namespace ChommieHub.Api.Repositories
 {
+    /// <summary>
+    /// Firestore implementation used to persist Chommiehub student profiles
+    /// </summary>
     public sealed class FirestoreStudentRepository : IStudentRepository
     {
         private const string CollectionName = "students";

@@ -2,6 +2,9 @@
 
 namespace ChommieHub.Api.Repositories
 {
+    /// <summary>
+    /// defines persistence operations for accommodation records independently of the underlying database technology
+    /// </summary>
     public interface IAccommodationRepository
     {
         Task<IReadOnlyList<Accommodation>> GetAllAsync(CancellationToken cancellationToken = default);

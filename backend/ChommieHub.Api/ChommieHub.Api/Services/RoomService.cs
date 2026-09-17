@@ -4,6 +4,9 @@ using ChommieHub.Api.Repositories;
 
 namespace ChommieHub.Api.Services
 {
+    /// <summary>
+    ///Coordinates room-related business rules and prevents rooms from being created under accommodation records that do not exist
+    /// </summary>
     public sealed class RoomService : IRoomService
     {
         private readonly IRoomRepository _roomRepository;
@@ -40,6 +43,7 @@ namespace ChommieHub.Api.Services
 
         public async Task<RoomResponse?> CreateAsync(string accommodationId, CreateRoomRequest request, CancellationToken cancellationToken = default)
         {
+            // A room must belong to a valid accommodation before it can be persisted
             Accommodation? accommodation = await _accommodationRepository.GetByIdAsync(
                 accommodationId,
                 cancellationToken);
@@ -91,6 +95,9 @@ namespace ChommieHub.Api.Services
             return MapToResponse(room);
         }
 
+        /// <summary>
+        /// Converts the internal room model into the API response representation
+        /// </summary>
         private static RoomResponse MapToResponse(Room room)
         {
             return new RoomResponse
