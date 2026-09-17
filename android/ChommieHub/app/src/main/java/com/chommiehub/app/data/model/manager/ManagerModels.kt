@@ -72,3 +72,15 @@ data class ResidentResponse(
     val isActive: Boolean,
     val createdAtUtc: String
 )
+
+/**
+ * Represents a residence room returned by the accommodation REST API
+ */
+data class RoomResponse(
+    val id: String,
+    val accommodationId: String,
+    val roomType: String,
+    val price: Double,
+    val capacity: Int,
+    val availability: Boolean
+)

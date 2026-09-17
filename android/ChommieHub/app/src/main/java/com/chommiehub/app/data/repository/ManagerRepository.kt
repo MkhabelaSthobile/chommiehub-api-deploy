@@ -7,6 +7,7 @@ import com.chommiehub.app.data.model.manager.ManagerDashboardResponse
 import com.chommiehub.app.data.model.manager.ResidentResponse
 import com.chommiehub.app.data.model.manager.ReviewApplicationRequest
 import com.chommiehub.app.data.remote.ChommieHubApi
+import com.chommiehub.app.data.model.manager.RoomResponse
 
 /**
  * Repository used by manager-facing Android features
@@ -47,5 +48,18 @@ class ManagerRepository(private val api: ChommieHubApi)
     suspend fun getResidents(accommodationId: String): List<ResidentResponse>
     {
         return api.getResidents(accommodationId)
+    }
+
+    /**
+     * Returns only rooms that are currently available for assignment
+     */
+    suspend fun getAvailableRooms(
+        accommodationId: String
+    ): List<RoomResponse> {
+        return api.getRooms(
+            accommodationId
+        ).filter { room ->
+            room.availability
+        }
     }
 }

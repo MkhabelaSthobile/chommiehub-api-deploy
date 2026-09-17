@@ -22,4 +22,7 @@
     <string name="detail_rental_period">Rental period: %1$s</string>
     <string name="detail_supporting_info">Supporting information: %1$s</string>
     <string name="detail_review_notes">Review notes: %1$s</string>
+
+    <string name="room_price">R %1$.2f per month</string>
+    <string name="room_capacity">Capacity: %1$d</string>
 </resources>

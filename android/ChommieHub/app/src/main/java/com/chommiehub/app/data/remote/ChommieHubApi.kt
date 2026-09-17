@@ -12,6 +12,7 @@ import retrofit2.http.GET
 import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Path
+import com.chommiehub.app.data.model.manager.RoomResponse
 
 /**
  * Defines HTTP operations exposed by the ChommieHub REST API
@@ -68,4 +69,13 @@ interface ChommieHubApi {
     @GET("api/manager/accommodations/{accommodationId}/residents")
     suspend fun getResidents(
         @Path("accommodationId") accommodationId: String): List<ResidentResponse>
+
+    /**
+     * Returns all rooms belonging to the selected accommodation.
+     */
+    @GET("api/accommodations/{accommodationId}/rooms")
+    suspend fun getRooms(
+        @Path("accommodationId")
+        accommodationId: String
+    ): List<RoomResponse>
 }

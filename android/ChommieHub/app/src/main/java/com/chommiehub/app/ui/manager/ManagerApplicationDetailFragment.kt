@@ -52,6 +52,10 @@ class ManagerApplicationDetailFragment : Fragment() {
     private lateinit var btnApprove: Button
     private lateinit var btnDecline: Button
 
+    private lateinit var btnAssignRoom: Button
+
+    private var currentApplication: ManagerApplicationDetailResponse? = null
+
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
@@ -98,7 +102,36 @@ class ManagerApplicationDetailFragment : Fragment() {
             submitReview("Declined")
         }
 
-        viewModel.loadApplication(applicationId)
+        btnAssignRoom.setOnClickListener {
+            currentApplication?.let {
+                    application ->
+
+                parentFragmentManager
+                    .beginTransaction()
+                    .replace(
+                        R.id.managerFragmentContainer,
+                        ManagerRoomAssignmentFragment
+                            .newInstance(
+                                applicationId =
+                                    application.id,
+                                accommodationId =
+                                    application.accommodationId
+                            )
+                    )
+                    .addToBackStack(null)
+                    .commit()
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        // Reload when returning from room assignment so the UI
+        // immediately reflects the new resident/room relationship.
+        viewModel.loadApplication(
+            applicationId
+        )
     }
 
     private fun bindViews(
@@ -127,6 +160,8 @@ class ManagerApplicationDetailFragment : Fragment() {
         btnApprove = view.findViewById(R.id.btnApproveApplication)
 
         btnDecline = view.findViewById(R.id.btnDeclineApplication)
+
+        btnAssignRoom = view.findViewById(R.id.btnAssignApplicationRoom)
     }
 
     private fun configureViewModel() {
@@ -176,6 +211,8 @@ class ManagerApplicationDetailFragment : Fragment() {
 
     private fun showApplication(application: ManagerApplicationDetailResponse)
     {
+        currentApplication = application
+
         progressBar.visibility = View.GONE
 
         tvError.visibility = View.GONE
@@ -246,6 +283,15 @@ class ManagerApplicationDetailFragment : Fragment() {
         btnApprove.isEnabled = canReview
 
         btnDecline.isEnabled = canReview
+
+        val canAssignRoom = application.status == "Approved" && application.assignedRoomId.isBlank()
+
+        btnAssignRoom.visibility =
+            if (canAssignRoom) {
+                View.VISIBLE
+            } else {
+                View.GONE
+            }
     }
 
     private fun showError(message: String)

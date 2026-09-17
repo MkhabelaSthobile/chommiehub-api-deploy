@@ -160,6 +160,15 @@
             android:textColor="@color/chommie_danger"
             app:strokeColor="@color/chommie_danger" />
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnAssignApplicationRoom"
+            style="@style/Widget.ChommieHub.Button.Primary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Assign Room"
+            android:visibility="gone" />
+
     </LinearLayout>
 
 </androidx.core.widget.NestedScrollView>
