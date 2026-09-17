@@ -36,6 +36,14 @@ builder.Services.AddScoped<IAccommodationRepository, FirestoreAccommodationRepos
 
 builder.Services.AddScoped<IRoomRepository, FirestoreRoomRepository>();
 
+builder.Services.AddScoped<IStudentRepository, FirestoreStudentRepository>();
+
+builder.Services.AddScoped<IApplicationRepository, FirestoreApplicationRepository>();
+
+builder.Services.AddScoped<
+    IResidentRepository,
+    FirestoreResidentRepository>();
+
 //Application business services
 builder.Services.AddScoped<IAccommodationService, AccommodationService>();
 
