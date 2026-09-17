@@ -12,12 +12,14 @@ namespace ChommieHub.Api.Services
         private readonly IApplicationRepository _applicationRepository;
         private readonly IResidentRepository _residentRepository;
         private readonly IRoomRepository _roomRepository;
+        private readonly IManagerWorkflowRepository _managerWorkflowRepository;
 
-        public ManagerService(IApplicationRepository applicationRepository, IResidentRepository residentRepository, IRoomRepository roomRepository)
+        public ManagerService(IApplicationRepository applicationRepository, IResidentRepository residentRepository, IRoomRepository roomRepository, IManagerWorkflowRepository managerWorkflowRepository)
         {
             _applicationRepository = applicationRepository;
             _residentRepository = residentRepository;
             _roomRepository = roomRepository;
+            _managerWorkflowRepository = managerWorkflowRepository;
         }
 
         public async Task<IReadOnlyList<ManagerApplicationSummaryResponse>> GetApplicationsAsync(string accommodationId, CancellationToken cancellationToken = default)
@@ -85,82 +87,21 @@ namespace ChommieHub.Api.Services
             return MapApplicationDetail(application);
         }
 
+        /// <summary>
+        /// Assigns a room through an atomic Firestore transaction so that the room, application and resident records cannot become partially updated
+        /// </summary>
         public async Task<ResidentResponse?> AssignRoomAsync(string applicationId, AssignRoomRequest request, CancellationToken cancellationToken = default)
         {
-            Application? application = await _applicationRepository.GetByIdAsync(
+            Resident? resident = await _managerWorkflowRepository.AssignRoomAsync( 
                 applicationId,
-                cancellationToken);
-
-            if (application is null)
-            {
-                return null;
-            }
-
-            // A student cannot receive a room until the manager has approved the application
-            if (application.Status != ApplicationStatuses.Approved)
-            {
-                throw new InvalidOperationException("Only approved applications can receive a room assignment.");
-            }
-
-            Resident? existingResident = await _residentRepository.GetByApplicationIdAsync(
-                applicationId,
-                cancellationToken);
-
-            if (existingResident is not null)
-            {
-                throw new InvalidOperationException("A resident has already been created for this application.");
-            }
-
-            Room? room = await _roomRepository.GetByIdAsync(
                 request.RoomId,
                 cancellationToken);
 
-            if (room is null)
-            {
-                throw new KeyNotFoundException("The selected room was not found.");
-            }
-
-            //Prevent a manager from assigning a room belonging to another residence
-            if (room.AccommodationId != application.AccommodationId)
-            {
-                throw new InvalidOperationException("The selected room does not belong to the application's accommodation.");
-            }
-
-            // Protect against assigning a room that is already occupied or otherwise unavailable
-            if (!room.Availability)
-            {
-                throw new InvalidOperationException("The selected room is not available.");
-            }
-
-            room.Availability = false;
-            room.UpdatedAtUtc = DateTime.UtcNow;
-
-            await _roomRepository.UpdateAsync(
-                room,
-                cancellationToken);
-
-            application.AssignedRoomId = room.Id;
-
-            await _applicationRepository.UpdateAsync(
-                application,
-                cancellationToken);
-
-            var resident = new Resident
-            {
-                StudentId = application.StudentId,
-                AccommodationId = application.AccommodationId,
-                RoomId = room.Id,
-                ApplicationId = application.Id,
-                IsActive = true,
-                CreatedAtUtc = DateTime.UtcNow
-            };
-
-            Resident createdResident = await _residentRepository.CreateAsync(
-                resident,
-                cancellationToken);
-
-            return MapResident(createdResident);
+            return resident is null
+                ? null
+                : MapResident(resident);
         }
+
 
         public async Task<IReadOnlyList<ResidentResponse>> GetResidentsAsync(string accommodationId, CancellationToken cancellationToken = default)
         {

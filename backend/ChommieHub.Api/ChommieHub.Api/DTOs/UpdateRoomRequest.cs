@@ -2,6 +2,9 @@
 
 namespace ChommieHub.Api.DTOs
 {
+    /// <summary>
+    /// Defines validated room values that may be updated.
+    /// </summary>
     public sealed class UpdateRoomRequest
     {
         [Required]

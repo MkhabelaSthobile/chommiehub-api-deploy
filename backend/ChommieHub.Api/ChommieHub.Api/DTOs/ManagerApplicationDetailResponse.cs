@@ -1,5 +1,8 @@
 ﻿namespace ChommieHub.Api.DTOs
 {
+    /// <summary>
+    /// Provides detailed application information used during manager review
+    /// </summary>
     public sealed class ManagerApplicationDetailResponse
     {
         public string Id { get; init; } = string.Empty;

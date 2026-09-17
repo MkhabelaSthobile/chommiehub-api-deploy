@@ -2,6 +2,9 @@
 
 namespace ChommieHub.Api.DTOs
 {
+    /// <summary>
+    /// Captures the manager's decision and optional review notes.
+    /// </summary>
     public sealed class ReviewApplicationRequest
     {
         [Required]

@@ -1,5 +1,8 @@
 ﻿namespace ChommieHub.Api.DTOs
 {
+    /// <summary>
+    ///Provides summary information used by the manager application list.
+    /// </summary>
     public sealed class ManagerApplicationSummaryResponse
     {
         public string Id { get; init; } = string.Empty;

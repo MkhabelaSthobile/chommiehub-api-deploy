@@ -2,6 +2,9 @@
 
 namespace ChommieHub.Api.DTOs
 {
+    /// <summary>
+    /// Defines the information required when a student submits an accommodation application
+    /// </summary>
     public sealed class CreateApplicationRequest
     {
         [Required]

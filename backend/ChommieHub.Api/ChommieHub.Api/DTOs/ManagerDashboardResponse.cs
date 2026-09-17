@@ -1,5 +1,8 @@
 ﻿namespace ChommieHub.Api.DTOs
 {
+    /// <summary>
+    /// Provides aggregated residence statistics displayed on the manager dashboard.
+    /// </summary>
     public sealed class ManagerDashboardResponse
     {
         public string AccommodationId { get; init; } = string.Empty;

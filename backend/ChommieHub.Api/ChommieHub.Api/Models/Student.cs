@@ -2,6 +2,9 @@
 
 namespace ChommieHub.Api.Models
 {
+    /// <summary>
+    /// Represents a ChommieHub student profile linked to Firebase Authentication.
+    /// </summary>
     [FirestoreData]
     public sealed class Student
     {

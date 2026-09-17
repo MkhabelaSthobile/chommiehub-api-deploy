@@ -2,6 +2,9 @@
 
 namespace ChommieHub.Api.DTOs
 {
+    /// <summary>
+    /// Defines validated input required to create a room.
+    /// </summary>
     public sealed class CreateRoomRequest
     {
         [Required]

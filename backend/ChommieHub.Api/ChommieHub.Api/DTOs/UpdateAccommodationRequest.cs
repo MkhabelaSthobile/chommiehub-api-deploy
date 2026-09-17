@@ -2,6 +2,9 @@
 
 namespace ChommieHub.Api.DTOs
 {
+    /// <summary>
+    ///Defines validated accommodation values that may be updated by management
+    /// </summary>
     public sealed class UpdateAccommodationRequest
     {
         [Required]

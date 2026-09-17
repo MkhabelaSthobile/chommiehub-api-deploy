@@ -1,5 +1,8 @@
 ﻿namespace ChommieHub.Api.DTOs
 {
+    /// <summary>
+    ///Represents accommodation data returned to API clients.
+    /// </summary>
     public sealed class AccommodationResponse
     {
         public string Id { get; init; } = string.Empty;

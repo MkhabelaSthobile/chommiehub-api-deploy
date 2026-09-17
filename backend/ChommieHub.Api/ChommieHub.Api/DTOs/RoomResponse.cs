@@ -1,5 +1,8 @@
 ﻿namespace ChommieHub.Api.DTOs
 {
+    /// <summary>
+    ///represents room data returned to API clients.
+    /// </summary>
     public sealed class RoomResponse
     {
         public string Id { get; init; } = string.Empty;

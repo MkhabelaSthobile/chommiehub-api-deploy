@@ -2,6 +2,9 @@
 
 namespace ChommieHub.Api.Models
 {
+    /// <summary>
+    /// Represents a student's accommodation application and its review lifecycle.
+    /// </summary>
     [FirestoreData]
     public sealed class Application
     {

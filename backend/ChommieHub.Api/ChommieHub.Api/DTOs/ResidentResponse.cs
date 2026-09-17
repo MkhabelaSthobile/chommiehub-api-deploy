@@ -1,5 +1,8 @@
 ﻿namespace ChommieHub.Api.DTOs
 {
+    /// <summary>
+    /// Represents resident information returned to manager-facing API clients
+    /// </summary>
     public sealed class ResidentResponse
     {
         public string Id { get; init; } = string.Empty;

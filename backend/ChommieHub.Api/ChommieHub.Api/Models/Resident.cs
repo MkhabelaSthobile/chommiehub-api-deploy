@@ -2,6 +2,9 @@
 
 namespace ChommieHub.Api.Models
 {
+    /// <summary>
+    /// Represents an approved student who has been assigned to a residence room.
+    /// </summary>
     [FirestoreData]
     public sealed class Resident
     {

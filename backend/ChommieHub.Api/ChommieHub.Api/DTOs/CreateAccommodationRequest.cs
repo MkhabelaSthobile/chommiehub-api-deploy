@@ -2,6 +2,9 @@
 
 namespace ChommieHub.Api.DTOs
 {
+    /// <summary>
+    ///defines validated input required to create an accommodation.
+    /// </summary>
     public sealed class CreateAccommodationRequest
     {
         [Required]
