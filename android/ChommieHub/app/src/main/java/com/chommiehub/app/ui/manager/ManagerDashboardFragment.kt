@@ -65,11 +65,25 @@ class ManagerDashboardFragment : Fragment() {
             loadDashboard()
         }
 
-        observeDashboard()
-
-        if (savedInstanceState == null) {
-            loadDashboard()
+        view.findViewById<Button>(R.id.btnReviewApplications).setOnClickListener {
+            parentFragmentManager
+                .beginTransaction()
+                .replace(
+                    R.id.managerFragmentContainer,
+                    ManagerApplicationsFragment()
+                )
+                .addToBackStack(null)
+                .commit()
         }
+
+        observeDashboard()
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        // Refresh totals when returning from manager workflows.
+        loadDashboard()
     }
 
     private fun bindViews(view: View) {

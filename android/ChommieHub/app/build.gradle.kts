@@ -63,11 +63,14 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.retrofit.gson)
 
-// Lifecycle-aware Android state management.
+    // Lifecycle-aware Android state management.
     implementation(libs.androidx.lifecycle.viewmodel)
     implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
+
+    // Efficient scrolling lists used by manager application and resident screens.
+    implementation(libs.androidx.recyclerview)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.espresso.core)

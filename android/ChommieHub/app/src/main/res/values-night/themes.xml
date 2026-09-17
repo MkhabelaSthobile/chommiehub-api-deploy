@@ -1,7 +1,30 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.ChommieHub" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+
+    <!--
+        Part 2 currently keeps one consistent ChommieHub visual identity.
+        A dedicated dark theme can later be connected to Settings.
+    -->
+    <style
+        name="Base.Theme.ChommieHub"
+        parent="Theme.Material3.DayNight.NoActionBar">
+
+        <item name="colorPrimary">@color/chommie_navy</item>
+        <item name="colorOnPrimary">@color/white</item>
+
+        <item name="colorSecondary">@color/chommie_gold</item>
+        <item name="colorOnSecondary">@color/chommie_navy</item>
+
+        <item name="colorSurface">@color/chommie_surface</item>
+        <item name="colorOnSurface">@color/chommie_text_primary</item>
+
+        <item name="android:windowBackground">@color/chommie_background</item>
+
+        <item name="android:statusBarColor">@color/chommie_navy</item>
+        <item name="android:navigationBarColor">@color/chommie_navy</item>
+
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+
     </style>
+
 </resources>

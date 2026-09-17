@@ -1,5 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+
+    <!-- ChommieHub brand colours derived from the application logo. -->
+    <color name="chommie_navy">#0B2343</color>
+    <color name="chommie_navy_light">#173A65</color>
+
+    <color name="chommie_gold">#F4AA08</color>
+    <color name="chommie_gold_dark">#D89500</color>
+    <color name="chommie_gold_soft">#FFF5D9</color>
+
+    <!-- Application surfaces. -->
+    <color name="chommie_background">#F7F9FC</color>
+    <color name="chommie_surface">#FFFFFF</color>
+    <color name="chommie_surface_secondary">#F1F4F8</color>
+    <color name="chommie_border">#E3E8EF</color>
+
+    <!-- Text colours. -->
+    <color name="chommie_text_primary">#172033</color>
+    <color name="chommie_text_secondary">#667085</color>
+
+    <!-- State colours. -->
+    <color name="chommie_success">#21845A</color>
+    <color name="chommie_success_soft">#E7F6EF</color>
+
+    <color name="chommie_danger">#B42318</color>
+    <color name="chommie_danger_soft">#FDECEC</color>
+
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+
 </resources>

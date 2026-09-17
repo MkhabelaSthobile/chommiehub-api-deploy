@@ -3,4 +3,16 @@
     <string name="api_checking">Checking ChommieHub API...</string>
     <string name="api_connected">%1$s connected — %2$s</string>
     <string name="api_connection_failed">Unable to connect to the ChommieHub API.</string>
+    <string name="back">Back</string>
+    <string name="retry">Retry</string>
+
+    <string name="manager_applications_title">Applications</string>
+    <string name="no_applications">No applications have been submitted yet.</string>
+
+    <string name="manager_application_student">Student: %1$s</string>
+    <string name="manager_application_status">Status: %1$s</string>
+    <string name="manager_application_room">Room preference: %1$s</string>
+    <string name="manager_application_submitted">Submitted: %1$s</string>
+
+    <string name="review_applications">Review Applications</string>
 </resources>
