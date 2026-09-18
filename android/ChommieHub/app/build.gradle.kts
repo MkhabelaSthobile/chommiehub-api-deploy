@@ -1,3 +1,29 @@
+import java.util.Properties
+
+val localProperties =
+    Properties().apply {
+        val localPropertiesFile =
+            rootProject.file(
+                "local.properties"
+            )
+
+        if (
+            localPropertiesFile.exists()
+        ) {
+            localPropertiesFile
+                .inputStream()
+                .use {
+                    load(it)
+                }
+        }
+    }
+
+val managerAccommodationId =
+    localProperties.getProperty(
+        "manager.accommodation.id",
+        "NOT_CONFIGURED"
+    )
+
 plugins {
     alias(libs.plugins.android.application)
 }
@@ -23,12 +49,12 @@ android {
             "\"http://10.0.2.2:5154/\""
         )
 
-        // Temporary development accommodation used by the manager prototype.
-        // This will later be replaced by the signed-in manager's accommodation.
+        // Development-only fallback until Firebase Authentication links
+        // the signed-in manager to their accommodation dynamically.
         buildConfigField(
             "String",
             "MANAGER_ACCOMMODATION_ID",
-            "\"TIliENohJOvVmK9dI8LN\""
+            "\"$managerAccommodationId\""
         )
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

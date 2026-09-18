@@ -84,3 +84,54 @@ data class RoomResponse(
     val capacity: Int,
     val availability: Boolean
 )
+
+/**
+ *defines the information required to add a room to an accommodation.
+ */
+data class CreateRoomRequest(
+    val roomType: String,
+    val price: Double,
+    val capacity: Int,
+    val availability: Boolean
+)
+
+/**
+ *defines room information that may be updated by residence management.
+ */
+data class UpdateRoomRequest(
+    val roomType: String,
+    val price: Double,
+    val capacity: Int,
+    val availability: Boolean
+)
+
+/**
+ *Complete accommodation information returned by the ChommieHub API
+ */
+data class AccommodationResponse(
+    val id: String,
+    val name: String,
+    val address: String,
+    val latitude: Double,
+    val longitude: Double,
+    val description: String,
+    val phoneNumber: String,
+    val amenities: List<String>,
+    val institutionArea: String,
+    val isActive: Boolean
+)
+
+/**
+ *Values a residence manager may update for their accommodation
+ */
+data class UpdateAccommodationRequest(
+    val name: String,
+    val address: String,
+    val latitude: Double,
+    val longitude: Double,
+    val description: String,
+    val phoneNumber: String,
+    val amenities: List<String>,
+    val institutionArea: String,
+    val isActive: Boolean
+)

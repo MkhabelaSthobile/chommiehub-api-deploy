@@ -8,6 +8,10 @@ import com.chommiehub.app.data.model.manager.ResidentResponse
 import com.chommiehub.app.data.model.manager.ReviewApplicationRequest
 import com.chommiehub.app.data.remote.ChommieHubApi
 import com.chommiehub.app.data.model.manager.RoomResponse
+import com.chommiehub.app.data.model.manager.CreateRoomRequest
+import com.chommiehub.app.data.model.manager.UpdateRoomRequest
+import com.chommiehub.app.data.model.manager.AccommodationResponse
+import com.chommiehub.app.data.model.manager.UpdateAccommodationRequest
 
 /**
  * Repository used by manager-facing Android features
@@ -51,15 +55,57 @@ class ManagerRepository(private val api: ChommieHubApi)
     }
 
     /**
-     * Returns only rooms that are currently available for assignment
+     *returns only rooms that are currently available for assignment
      */
-    suspend fun getAvailableRooms(
-        accommodationId: String
-    ): List<RoomResponse> {
-        return api.getRooms(
-            accommodationId
-        ).filter { room ->
-            room.availability
+    suspend fun getAvailableRooms(accommodationId: String): List<RoomResponse>
+    {
+        return api.getRooms(accommodationId).filter {
+            room -> room.availability
         }
+    }
+
+    /**
+     *Retrieves the manager's current accommodation information
+     */
+    suspend fun getAccommodation(accommodationId: String): AccommodationResponse
+    {
+        return api.getAccommodation(accommodationId)
+    }
+
+    /**
+     * Updates accommodation information through the custom REST API
+     */
+    suspend fun updateAccommodation(accommodationId: String, request: UpdateAccommodationRequest): AccommodationResponse
+    {
+        return api.updateAccommodation(
+            accommodationId,
+            request
+        )
+    }
+
+    suspend fun getRooms(accommodationId: String): List<RoomResponse>
+    {
+        return api.getRooms(accommodationId)
+    }
+
+    suspend fun getRoom(roomId: String): RoomResponse
+    {
+        return api.getRoom(roomId)
+    }
+
+    suspend fun createRoom(accommodationId: String, request: CreateRoomRequest): RoomResponse
+    {
+        return api.createRoom(
+            accommodationId,
+            request
+        )
+    }
+
+    suspend fun updateRoom(roomId: String, request: UpdateRoomRequest): RoomResponse
+    {
+        return api.updateRoom(
+            roomId,
+            request
+        )
     }
 }
