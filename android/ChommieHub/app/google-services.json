@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "565167606675",
+    "project_id": "chommiehub-c80ef",
+    "storage_bucket": "chommiehub-c80ef.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:565167606675:android:86b5fa9179579807db3666",
+        "android_client_info": {
+          "package_name": "com.chommiehub.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDDTOS0pLnU-BZAN-OATzYXeFkKQe7yfm0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
