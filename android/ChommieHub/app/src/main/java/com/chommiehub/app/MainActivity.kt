@@ -14,6 +14,7 @@ import com.chommiehub.app.data.repository.HealthRepository
 import kotlinx.coroutines.launch
 import android.content.Intent
 import com.chommiehub.app.ui.manager.ManagerActivity
+import com.chommiehub.app.ui.student.StudentActivity
 
 /**
  * Temporary integration screen used to verify communication between the native Android application and the custom ChommieHub REST API.
@@ -29,6 +30,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnRetry: Button
 
     private lateinit var btnOpenManager: Button
+
+    private lateinit var btnOpenStudentProfile: Button
 
     private val healthRepository by lazy {
         HealthRepository(ApiClient.api)
@@ -63,6 +66,7 @@ class MainActivity : AppCompatActivity() {
         tvApiStatus = findViewById(R.id.tvApiStatus)
         btnRetry = findViewById(R.id.btnRetry)
         btnOpenManager = findViewById(R.id.btnOpenManager)
+        btnOpenStudentProfile = findViewById(R.id.btnOpenStudentProfile)
 
         btnRetry.setOnClickListener {
             Log.d(TAG, "Manual API connection retry requested.")
@@ -79,6 +83,20 @@ class MainActivity : AppCompatActivity() {
                 Intent(
                     this,
                     ManagerActivity::class.java
+                )
+            )
+        }
+
+        btnOpenStudentProfile.setOnClickListener {
+            Log.d(
+                TAG,
+                "Opening student profile feature area."
+            )
+
+            startActivity(
+                Intent(
+                    this,
+                    StudentActivity::class.java
                 )
             )
         }
