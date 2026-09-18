@@ -99,6 +99,8 @@ dependencies {
     implementation(libs.androidx.recyclerview)
 
     testImplementation(libs.junit)
+    // Kotlin-friendly mocks used by local JVM unit tests.
+    testImplementation(libs.mockito.kotlin)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
 }
