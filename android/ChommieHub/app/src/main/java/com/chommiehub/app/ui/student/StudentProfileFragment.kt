@@ -11,7 +11,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.chommiehub.app.BuildConfig
 import com.chommiehub.app.R
 import com.chommiehub.app.data.model.student.CreateStudentRequest
 import com.chommiehub.app.data.model.student.StudentResponse
@@ -19,6 +18,7 @@ import com.chommiehub.app.data.model.student.UpdateStudentRequest
 import com.chommiehub.app.data.remote.ApiClient
 import com.chommiehub.app.data.repository.StudentRepository
 import com.google.android.material.button.MaterialButton
+import com.google.firebase.auth.FirebaseAuth
 
 /**
  * Displays the signed-in student's profile, and doubles as the setup form
@@ -97,15 +97,25 @@ class StudentProfileFragment : Fragment() {
         viewModel.uiState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 StudentProfileUiState.Loading -> showLoading()
+
                 StudentProfileUiState.NotFound -> showCreateForm()
-                is StudentProfileUiState.Loaded -> showLoadedProfile(state.student)
-                is StudentProfileUiState.Error -> showError(state.message)
+
+                is StudentProfileUiState.Loaded ->
+                    showLoadedProfile(state.student)
+
+                is StudentProfileUiState.Error ->
+                    showError(state.message)
             }
         }
 
         viewModel.saveMessage.observe(viewLifecycleOwner) { message ->
             if (message != null) {
-                Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    requireContext(),
+                    message,
+                    Toast.LENGTH_SHORT
+                ).show()
+
                 viewModel.consumeSaveMessage()
             }
         }
@@ -119,7 +129,14 @@ class StudentProfileFragment : Fragment() {
     }
 
     private fun loadProfile() {
-        viewModel.loadProfile(BuildConfig.STUDENT_ID)
+        val firebaseUid = FirebaseAuth.getInstance().currentUser?.uid
+
+        if (firebaseUid == null) {
+            showError("No signed-in student found.")
+            return
+        }
+
+        viewModel.loadProfile(firebaseUid)
     }
 
     private fun showLoading() {
@@ -160,7 +177,6 @@ class StudentProfileFragment : Fragment() {
         etName.setText(student.name)
         etSurname.setText(student.surname)
         etEmail.setText(student.email)
-        // Email is tied to the Firebase account and isn't editable here.
         etEmail.isEnabled = false
         etPhone.setText(student.phoneNumber)
         etLanguage.setText(student.preferredLanguage)
@@ -182,7 +198,8 @@ class StudentProfileFragment : Fragment() {
         val surname = etSurname.text.toString().trim()
         val email = etEmail.text.toString().trim()
         val phone = etPhone.text.toString().trim()
-        val language = etLanguage.text.toString().trim().ifBlank { "English" }
+        val language =
+            etLanguage.text.toString().trim().ifBlank { "English" }
 
         if (name.isBlank()) {
             showFormError("Enter your first name.")
@@ -194,8 +211,19 @@ class StudentProfileFragment : Fragment() {
             return
         }
 
+        val firebaseUid = FirebaseAuth.getInstance().currentUser?.uid
+
+        if (firebaseUid == null) {
+            showFormError("No signed-in student found.")
+            return
+        }
+
         if (isCreateMode) {
-            if (email.isBlank() || !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+
+            if (
+                email.isBlank() ||
+                !Patterns.EMAIL_ADDRESS.matcher(email).matches()
+            ) {
                 showFormError("Enter a valid email address.")
                 return
             }
@@ -204,7 +232,7 @@ class StudentProfileFragment : Fragment() {
 
             viewModel.createProfile(
                 CreateStudentRequest(
-                    firebaseUid = BuildConfig.STUDENT_ID,
+                    firebaseUid = firebaseUid,
                     name = name,
                     surname = surname,
                     email = email,
@@ -212,11 +240,13 @@ class StudentProfileFragment : Fragment() {
                     preferredLanguage = language
                 )
             )
+
         } else {
+
             tvFormError.visibility = View.GONE
 
             viewModel.updateProfile(
-                BuildConfig.STUDENT_ID,
+                firebaseUid,
                 UpdateStudentRequest(
                     name = name,
                     surname = surname,

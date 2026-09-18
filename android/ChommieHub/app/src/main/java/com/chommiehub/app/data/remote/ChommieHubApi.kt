@@ -1,6 +1,7 @@
 package com.chommiehub.app.data.remote
 
 import com.chommiehub.app.data.model.HealthResponse
+
 import com.chommiehub.app.data.model.manager.AssignRoomRequest
 import com.chommiehub.app.data.model.manager.ManagerApplicationDetailResponse
 import com.chommiehub.app.data.model.manager.ManagerApplicationSummaryResponse
@@ -12,13 +13,17 @@ import com.chommiehub.app.data.model.manager.CreateRoomRequest
 import com.chommiehub.app.data.model.manager.UpdateRoomRequest
 import com.chommiehub.app.data.model.manager.AccommodationResponse
 import com.chommiehub.app.data.model.manager.UpdateAccommodationRequest
+
+import com.chommiehub.app.data.model.student.CreateStudentRequest
+import com.chommiehub.app.data.model.student.StudentResponse
+import com.chommiehub.app.data.model.student.UpdateStudentRequest
+
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.PUT
-
 /**
  * Defines HTTP operations exposed by the ChommieHub REST API
  * Android UI code communicates with this contract through repositories rather than performing network requests directly
@@ -131,4 +136,29 @@ interface ChommieHubApi {
         roomId: String,
         @Body request: UpdateRoomRequest
     ): RoomResponse
+
+    /**
+     * Retrieves a student's profile by their Firebase UID / Student.Id.
+     */
+    @GET("api/students/{id}")
+    suspend fun getStudent(
+        @Path("id") id: String
+    ): StudentResponse
+
+    /**
+     * Creates a new student profile linked to a Firebase UID.
+     */
+    @POST("api/students")
+    suspend fun createStudent(
+        @Body request: CreateStudentRequest
+    ): StudentResponse
+
+    /**
+     * Updates the signed-in student's own profile information.
+     */
+    @PUT("api/students/{id}")
+    suspend fun updateStudent(
+        @Path("id") id: String,
+        @Body request: UpdateStudentRequest
+    ): StudentResponse
 }
