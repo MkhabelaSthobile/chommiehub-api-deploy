@@ -30,6 +30,9 @@ namespace ChommieHub.Api.Models
         public string PreferredLanguage { get; set; } = "English";
 
         [FirestoreProperty]
+        public bool NotificationsEnabled { get; set; } = true;
+
+        [FirestoreProperty]
         public string UserType { get; set; } = "Applicant";
 
         [FirestoreProperty]
