@@ -1,30 +1,38 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
 
     <!--
-        Part 2 currently keeps one consistent ChommieHub visual identity.
-        A dedicated dark theme can later be connected to Settings.
+        ChommieHub currently keeps a consistent visual identity
+        between light and night configurations.
     -->
+
     <style
         name="Base.Theme.ChommieHub"
         parent="Theme.Material3.DayNight.NoActionBar">
 
+        <!-- Primary brand colours -->
         <item name="colorPrimary">@color/chommie_navy</item>
         <item name="colorOnPrimary">@color/white</item>
 
+        <!-- Secondary brand colours -->
         <item name="colorSecondary">@color/chommie_gold</item>
         <item name="colorOnSecondary">@color/chommie_navy</item>
 
+        <!-- Surface colours -->
         <item name="colorSurface">@color/chommie_surface</item>
         <item name="colorOnSurface">@color/chommie_text_primary</item>
 
+        <!-- Window background -->
         <item name="android:windowBackground">@color/chommie_background</item>
 
+        <!-- System bars -->
         <item name="android:statusBarColor">@color/chommie_navy</item>
         <item name="android:navigationBarColor">@color/chommie_navy</item>
 
-        <item name="android:windowLightStatusBar">false</item>
-        <item name="android:windowLightNavigationBar">false</item>
-
     </style>
+
+    <style
+        name="Theme.ChommieHub"
+        parent="Base.Theme.ChommieHub" />
 
 </resources>
