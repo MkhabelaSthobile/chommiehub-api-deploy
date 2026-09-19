@@ -1,12 +1,5 @@
 package com.chommiehub.app.ui.auth
-import android.content.Intent
-import android.os.Bundle
-import android.util.Patterns
-import android.widget.*
-import androidx.appcompat.app.AppCompatActivity
-import com.chommiehub.app.R
-import com.chommiehub.app.ui.student.StudentActivity
-import com.google.firebase.auth.FirebaseAuth
-class RegisterActivity:AppCompatActivity(){ override fun onCreate(s:Bundle?){super.onCreate(s);setContentView(R.layout.activity_register); val auth=FirebaseAuth.getInstance(); val email=findViewById<EditText>(R.id.etRegisterEmail); val pass=findViewById<EditText>(R.id.etRegisterPassword); val confirm=findViewById<EditText>(R.id.etConfirmPassword); val error=findViewById<TextView>(R.id.tvRegisterError)
-    findViewById<Button>(R.id.btnRegister).setOnClickListener{ val e=email.text.toString().trim(); val p=pass.text.toString(); when{!Patterns.EMAIL_ADDRESS.matcher(e).matches()->error.text="Enter a valid email address.";p.length<6->error.text="Password must contain at least 6 characters.";p!=confirm.text.toString()->error.text="Passwords do not match.";else->auth.createUserWithEmailAndPassword(e,p).addOnSuccessListener{startActivity(Intent(this,StudentActivity::class.java));finishAffinity()}.addOnFailureListener{error.text=it.message}}}; findViewById<View>(R.id.tvBackToLogin).setOnClickListener{finish()} }
-}
+import android.content.Intent;import android.os.Bundle;import android.util.Patterns;import android.widget.*;import androidx.appcompat.app.AppCompatActivity;import com.chommiehub.app.R;import com.chommiehub.app.data.model.student.CreateStudentRequest;import com.chommiehub.app.data.remote.ApiClient;import com.google.firebase.auth.FirebaseAuth;import kotlinx.coroutines.*
+class RegisterActivity:AppCompatActivity(){val auth by lazy{FirebaseAuth.getInstance()};override fun onCreate(b:Bundle?){super.onCreate(b);setContentView(R.layout.activity_register);findViewById<Button>(R.id.btnRegister).setOnClickListener{register()};findViewById<TextView>(R.id.tvLogin).setOnClickListener{finish()}}
+    private fun register(){fun v(id:Int)=findViewById<EditText>(id).text.toString().trim();val n=v(R.id.etName);val s=v(R.id.etSurname);val e=v(R.id.etEmail);val ph=v(R.id.etPhone);val p=v(R.id.etPassword);val c=v(R.id.etConfirmPassword);if(n.isBlank()||s.isBlank()||ph.isBlank()){toast("Complete all required fields");return};if(!Patterns.EMAIL_ADDRESS.matcher(e).matches()){toast("Enter a valid email");return};if(p.length<6){toast("Password must be at least 6 characters");return};if(p!=c){toast("Passwords do not match");return};auth.createUserWithEmailAndPassword(e,p).addOnSuccessListener{r->val uid=r.user!!.uid;CoroutineScope(Dispatchers.IO).launch{try{ApiClient.api.createStudent(CreateStudentRequest(uid,n,s,e,ph,"English"));withContext(Dispatchers.Main){startActivity(Intent(this@RegisterActivity,LoginActivity::class.java));finish()}}catch(x:Exception){withContext(Dispatchers.Main){toast("Account created. Profile sync failed: ${x.message}")}}}}.addOnFailureListener{toast(it.message?:"Registration failed")}}
+    private fun toast(s:String)=Toast.makeText(this,s,Toast.LENGTH_SHORT).show() }

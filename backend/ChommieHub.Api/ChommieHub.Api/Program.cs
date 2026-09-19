@@ -51,6 +51,8 @@ builder.Services.AddScoped<IRoomService, RoomService>();
 
 builder.Services.AddScoped<IManagerService, ManagerService>();
 
+builder.Services.AddScoped<IStudentService, StudentService>();
+
 var app = builder.Build();
 
 // ---------------------------------------------------------

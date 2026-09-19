@@ -1,23 +1,75 @@
 package com.chommiehub.app.ui.auth
+
 import android.content.Intent
 import android.os.Bundle
 import android.util.Patterns
-import android.widget.*
+import android.widget.Button
+import android.widget.EditText
+import android.widget.TextView
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.chommiehub.app.R
-import com.chommiehub.app.ui.student.StudentActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
-class LoginActivity:AppCompatActivity(){
-    private val auth by lazy{FirebaseAuth.getInstance()}; private val googleCode=120
-    override fun onCreate(s:Bundle?){super.onCreate(s); if(auth.currentUser!=null){openStudent();return}; setContentView(R.layout.activity_login)
-        val email=findViewById<EditText>(R.id.etLoginEmail); val password=findViewById<EditText>(R.id.etLoginPassword); val error=findViewById<TextView>(R.id.tvLoginError)
-        findViewById<Button>(R.id.btnLogin).setOnClickListener{ val e=email.text.toString().trim(); val p=password.text.toString(); if(!Patterns.EMAIL_ADDRESS.matcher(e).matches()) error.text="Enter a valid email address." else if(p.isBlank()) error.text="Enter your password." else auth.signInWithEmailAndPassword(e,p).addOnSuccessListener{openStudent()}.addOnFailureListener{error.text=it.message} }
-        findViewById<View>(R.id.btnGoogleLogin).setOnClickListener{ val gso=GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken(getString(R.string.default_web_client_id)).requestEmail().build(); startActivityForResult(GoogleSignIn.getClient(this,gso).signInIntent,googleCode) }
 
+class LoginActivity : AppCompatActivity() {
+    private val auth by lazy { FirebaseAuth.getInstance() }
+
+    private val googleLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        try {
+            val account = GoogleSignIn.getSignedInAccountFromIntent(result.data).getResult(ApiException::class.java)
+            val credential = GoogleAuthProvider.getCredential(account.idToken, null)
+            auth.signInWithCredential(credential)
+                .addOnSuccessListener { AuthRouter.route(this) }
+                .addOnFailureListener { toast(it.message ?: "Google sign-in failed") }
+        } catch (e: Exception) {
+            toast(e.message ?: "Google sign-in failed")
+        }
     }
-    @Deprecated("Deprecated in Java") override fun onActivityResult(r:Int,c:Int,d:Intent?){super.onActivityResult(r,c,d); if(r==googleCode) try{ val account=GoogleSignIn.getSignedInAccountFromIntent(d).getResult(Exception::class.java); auth.signInWithCredential(GoogleAuthProvider.getCredential(account.idToken,null)).addOnSuccessListener{openStudent()} }catch(e:Exception){Toast.makeText(this,e.message,Toast.LENGTH_LONG).show()} }
-    private fun openStudent(){startActivity(Intent(this,StudentActivity::class.java));finish()}
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_login)
+
+        findViewById<Button>(R.id.btnLogin).setOnClickListener { login() }
+        findViewById<Button>(R.id.btnGoogle).setOnClickListener { googleSignIn() }
+        findViewById<TextView>(R.id.tvRegister).setOnClickListener {
+            startActivity(Intent(this, RegisterActivity::class.java))
+        }
+        findViewById<TextView>(R.id.tvBiometric).setOnClickListener {
+            startActivity(Intent(this, BiometricActivity::class.java))
+        }
+    }
+
+    private fun login() {
+        val email = findViewById<EditText>(R.id.etEmail).text.toString().trim()
+        val password = findViewById<EditText>(R.id.etPassword).text.toString()
+
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            toast("Enter a valid email address")
+            return
+        }
+        if (password.length < 6) {
+            toast("Password must be at least 6 characters")
+            return
+        }
+
+        auth.signInWithEmailAndPassword(email, password)
+            .addOnSuccessListener { AuthRouter.route(this) }
+            .addOnFailureListener { toast(it.message ?: "Login failed") }
+    }
+
+    private fun googleSignIn() {
+        val options = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.default_web_client_id))
+            .requestEmail()
+            .build()
+        googleLauncher.launch(GoogleSignIn.getClient(this, options).signInIntent)
+    }
+
+    private fun toast(message: String) = Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
 }
