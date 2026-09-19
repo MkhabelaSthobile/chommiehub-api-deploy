@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Required for communication with Firebase and the ChommieHub REST API -->
+    <!-- Required for Firebase and the ChommieHub REST API -->
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -16,7 +15,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ChommieHub">
 
-        <!-- Authentication Activities -->
+        <!-- ================================================= -->
+        <!-- Authentication -->
+        <!-- ================================================= -->
 
         <activity
             android:name=".ui.auth.RegisterActivity"
@@ -39,18 +40,32 @@
 
         </activity>
 
-        <!-- Main Application Activity -->
+        <!-- ================================================= -->
+        <!-- Student -->
+        <!-- ================================================= -->
+
+        <activity
+            android:name=".ui.student.StudentActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- ================================================= -->
+        <!-- Manager -->
+        <!-- ================================================= -->
+
+        <activity
+            android:name=".ui.manager.ManagerActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- ================================================= -->
+        <!-- Main / Development -->
+        <!-- ================================================= -->
 
         <activity
             android:name=".MainActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
-
-        <!-- Manager Activity -->
-
-        <activity
-            android:name=".ui.manager.ManagerActivity"
-            android:exported="false" />
 
     </application>
 

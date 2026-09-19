@@ -82,13 +82,13 @@ interface ChommieHubApi {
     // STUDENT APPLICATIONS
     // =========================================================
 
-    @POST("api/applications/{id}")
+    @POST("api/students/{id}/applications")
     suspend fun submitApplication(
         @Path("id") id: String,
         @Body request: SubmitApplicationRequest
     ): StudentApplicationResponse
 
-    @GET("api/applications/student/{id}")
+    @GET("api/students/{id}/applications")
     suspend fun getStudentApplications(
         @Path("id") id: String
     ): List<StudentApplicationResponse>
