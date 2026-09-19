@@ -1,124 +1,184 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/chommie_background"
-    android:fillViewport="true">
+    android:fillViewport="true"
+    android:background="#F8F9FB">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="22dp">
+        android:padding="24dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/profile_title"
-            android:textColor="@color/chommie_navy"
-            android:textSize="28sp"
-            android:textStyle="bold" />
+            android:text="My Profile"
+            android:textColor="#0B1F3A"
+            android:textSize="26sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="6dp" />
 
-        <EditText
-            android:id="@+id/etProfileName"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:layout_marginTop="20dp"
-            android:autofillHints="givenName"
-            android:background="@drawable/bg_input"
-            android:hint="@string/hint_profile_name"
-            android:imeOptions="actionNext"
-            android:inputType="textPersonName|textCapWords"
-            android:paddingStart="18dp"
-            android:paddingEnd="18dp"
-            android:textColor="@color/chommie_text_primary"
-            android:textColorHint="@color/chommie_text_secondary" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Manage your student account information"
+            android:textColor="#666666"
+            android:textSize="14sp"
+            android:layout_marginBottom="24dp" />
 
-        <EditText
-            android:id="@+id/etProfileSurname"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:layout_marginTop="12dp"
-            android:autofillHints="familyName"
-            android:background="@drawable/bg_input"
-            android:hint="@string/hint_profile_surname"
-            android:imeOptions="actionNext"
-            android:inputType="textPersonName|textCapWords"
-            android:paddingStart="18dp"
-            android:paddingEnd="18dp"
-            android:textColor="@color/chommie_text_primary"
-            android:textColorHint="@color/chommie_text_secondary" />
+        <ProgressBar
+            android:id="@+id/progressProfile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:visibility="gone"
+            android:layout_marginTop="30dp"
+            android:layout_marginBottom="20dp" />
 
-        <EditText
-            android:id="@+id/etProfileEmail"
+        <TextView
+            android:id="@+id/tvProfileError"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:layout_marginTop="12dp"
-            android:autofillHints="emailAddress"
-            android:background="@drawable/bg_input"
-            android:enabled="false"
-            android:hint="@string/hint_profile_email"
-            android:inputType="textEmailAddress"
-            android:paddingStart="18dp"
-            android:paddingEnd="18dp"
-            android:textColor="@color/chommie_text_secondary"
-            android:textColorHint="@color/chommie_text_secondary" />
+            android:layout_height="wrap_content"
+            android:textColor="#B00020"
+            android:textSize="14sp"
+            android:visibility="gone"
+            android:layout_marginBottom="12dp" />
 
-        <EditText
-            android:id="@+id/etProfilePhone"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnProfileRetry"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:layout_marginTop="12dp"
-            android:autofillHints="phone"
-            android:background="@drawable/bg_input"
-            android:hint="@string/hint_profile_phone"
-            android:imeOptions="actionNext"
-            android:inputType="phone"
-            android:paddingStart="18dp"
-            android:paddingEnd="18dp"
-            android:textColor="@color/chommie_text_primary"
-            android:textColorHint="@color/chommie_text_secondary" />
+            android:layout_height="wrap_content"
+            android:text="Retry"
+            android:visibility="gone"
+            android:layout_marginBottom="16dp"
+            app:backgroundTint="#D9A441" />
 
-        <EditText
-            android:id="@+id/etProfileLanguage"
+        <LinearLayout
+            android:id="@+id/profileFormContainer"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:layout_marginTop="12dp"
-            android:background="@drawable/bg_input"
-            android:hint="@string/hint_profile_language"
-            android:imeOptions="actionDone"
-            android:inputType="text|textCapWords"
-            android:paddingStart="18dp"
-            android:paddingEnd="18dp"
-            android:textColor="@color/chommie_text_primary"
-            android:textColorHint="@color/chommie_text_secondary" />
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-        <Button
-            android:id="@+id/btnSaveProfile"
-            android:layout_width="match_parent"
-            android:layout_height="54dp"
-            android:layout_marginTop="24dp"
-            android:backgroundTint="@color/chommie_gold"
-            android:text="@string/save_profile"
-            android:textColor="@color/chommie_navy"
-            android:textStyle="bold" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="First Name"
+                android:textColor="#0B1F3A"
+                android:textStyle="bold"
+                android:layout_marginBottom="6dp" />
 
-        <Button
-            android:id="@+id/btnSettings"
-            android:layout_width="match_parent"
-            android:layout_height="54dp"
-            android:layout_marginTop="12dp"
-            android:backgroundTint="@color/chommie_surface"
-            android:text="@string/settings"
-            android:textColor="@color/chommie_navy" />
+            <EditText
+                android:id="@+id/etProfileName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter your first name"
+                android:inputType="textPersonName"
+                android:minHeight="48dp"
+                android:padding="12dp"
+                android:backgroundTint="#D9A441"
+                android:layout_marginBottom="16dp" />
 
-        <Button
-            android:id="@+id/btnLogout"
-            android:layout_width="match_parent"
-            android:layout_height="54dp"
-            android:layout_marginTop="12dp"
-            android:backgroundTint="@color/chommie_danger_soft"
-            android:text="@string/log_out"
-            android:textColor="@color/chommie_danger" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Surname"
+                android:textColor="#0B1F3A"
+                android:textStyle="bold"
+                android:layout_marginBottom="6dp" />
+
+            <EditText
+                android:id="@+id/etProfileSurname"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter your surname"
+                android:inputType="textPersonName"
+                android:minHeight="48dp"
+                android:padding="12dp"
+                android:backgroundTint="#D9A441"
+                android:layout_marginBottom="16dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Email Address"
+                android:textColor="#0B1F3A"
+                android:textStyle="bold"
+                android:layout_marginBottom="6dp" />
+
+            <EditText
+                android:id="@+id/etProfileEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter your email address"
+                android:inputType="textEmailAddress"
+                android:minHeight="48dp"
+                android:padding="12dp"
+                android:backgroundTint="#D9A441"
+                android:layout_marginBottom="16dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Phone Number"
+                android:textColor="#0B1F3A"
+                android:textStyle="bold"
+                android:layout_marginBottom="6dp" />
+
+            <EditText
+                android:id="@+id/etProfilePhone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter your phone number"
+                android:inputType="phone"
+                android:minHeight="48dp"
+                android:padding="12dp"
+                android:backgroundTint="#D9A441"
+                android:layout_marginBottom="16dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Preferred Language"
+                android:textColor="#0B1F3A"
+                android:textStyle="bold"
+                android:layout_marginBottom="6dp" />
+
+            <EditText
+                android:id="@+id/etProfileLanguage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="e.g. English"
+                android:inputType="textCapWords"
+                android:minHeight="48dp"
+                android:padding="12dp"
+                android:backgroundTint="#D9A441"
+                android:layout_marginBottom="12dp" />
+
+            <TextView
+                android:id="@+id/tvProfileFormError"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#B00020"
+                android:textSize="13sp"
+                android:visibility="gone"
+                android:layout_marginBottom="12dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSaveProfile"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="Save Profile"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                app:backgroundTint="#0B1F3A"
+                app:cornerRadius="12dp" />
+
+        </LinearLayout>
+
     </LinearLayout>
+
 </ScrollView>

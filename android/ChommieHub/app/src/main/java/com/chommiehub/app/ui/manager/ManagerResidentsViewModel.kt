@@ -11,68 +11,127 @@ import com.chommiehub.app.data.repository.ManagerRepository
 import kotlinx.coroutines.launch
 
 /**
- * Loads the residents currently belonging to the manager's accommodation.
+ * Loads the residents currently belonging to the
+ * manager's accommodation.
  */
-class ManagerResidentsViewModel(private val repository: ManagerRepository) : ViewModel()
-{
+class ManagerResidentsViewModel(
+    private val repository: ManagerRepository
+) : ViewModel() {
+
     companion object {
         private const val TAG = "ManagerResidentsVM"
     }
 
-    private val _uiState = MutableLiveData<ManagerResidentsUiState>()
+    private val _uiState =
+        MutableLiveData<ManagerResidentsUiState>()
 
-    val uiState: LiveData<ManagerResidentsUiState> get() = _uiState
+    val uiState: LiveData<ManagerResidentsUiState>
+        get() = _uiState
 
-    fun loadResidents(accommodationId: String)
-    {
-        _uiState.value = ManagerResidentsUiState.Loading
+    /**
+     * Loads residents for the supplied accommodation.
+     */
+    fun loadResidents(
+        accommodationId: String
+    ) {
+        if (accommodationId.isBlank()) {
+            _uiState.value =
+                ManagerResidentsUiState.Error(
+                    "Accommodation ID is required."
+                )
+
+            Log.e(
+                TAG,
+                "Unable to load residents because accommodation ID is empty."
+            )
+
+            return
+        }
+
+        _uiState.value =
+            ManagerResidentsUiState.Loading
 
         viewModelScope.launch {
             try {
-                val residents = repository.getResidents(accommodationId)
+                val residents =
+                    repository.getResidents(
+                        accommodationId
+                    )
 
-                _uiState.value = ManagerResidentsUiState.Success(residents)
+                _uiState.value =
+                    ManagerResidentsUiState.Success(
+                        residents
+                    )
 
                 Log.i(
                     TAG,
                     "Loaded ${residents.size} residents."
                 )
             } catch (exception: Exception) {
+
                 Log.e(
                     TAG,
                     "Unable to load residents.",
                     exception
                 )
 
-                _uiState.value = ManagerResidentsUiState.Error(exception.message ?: "Unable to load residents.")
+                val errorMessage =
+                    exception.message
+                        ?.takeIf { it.isNotBlank() }
+                        ?: "Unable to load residents."
+
+                _uiState.value =
+                    ManagerResidentsUiState.Error(
+                        errorMessage
+                    )
             }
         }
     }
 
-    class Factory(private val repository: ManagerRepository) : ViewModelProvider.Factory
-    {
+    /**
+     * Factory used to provide ManagerRepository
+     * to ManagerResidentsViewModel.
+     */
+    class Factory(
+        private val repository: ManagerRepository
+    ) : ViewModelProvider.Factory {
+
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
             modelClass: Class<T>
         ): T {
+
             if (
-                modelClass.isAssignableFrom(ManagerResidentsViewModel::class.java)
+                modelClass.isAssignableFrom(
+                    ManagerResidentsViewModel::class.java
+                )
             ) {
                 return ManagerResidentsViewModel(
                     repository
                 ) as T
             }
 
-            throw IllegalArgumentException("Unknown ViewModel class.")
+            throw IllegalArgumentException(
+                "Unknown ViewModel class: ${modelClass.name}"
+            )
         }
     }
 }
 
+/**
+ * Represents the possible states of the
+ * manager residents screen.
+ */
 sealed interface ManagerResidentsUiState {
 
-    data object Loading : ManagerResidentsUiState
+    data object Loading :
+        ManagerResidentsUiState
 
-    data class Success(val residents: List<ResidentResponse>) : ManagerResidentsUiState
+    data class Success(
+        val residents: List<ResidentResponse>
+    ) : ManagerResidentsUiState
 
-    data class Error(val message: String) : ManagerResidentsUiState
+    data class Error(
+        val message: String
+    ) : ManagerResidentsUiState
 }

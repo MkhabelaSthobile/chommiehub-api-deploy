@@ -18,38 +18,37 @@ import com.chommiehub.app.data.repository.ManagerRepository
 import com.chommiehub.app.ui.manager.adapter.ManagerRoomAdapter
 
 /**
- * Allows the residence manager to select an available room for an approved accommodation application.
+ * Allows the residence manager to select an available
+ * room for an approved accommodation application.
  */
-class ManagerRoomAssignmentFragment : Fragment()
-{
+class ManagerRoomAssignmentFragment : Fragment() {
+
     companion object {
         private const val ARG_APPLICATION_ID = "applicationId"
-
         private const val ARG_ACCOMMODATION_ID = "accommodationId"
 
         fun newInstance(
             applicationId: String,
             accommodationId: String
         ): ManagerRoomAssignmentFragment {
-            return ManagerRoomAssignmentFragment()
-                .apply {
-                    arguments = Bundle().apply {
-                            putString(
-                                ARG_APPLICATION_ID,
-                                applicationId
-                            )
 
-                            putString(
-                                ARG_ACCOMMODATION_ID,
-                                accommodationId
-                            )
-                        }
+            return ManagerRoomAssignmentFragment().apply {
+                arguments = Bundle().apply {
+                    putString(
+                        ARG_APPLICATION_ID,
+                        applicationId
+                    )
+
+                    putString(
+                        ARG_ACCOMMODATION_ID,
+                        accommodationId
+                    )
                 }
+            }
         }
     }
 
     private lateinit var applicationId: String
-
     private lateinit var accommodationId: String
 
     private var selectedRoomId: String? = null
@@ -57,29 +56,38 @@ class ManagerRoomAssignmentFragment : Fragment()
     private lateinit var viewModel: ManagerRoomAssignmentViewModel
 
     private lateinit var progressBar: ProgressBar
-
     private lateinit var recyclerView: RecyclerView
-
     private lateinit var tvMessage: TextView
-
     private lateinit var btnConfirm: Button
 
-    private val adapter = ManagerRoomAdapter {
+    private val roomAdapter by lazy {
+        ManagerRoomAdapter { room ->
+            selectedRoomId = room.id
 
-        room -> selectedRoomId = room.id
-
-            btnConfirm.isEnabled = true
+            if (::btnConfirm.isInitialized) {
+                btnConfirm.isEnabled = true
+            }
         }
+    }
 
-    override fun onCreate(savedInstanceState: Bundle?)
-    {
+    override fun onCreate(
+        savedInstanceState: Bundle?
+    ) {
         super.onCreate(savedInstanceState)
 
-        applicationId = requireArguments().getString(ARG_APPLICATION_ID)
-            ?: error("Application ID missing.")
+        applicationId =
+            arguments?.getString(ARG_APPLICATION_ID)
+                ?.takeIf { it.isNotBlank() }
+                ?: throw IllegalArgumentException(
+                    "Application ID missing."
+                )
 
-        accommodationId = requireArguments().getString(ARG_ACCOMMODATION_ID)
-            ?: error("Accommodation ID missing.")
+        accommodationId =
+            arguments?.getString(ARG_ACCOMMODATION_ID)
+                ?.takeIf { it.isNotBlank() }
+                ?: throw IllegalArgumentException(
+                    "Accommodation ID missing."
+                )
     }
 
     override fun onCreateView(
@@ -103,112 +111,259 @@ class ManagerRoomAssignmentFragment : Fragment()
             savedInstanceState
         )
 
-        progressBar = view.findViewById(R.id.progressRooms)
+        bindViews(view)
+        configureRecyclerView()
+        configureViewModel()
+        configureClickListeners(view)
+        observeState()
+        loadAvailableRooms()
+    }
 
-        recyclerView = view.findViewById(R.id.recyclerAvailableRooms)
+    /**
+     * Connects the Fragment to its XML views.
+     */
+    private fun bindViews(
+        view: View
+    ) {
+        progressBar =
+            view.findViewById(R.id.progressRooms)
 
-        tvMessage = view.findViewById(R.id.tvRoomsMessage)
+        recyclerView =
+            view.findViewById(R.id.recyclerAvailableRooms)
 
-        btnConfirm = view.findViewById(R.id.btnConfirmRoomAssignment)
+        tvMessage =
+            view.findViewById(R.id.tvRoomsMessage)
 
-        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        btnConfirm =
+            view.findViewById(R.id.btnConfirmRoomAssignment)
 
-        recyclerView.adapter = adapter
+        // A room must be selected before assignment.
+        btnConfirm.isEnabled = false
+    }
 
-        val repository = ManagerRepository(ApiClient.api)
+    /**
+     * Configures the list of available rooms.
+     */
+    private fun configureRecyclerView() {
+        recyclerView.layoutManager =
+            LinearLayoutManager(
+                requireContext()
+            )
 
-        viewModel = ViewModelProvider(
+        recyclerView.adapter =
+            roomAdapter
+    }
+
+    /**
+     * Creates the repository and ViewModel.
+     */
+    private fun configureViewModel() {
+        val repository =
+            ManagerRepository(
+                ApiClient.api
+            )
+
+        val factory =
+            ManagerRoomAssignmentViewModel.Factory(
+                repository
+            )
+
+        viewModel =
+            ViewModelProvider(
                 this,
-                ManagerRoomAssignmentViewModel.Factory(repository)
-        )[ManagerRoomAssignmentViewModel::class.java]
+                factory
+            )[ManagerRoomAssignmentViewModel::class.java]
+    }
 
-        view.findViewById<Button>(R.id.btnRoomAssignmentBack).setOnClickListener {
-            parentFragmentManager
-                .popBackStack()
+    /**
+     * Configures the screen buttons.
+     */
+    private fun configureClickListeners(
+        view: View
+    ) {
+        view.findViewById<Button>(
+            R.id.btnRoomAssignmentBack
+        ).setOnClickListener {
+            parentFragmentManager.popBackStack()
         }
 
         btnConfirm.setOnClickListener {
-            selectedRoomId?.let {
-                    roomId ->
-
-                btnConfirm.isEnabled = false
-
-                viewModel.assignRoom(
-                    applicationId = applicationId,
-                    roomId = roomId
-                )
-            }
+            confirmRoomAssignment()
         }
-
-        observeState()
-
-        viewModel.loadAvailableRooms(accommodationId)
     }
 
+    /**
+     * Loads rooms that are currently available
+     * for the application's accommodation.
+     */
+    private fun loadAvailableRooms() {
+        if (accommodationId.isBlank()) {
+            showError(
+                "Accommodation could not be identified."
+            )
+            return
+        }
+
+        viewModel.loadAvailableRooms(
+            accommodationId
+        )
+    }
+
+    /**
+     * Assigns the selected room to the application.
+     */
+    private fun confirmRoomAssignment() {
+        val roomId =
+            selectedRoomId
+
+        if (roomId.isNullOrBlank()) {
+            showError(
+                "Please select a room before confirming."
+            )
+            return
+        }
+
+        if (applicationId.isBlank()) {
+            showError(
+                "Application could not be identified."
+            )
+            return
+        }
+
+        btnConfirm.isEnabled = false
+
+        viewModel.assignRoom(
+            applicationId = applicationId,
+            roomId = roomId
+        )
+    }
+
+    /**
+     * Observes the room-assignment state.
+     */
     private fun observeState() {
         viewModel.uiState.observe(
             viewLifecycleOwner
         ) { state ->
-            when (state) {
-                RoomAssignmentUiState.Loading -> {
-                    progressBar.visibility = View.VISIBLE
 
-                    tvMessage.visibility = View.GONE
+            when (state) {
+
+                RoomAssignmentUiState.Loading -> {
+                    showLoading()
                 }
 
                 is RoomAssignmentUiState.Rooms -> {
-                    progressBar.visibility = View.GONE
-
-                    adapter.submitList(state.rooms)
-
-                    recyclerView.visibility =
-                        if (
-                            state.rooms.isEmpty()
-                        ) {
-                            View.GONE
-                        } else {
-                            View.VISIBLE
-                        }
-
-                    tvMessage.visibility =
-                        if (
-                            state.rooms.isEmpty()
-                        ) {
-                            View.VISIBLE
-                        } else {
-                            View.GONE
-                        }
-
-                    if (
-                        state.rooms.isEmpty()
-                    ) {
-                        tvMessage.text = "No rooms are currently available."
-                    }
+                    showRooms(
+                        state.rooms
+                    )
                 }
 
                 is RoomAssignmentUiState.Assigned -> {
-                    progressBar.visibility = View.GONE
-
-                    Toast.makeText(
-                        requireContext(),
-                        "Room assigned successfully.",
-                        Toast.LENGTH_SHORT
-                    ).show()
-
-                    parentFragmentManager
-                        .popBackStack()
+                    showAssignmentSuccess()
                 }
 
                 is RoomAssignmentUiState.Error -> {
-                    progressBar.visibility = View.GONE
-
-                    btnConfirm.isEnabled = selectedRoomId != null
-
-                    tvMessage.text = state.message
-
-                    tvMessage.visibility = View.VISIBLE
+                    showError(
+                        state.message
+                    )
                 }
             }
         }
+    }
+
+    /**
+     * Displays the loading state.
+     */
+    private fun showLoading() {
+        progressBar.visibility =
+            View.VISIBLE
+
+        recyclerView.visibility =
+            View.GONE
+
+        tvMessage.visibility =
+            View.GONE
+
+        btnConfirm.isEnabled =
+            false
+    }
+
+    /**
+     * Displays the available rooms.
+     */
+    private fun showRooms(
+        rooms: List<com.chommiehub.app.data.model.manager.RoomResponse>
+    ) {
+        progressBar.visibility =
+            View.GONE
+
+        roomAdapter.submitList(
+            rooms
+        )
+
+        if (rooms.isEmpty()) {
+            recyclerView.visibility =
+                View.GONE
+
+            tvMessage.text =
+                "No rooms are currently available."
+
+            tvMessage.visibility =
+                View.VISIBLE
+
+            selectedRoomId =
+                null
+
+            btnConfirm.isEnabled =
+                false
+        } else {
+            recyclerView.visibility =
+                View.VISIBLE
+
+            tvMessage.visibility =
+                View.GONE
+
+            // Keep disabled until the manager selects a room.
+            btnConfirm.isEnabled =
+                selectedRoomId != null
+        }
+    }
+
+    /**
+     * Handles successful room assignment.
+     */
+    private fun showAssignmentSuccess() {
+        progressBar.visibility =
+            View.GONE
+
+        btnConfirm.isEnabled =
+            false
+
+        Toast.makeText(
+            requireContext(),
+            "Room assigned successfully.",
+            Toast.LENGTH_SHORT
+        ).show()
+
+        parentFragmentManager.popBackStack()
+    }
+
+    /**
+     * Displays an error.
+     */
+    private fun showError(
+        message: String
+    ) {
+        progressBar.visibility =
+            View.GONE
+
+        tvMessage.text =
+            message
+
+        tvMessage.visibility =
+            View.VISIBLE
+
+        btnConfirm.isEnabled =
+            selectedRoomId != null
     }
 }

@@ -5,12 +5,12 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 /**
- * Creates and exposes the shared Retrofit client used by the Android
- * application to communicate with the ChommieHub ASP.NET Core REST API.
+ * Shared Retrofit client used by the ChommieHub Android application
+ * to communicate with the ASP.NET Core REST API.
  */
 object ApiClient {
 
-    private val retrofit: Retrofit by lazy {
+    private val retrofitClient: Retrofit by lazy {
         Retrofit.Builder()
             .baseUrl(BuildConfig.API_BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
@@ -18,6 +18,6 @@ object ApiClient {
     }
 
     val api: ChommieHubApi by lazy {
-        retrofit.create(ChommieHubApi::class.java)
+        retrofitClient.create(ChommieHubApi::class.java)
     }
 }

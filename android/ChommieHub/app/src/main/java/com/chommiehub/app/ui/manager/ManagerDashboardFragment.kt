@@ -60,140 +60,158 @@ class ManagerDashboardFragment : Fragment() {
 
         bindViews(view)
         configureViewModel()
-
-        btnRetry.setOnClickListener {
-            loadDashboard()
-        }
-
-        view.findViewById<Button>(R.id.btnReviewApplications).setOnClickListener {
-            parentFragmentManager
-                .beginTransaction()
-                .replace(
-                    R.id.managerFragmentContainer,
-                    ManagerApplicationsFragment()
-                )
-                .addToBackStack(null)
-                .commit()
-        }
-
-        view.findViewById<Button>(R.id.btnViewResidents).setOnClickListener {
-            parentFragmentManager
-                .beginTransaction()
-                .replace(
-                    R.id.managerFragmentContainer,
-                    ManagerResidentsFragment()
-                )
-                .addToBackStack(null)
-                .commit()
-        }
-
-        view.findViewById<Button>(R.id.btnManageResidence).setOnClickListener {
-            parentFragmentManager
-                .beginTransaction()
-                .replace(
-                    R.id.managerFragmentContainer,
-                    ManagerResidenceFragment()
-                )
-                .addToBackStack(null)
-                .commit()
-        }
-
+        configureClickListeners(view)
         observeDashboard()
     }
 
     override fun onResume() {
         super.onResume()
-
-        // Refresh totals when returning from manager workflows.
         loadDashboard()
     }
 
+    /**
+     * Connects the views from fragment_manager_dashboard.xml.
+     */
     private fun bindViews(view: View) {
-        progressBar = view.findViewById(
-            R.id.progressDashboard
-        )
+        progressBar = view.findViewById(R.id.progressDashboard)
+        tvError = view.findViewById(R.id.tvDashboardError)
+        btnRetry = view.findViewById(R.id.btnDashboardRetry)
 
-        tvError = view.findViewById(
-            R.id.tvDashboardError
-        )
+        tvApplications = view.findViewById(R.id.tvTotalApplications)
+        tvPending = view.findViewById(R.id.tvPendingApplications)
+        tvApproved = view.findViewById(R.id.tvApprovedApplications)
+        tvDeclined = view.findViewById(R.id.tvDeclinedApplications)
 
-        btnRetry = view.findViewById(
-            R.id.btnDashboardRetry
-        )
+        tvResidents = view.findViewById(R.id.tvActiveResidents)
 
-        tvApplications = view.findViewById(
-            R.id.tvTotalApplications
-        )
-
-        tvPending = view.findViewById(
-            R.id.tvPendingApplications
-        )
-
-        tvApproved = view.findViewById(
-            R.id.tvApprovedApplications
-        )
-
-        tvDeclined = view.findViewById(
-            R.id.tvDeclinedApplications
-        )
-
-        tvResidents = view.findViewById(
-            R.id.tvActiveResidents
-        )
-
-        tvRooms = view.findViewById(
-            R.id.tvTotalRooms
-        )
-
-        tvAvailableRooms = view.findViewById(
-            R.id.tvAvailableRooms
-        )
-
-        tvUnavailableRooms = view.findViewById(
-            R.id.tvUnavailableRooms
-        )
+        tvRooms = view.findViewById(R.id.tvTotalRooms)
+        tvAvailableRooms = view.findViewById(R.id.tvAvailableRooms)
+        tvUnavailableRooms = view.findViewById(R.id.tvUnavailableRooms)
     }
 
+    /**
+     * Creates the repository and ViewModel used by the dashboard.
+     */
     private fun configureViewModel() {
-        val repository =
-            ManagerRepository(ApiClient.api)
+        val repository = ManagerRepository(
+            ApiClient.api
+        )
 
-        val factory =
-            ManagerDashboardViewModel.Factory(
-                repository
-            )
+        val factory = ManagerDashboardViewModel.Factory(
+            repository
+        )
 
-        viewModel =
-            ViewModelProvider(
-                this,
-                factory
-            )[ManagerDashboardViewModel::class.java]
+        viewModel = ViewModelProvider(
+            this,
+            factory
+        )[ManagerDashboardViewModel::class.java]
     }
 
+    /**
+     * Configures navigation to the existing manager features.
+     */
+    private fun configureClickListeners(view: View) {
+
+        btnRetry.setOnClickListener {
+            loadDashboard()
+        }
+
+        view.findViewById<Button>(
+            R.id.btnReviewApplications
+        ).setOnClickListener {
+
+            openFragment(
+                ManagerApplicationsFragment()
+            )
+        }
+
+        view.findViewById<Button>(
+            R.id.btnViewResidents
+        ).setOnClickListener {
+
+            openFragment(
+                ManagerResidentsFragment()
+            )
+        }
+
+        view.findViewById<Button>(
+            R.id.btnManageResidence
+        ).setOnClickListener {
+
+            openFragment(
+                ManagerResidenceFragment()
+            )
+        }
+    }
+
+    /**
+     * Replaces the current manager fragment while preserving
+     * the back-stack navigation.
+     */
+    private fun openFragment(fragment: Fragment) {
+        parentFragmentManager
+            .beginTransaction()
+            .replace(
+                R.id.managerFragmentContainer,
+                fragment
+            )
+            .addToBackStack(null)
+            .commit()
+    }
+
+    /**
+     * Observes dashboard state returned by the ViewModel.
+     */
     private fun observeDashboard() {
         viewModel.uiState.observe(
             viewLifecycleOwner
         ) { state ->
+
             when (state) {
-                ManagerDashboardUiState.Loading ->
+
+                ManagerDashboardUiState.Loading -> {
                     showLoading()
+                }
 
-                is ManagerDashboardUiState.Success ->
-                    showDashboard(state.dashboard)
+                is ManagerDashboardUiState.Success -> {
+                    showDashboard(
+                        state.dashboard
+                    )
+                }
 
-                is ManagerDashboardUiState.Error ->
-                    showError(state.message)
+                is ManagerDashboardUiState.Error -> {
+                    showError(
+                        state.message
+                    )
+                }
             }
         }
     }
 
+    /**
+     * Retrieves the dashboard for the manager's accommodation.
+     */
     private fun loadDashboard() {
+
         val accommodationId =
             BuildConfig.MANAGER_ACCOMMODATION_ID
 
+        if (accommodationId.isBlank()) {
+            Log.e(
+                TAG,
+                "Manager accommodation ID is missing."
+            )
+
+            showError(
+                "Manager accommodation could not be identified."
+            )
+
+            return
+        }
+
         Log.d(
             TAG,
-            "Loading dashboard for accommodation $accommodationId."
+            "Loading dashboard for accommodation: $accommodationId"
         )
 
         viewModel.loadDashboard(
@@ -239,7 +257,9 @@ class ManagerDashboardFragment : Fragment() {
             dashboard.unavailableRooms.toString()
     }
 
-    private fun showError(message: String) {
+    private fun showError(
+        message: String
+    ) {
         progressBar.visibility = View.GONE
 
         tvError.text = message

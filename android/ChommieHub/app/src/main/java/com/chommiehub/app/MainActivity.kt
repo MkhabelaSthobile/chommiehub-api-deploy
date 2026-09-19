@@ -1,5 +1,6 @@
 package com.chommiehub.app
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
@@ -11,14 +12,15 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import com.chommiehub.app.data.remote.ApiClient
 import com.chommiehub.app.data.repository.HealthRepository
-import kotlinx.coroutines.launch
-import android.content.Intent
 import com.chommiehub.app.ui.manager.ManagerActivity
 import com.chommiehub.app.ui.student.StudentActivity
+import kotlinx.coroutines.launch
 
 /**
- * Temporary integration screen used to verify communication between the native Android application and the custom ChommieHub REST API.
- * This screen will be replaced by the role-based application flow once backend connectivity has been verified.
+ * Temporary integration screen used to verify communication
+ * between the Android application and the ChommieHub REST API.
+ *
+ * Authentication will eventually handle role-based routing.
  */
 class MainActivity : AppCompatActivity() {
 
@@ -28,12 +30,10 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var tvApiStatus: TextView
     private lateinit var btnRetry: Button
-
     private lateinit var btnOpenManager: Button
-
     private lateinit var btnOpenStudentProfile: Button
 
-    private val healthRepository by lazy {
+    private val healthRepository: HealthRepository by lazy {
         HealthRepository(ApiClient.api)
     }
 
@@ -48,10 +48,10 @@ class MainActivity : AppCompatActivity() {
         ViewCompat.setOnApplyWindowInsetsListener(
             findViewById(R.id.main)
         ) { view, insets ->
-            val systemBars =
-                insets.getInsets(
-                    WindowInsetsCompat.Type.systemBars()
-                )
+
+            val systemBars = insets.getInsets(
+                WindowInsetsCompat.Type.systemBars()
+            )
 
             view.setPadding(
                 systemBars.left,
@@ -63,57 +63,79 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
+        bindViews()
+        configureButtons()
+
+        checkApiConnection()
+    }
+
+    private fun bindViews() {
         tvApiStatus = findViewById(R.id.tvApiStatus)
         btnRetry = findViewById(R.id.btnRetry)
         btnOpenManager = findViewById(R.id.btnOpenManager)
-        btnOpenStudentProfile = findViewById(R.id.btnOpenStudentProfile)
+        btnOpenStudentProfile =
+            findViewById(R.id.btnOpenStudentProfile)
+    }
+
+    private fun configureButtons() {
 
         btnRetry.setOnClickListener {
-            Log.d(TAG, "Manual API connection retry requested.")
+            Log.d(
+                TAG,
+                "Manual API connection retry requested."
+            )
+
             checkApiConnection()
         }
 
         btnOpenManager.setOnClickListener {
+
             Log.d(
                 TAG,
                 "Opening residence manager feature area."
             )
 
-            startActivity(
-                Intent(
-                    this,
-                    ManagerActivity::class.java
-                )
+            val intent = Intent(
+                this@MainActivity,
+                ManagerActivity::class.java
             )
+
+            startActivity(intent)
         }
 
         btnOpenStudentProfile.setOnClickListener {
+
             Log.d(
                 TAG,
-                "Opening student profile feature area."
+                "Opening student feature area."
             )
 
-            startActivity(
-                Intent(
-                    this,
-                    StudentActivity::class.java
-                )
+            val intent = Intent(
+                this@MainActivity,
+                StudentActivity::class.java
             )
+
+            startActivity(intent)
         }
-
-        checkApiConnection()
     }
 
     /**
-     * Calls the custom backend health endpoint without blocking the UI thread and provides visible and logged connection feedback.
+     * Calls the backend health endpoint without blocking
+     * the main UI thread.
      */
     private fun checkApiConnection() {
-        tvApiStatus.text = getString(R.string.api_checking)
+
+        tvApiStatus.text =
+            getString(R.string.api_checking)
+
         btnRetry.isEnabled = false
 
         lifecycleScope.launch {
+
             try {
-                val health = healthRepository.getHealth()
+
+                val health =
+                    healthRepository.getHealth()
 
                 tvApiStatus.text =
                     getString(
@@ -124,19 +146,26 @@ class MainActivity : AppCompatActivity() {
 
                 Log.i(
                     TAG,
-                    "API connection successful. Service=${health.service}, " +
+                    "API connection successful. " +
+                            "Service=${health.service}, " +
                             "status=${health.status}"
                 )
+
             } catch (exception: Exception) {
+
                 tvApiStatus.text =
-                    getString(R.string.api_connection_failed)
+                    getString(
+                        R.string.api_connection_failed
+                    )
 
                 Log.e(
                     TAG,
                     "Unable to connect to ChommieHub API.",
                     exception
                 )
+
             } finally {
+
                 btnRetry.isEnabled = true
             }
         }

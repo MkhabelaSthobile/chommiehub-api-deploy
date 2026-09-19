@@ -21,8 +21,9 @@ import com.google.android.material.button.MaterialButton
 import com.google.firebase.auth.FirebaseAuth
 
 /**
- * Displays the signed-in student's profile, and doubles as the setup form
- * the first time a profile is created for a Firebase account.
+ * Displays the signed-in student's profile.
+ * If no profile exists, the same screen is used
+ * to create the student's profile.
  */
 class StudentProfileFragment : Fragment() {
 
@@ -38,10 +39,10 @@ class StudentProfileFragment : Fragment() {
     private lateinit var etEmail: EditText
     private lateinit var etPhone: EditText
     private lateinit var etLanguage: EditText
+
     private lateinit var tvFormError: TextView
     private lateinit var btnSave: MaterialButton
 
-    /** True while no profile exists yet and the form is creating one. */
     private var isCreateMode = false
 
     override fun onCreateView(
@@ -56,60 +57,117 @@ class StudentProfileFragment : Fragment() {
         )
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?
+    ) {
         super.onViewCreated(view, savedInstanceState)
 
         bindViews(view)
         configureViewModel()
-
-        btnRetry.setOnClickListener { loadProfile() }
-        btnSave.setOnClickListener { saveProfile() }
-
+        configureClickListeners()
         observeState()
         loadProfile()
     }
 
     private fun bindViews(view: View) {
-        progressBar = view.findViewById(R.id.progressProfile)
-        formContainer = view.findViewById(R.id.profileFormContainer)
-        tvError = view.findViewById(R.id.tvProfileError)
-        btnRetry = view.findViewById(R.id.btnProfileRetry)
+        progressBar =
+            view.findViewById(R.id.progressProfile)
 
-        etName = view.findViewById(R.id.etProfileName)
-        etSurname = view.findViewById(R.id.etProfileSurname)
-        etEmail = view.findViewById(R.id.etProfileEmail)
-        etPhone = view.findViewById(R.id.etProfilePhone)
-        etLanguage = view.findViewById(R.id.etProfileLanguage)
-        tvFormError = view.findViewById(R.id.tvProfileFormError)
-        btnSave = view.findViewById(R.id.btnSaveProfile)
+        formContainer =
+            view.findViewById(R.id.profileFormContainer)
+
+        tvError =
+            view.findViewById(R.id.tvProfileError)
+
+        btnRetry =
+            view.findViewById(R.id.btnProfileRetry)
+
+        etName =
+            view.findViewById(R.id.etProfileName)
+
+        etSurname =
+            view.findViewById(R.id.etProfileSurname)
+
+        etEmail =
+            view.findViewById(R.id.etProfileEmail)
+
+        etPhone =
+            view.findViewById(R.id.etProfilePhone)
+
+        etLanguage =
+            view.findViewById(R.id.etProfileLanguage)
+
+        tvFormError =
+            view.findViewById(R.id.tvProfileFormError)
+
+        btnSave =
+            view.findViewById(R.id.btnSaveProfile)
     }
 
     private fun configureViewModel() {
-        val repository = StudentRepository(ApiClient.api)
+        val repository =
+            StudentRepository(
+                ApiClient.api
+            )
 
-        viewModel = ViewModelProvider(
-            this,
-            StudentProfileViewModel.Factory(repository)
-        )[StudentProfileViewModel::class.java]
+        val factory =
+            StudentProfileViewModel.Factory(
+                repository
+            )
+
+        viewModel =
+            ViewModelProvider(
+                this,
+                factory
+            )[StudentProfileViewModel::class.java]
+    }
+
+    private fun configureClickListeners() {
+        btnRetry.setOnClickListener {
+            loadProfile()
+        }
+
+        btnSave.setOnClickListener {
+            saveProfile()
+        }
     }
 
     private fun observeState() {
-        viewModel.uiState.observe(viewLifecycleOwner) { state ->
+        viewModel.uiState.observe(
+            viewLifecycleOwner
+        ) { state ->
+
             when (state) {
-                StudentProfileUiState.Loading -> showLoading()
 
-                StudentProfileUiState.NotFound -> showCreateForm()
+                StudentProfileUiState.Loading -> {
+                    showLoading()
+                }
 
-                is StudentProfileUiState.Loaded ->
-                    showLoadedProfile(state.student)
+                StudentProfileUiState.NotFound -> {
+                    showCreateForm()
+                }
 
-                is StudentProfileUiState.Error ->
-                    showError(state.message)
+                is StudentProfileUiState.Loaded -> {
+                    showLoadedProfile(
+                        state.student
+                    )
+                }
+
+                is StudentProfileUiState.Error -> {
+                    showError(
+                        state.message
+                    )
+                }
             }
         }
 
-        viewModel.saveMessage.observe(viewLifecycleOwner) { message ->
-            if (message != null) {
+        viewModel.saveMessage.observe(
+            viewLifecycleOwner
+        ) { message ->
+
+            if (!message.isNullOrBlank()) {
+
                 Toast.makeText(
                     requireContext(),
                     message,
@@ -120,101 +178,211 @@ class StudentProfileFragment : Fragment() {
             }
         }
 
-        viewModel.saveError.observe(viewLifecycleOwner) { message ->
-            if (message != null) {
-                tvFormError.text = message
-                tvFormError.visibility = View.VISIBLE
+        viewModel.saveError.observe(
+            viewLifecycleOwner
+        ) { message ->
+
+            if (!message.isNullOrBlank()) {
+                showFormError(
+                    message
+                )
             }
         }
     }
 
     private fun loadProfile() {
-        val firebaseUid = FirebaseAuth.getInstance().currentUser?.uid
+        val firebaseUid =
+            FirebaseAuth
+                .getInstance()
+                .currentUser
+                ?.uid
 
-        if (firebaseUid == null) {
-            showError("No signed-in student found.")
+        if (firebaseUid.isNullOrBlank()) {
+            showError(
+                "No signed-in student found."
+            )
             return
         }
 
-        viewModel.loadProfile(firebaseUid)
+        viewModel.loadProfile(
+            firebaseUid
+        )
     }
 
     private fun showLoading() {
-        progressBar.visibility = View.VISIBLE
-        formContainer.visibility = View.GONE
-        tvError.visibility = View.GONE
-        btnRetry.visibility = View.GONE
+        progressBar.visibility =
+            View.VISIBLE
+
+        formContainer.visibility =
+            View.GONE
+
+        tvError.visibility =
+            View.GONE
+
+        btnRetry.visibility =
+            View.GONE
     }
 
     private fun showCreateForm() {
-        progressBar.visibility = View.GONE
-        tvError.visibility = View.GONE
-        btnRetry.visibility = View.GONE
-        formContainer.visibility = View.VISIBLE
-        tvFormError.visibility = View.GONE
+        progressBar.visibility =
+            View.GONE
+
+        tvError.visibility =
+            View.GONE
+
+        btnRetry.visibility =
+            View.GONE
+
+        formContainer.visibility =
+            View.VISIBLE
+
+        tvFormError.visibility =
+            View.GONE
 
         isCreateMode = true
 
         etEmail.isEnabled = true
+
         etName.setText("")
         etSurname.setText("")
-        etEmail.setText("")
+
+        val firebaseEmail =
+            FirebaseAuth
+                .getInstance()
+                .currentUser
+                ?.email
+                .orEmpty()
+
+        etEmail.setText(
+            firebaseEmail
+        )
+
         etPhone.setText("")
         etLanguage.setText("English")
 
-        btnSave.text = "Create Profile"
+        btnSave.text =
+            getString(R.string.save_profile)
     }
 
-    private fun showLoadedProfile(student: StudentResponse) {
-        progressBar.visibility = View.GONE
-        tvError.visibility = View.GONE
-        btnRetry.visibility = View.GONE
-        formContainer.visibility = View.VISIBLE
-        tvFormError.visibility = View.GONE
+    private fun showLoadedProfile(
+        student: StudentResponse
+    ) {
+        progressBar.visibility =
+            View.GONE
+
+        tvError.visibility =
+            View.GONE
+
+        btnRetry.visibility =
+            View.GONE
+
+        formContainer.visibility =
+            View.VISIBLE
+
+        tvFormError.visibility =
+            View.GONE
 
         isCreateMode = false
 
-        etName.setText(student.name)
-        etSurname.setText(student.surname)
-        etEmail.setText(student.email)
-        etEmail.isEnabled = false
-        etPhone.setText(student.phoneNumber)
-        etLanguage.setText(student.preferredLanguage)
+        etName.setText(
+            student.name
+        )
 
-        btnSave.text = "Save Profile"
+        etSurname.setText(
+            student.surname
+        )
+
+        etEmail.setText(
+            student.email
+        )
+
+        etEmail.isEnabled =
+            false
+
+        etPhone.setText(
+            student.phoneNumber
+        )
+
+        etLanguage.setText(
+            student.preferredLanguage
+        )
+
+        btnSave.text =
+            getString(R.string.save_profile)
     }
 
-    private fun showError(message: String) {
-        progressBar.visibility = View.GONE
-        formContainer.visibility = View.GONE
+    private fun showError(
+        message: String
+    ) {
+        progressBar.visibility =
+            View.GONE
 
-        tvError.text = message
-        tvError.visibility = View.VISIBLE
-        btnRetry.visibility = View.VISIBLE
+        formContainer.visibility =
+            View.GONE
+
+        tvError.text =
+            message
+
+        tvError.visibility =
+            View.VISIBLE
+
+        btnRetry.visibility =
+            View.VISIBLE
     }
 
     private fun saveProfile() {
-        val name = etName.text.toString().trim()
-        val surname = etSurname.text.toString().trim()
-        val email = etEmail.text.toString().trim()
-        val phone = etPhone.text.toString().trim()
+        val name =
+            etName.text
+                .toString()
+                .trim()
+
+        val surname =
+            etSurname.text
+                .toString()
+                .trim()
+
+        val email =
+            etEmail.text
+                .toString()
+                .trim()
+
+        val phone =
+            etPhone.text
+                .toString()
+                .trim()
+
         val language =
-            etLanguage.text.toString().trim().ifBlank { "English" }
+            etLanguage.text
+                .toString()
+                .trim()
+                .ifBlank {
+                    "English"
+                }
 
         if (name.isBlank()) {
-            showFormError("Enter your first name.")
+            showFormError(
+                "Enter your first name."
+            )
             return
         }
 
         if (surname.isBlank()) {
-            showFormError("Enter your surname.")
+            showFormError(
+                "Enter your surname."
+            )
             return
         }
 
-        val firebaseUid = FirebaseAuth.getInstance().currentUser?.uid
+        val firebaseUid =
+            FirebaseAuth
+                .getInstance()
+                .currentUser
+                ?.uid
 
-        if (firebaseUid == null) {
-            showFormError("No signed-in student found.")
+        if (firebaseUid.isNullOrBlank()) {
+            showFormError(
+                "No signed-in student found."
+            )
             return
         }
 
@@ -222,15 +390,19 @@ class StudentProfileFragment : Fragment() {
 
             if (
                 email.isBlank() ||
-                !Patterns.EMAIL_ADDRESS.matcher(email).matches()
+                !Patterns.EMAIL_ADDRESS
+                    .matcher(email)
+                    .matches()
             ) {
-                showFormError("Enter a valid email address.")
+                showFormError(
+                    "Enter a valid email address."
+                )
                 return
             }
 
-            tvFormError.visibility = View.GONE
+            hideFormError()
 
-            viewModel.createProfile(
+            val request =
                 CreateStudentRequest(
                     firebaseUid = firebaseUid,
                     name = name,
@@ -239,26 +411,45 @@ class StudentProfileFragment : Fragment() {
                     phoneNumber = phone,
                     preferredLanguage = language
                 )
+
+            viewModel.createProfile(
+                request
             )
 
         } else {
 
-            tvFormError.visibility = View.GONE
+            hideFormError()
 
-            viewModel.updateProfile(
-                firebaseUid,
+            val request =
                 UpdateStudentRequest(
                     name = name,
                     surname = surname,
                     phoneNumber = phone,
                     preferredLanguage = language
                 )
+
+            viewModel.updateProfile(
+                firebaseUid,
+                request
             )
         }
     }
 
-    private fun showFormError(message: String) {
-        tvFormError.text = message
-        tvFormError.visibility = View.VISIBLE
+    private fun showFormError(
+        message: String
+    ) {
+        tvFormError.text =
+            message
+
+        tvFormError.visibility =
+            View.VISIBLE
+    }
+
+    private fun hideFormError() {
+        tvFormError.text =
+            ""
+
+        tvFormError.visibility =
+            View.GONE
     }
 }

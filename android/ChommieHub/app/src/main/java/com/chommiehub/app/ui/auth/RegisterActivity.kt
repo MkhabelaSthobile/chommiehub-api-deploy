@@ -1,5 +1,152 @@
 package com.chommiehub.app.ui.auth
-import android.content.Intent;import android.os.Bundle;import android.util.Patterns;import android.widget.*;import androidx.appcompat.app.AppCompatActivity;import com.chommiehub.app.R;import com.chommiehub.app.data.model.student.CreateStudentRequest;import com.chommiehub.app.data.remote.ApiClient;import com.google.firebase.auth.FirebaseAuth;import kotlinx.coroutines.*
-class RegisterActivity:AppCompatActivity(){val auth by lazy{FirebaseAuth.getInstance()};override fun onCreate(b:Bundle?){super.onCreate(b);setContentView(R.layout.activity_register);findViewById<Button>(R.id.btnRegister).setOnClickListener{register()};findViewById<TextView>(R.id.tvLogin).setOnClickListener{finish()}}
-    private fun register(){fun v(id:Int)=findViewById<EditText>(id).text.toString().trim();val n=v(R.id.etName);val s=v(R.id.etSurname);val e=v(R.id.etEmail);val ph=v(R.id.etPhone);val p=v(R.id.etPassword);val c=v(R.id.etConfirmPassword);if(n.isBlank()||s.isBlank()||ph.isBlank()){toast("Complete all required fields");return};if(!Patterns.EMAIL_ADDRESS.matcher(e).matches()){toast("Enter a valid email");return};if(p.length<6){toast("Password must be at least 6 characters");return};if(p!=c){toast("Passwords do not match");return};auth.createUserWithEmailAndPassword(e,p).addOnSuccessListener{r->val uid=r.user!!.uid;CoroutineScope(Dispatchers.IO).launch{try{ApiClient.api.createStudent(CreateStudentRequest(uid,n,s,e,ph,"English"));withContext(Dispatchers.Main){startActivity(Intent(this@RegisterActivity,LoginActivity::class.java));finish()}}catch(x:Exception){withContext(Dispatchers.Main){toast("Account created. Profile sync failed: ${x.message}")}}}}.addOnFailureListener{toast(it.message?:"Registration failed")}}
-    private fun toast(s:String)=Toast.makeText(this,s,Toast.LENGTH_SHORT).show() }
+
+import android.content.Intent
+import android.os.Bundle
+import android.util.Patterns
+import android.widget.Button
+import android.widget.EditText
+import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import com.chommiehub.app.R
+import com.chommiehub.app.data.model.student.CreateStudentRequest
+import com.chommiehub.app.data.remote.ApiClient
+import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
+class RegisterActivity : AppCompatActivity() {
+
+    private val auth by lazy {
+        FirebaseAuth.getInstance()
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_register)
+
+        findViewById<Button>(R.id.btnRegister).setOnClickListener {
+            register()
+        }
+
+        findViewById<TextView>(R.id.tvLogin).setOnClickListener {
+            finish()
+        }
+    }
+
+    private fun register() {
+
+        fun getValue(id: Int): String {
+            return findViewById<EditText>(id)
+                .text
+                .toString()
+                .trim()
+        }
+
+        val name = getValue(R.id.etName)
+        val surname = getValue(R.id.etSurname)
+        val email = getValue(R.id.etEmail)
+        val phone = getValue(R.id.etPhone)
+        val password = getValue(R.id.etPassword)
+        val confirmPassword = getValue(R.id.etConfirmPassword)
+
+        // Validate required fields
+        if (
+            name.isBlank() ||
+            surname.isBlank() ||
+            phone.isBlank()
+        ) {
+            toast("Complete all required fields")
+            return
+        }
+
+        // Validate email
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            toast("Enter a valid email")
+            return
+        }
+
+        // Validate password
+        if (password.length < 6) {
+            toast("Password must be at least 6 characters")
+            return
+        }
+
+        // Confirm passwords match
+        if (password != confirmPassword) {
+            toast("Passwords do not match")
+            return
+        }
+
+        // Create Firebase Authentication account
+        auth.createUserWithEmailAndPassword(
+            email,
+            password
+        ).addOnSuccessListener { result ->
+
+            val firebaseUid = result.user?.uid
+
+            if (firebaseUid == null) {
+                toast("Could not retrieve Firebase user ID")
+                return@addOnSuccessListener
+            }
+
+            // Create the student's profile through the ChommieHub API
+            CoroutineScope(Dispatchers.IO).launch {
+
+                try {
+
+                    val request = CreateStudentRequest(
+                        firebaseUid = firebaseUid,
+                        name = name,
+                        surname = surname,
+                        email = email,
+                        phoneNumber = phone,
+                        preferredLanguage = "English"
+                    )
+
+                    ApiClient.api.createStudent(request)
+
+                    withContext(Dispatchers.Main) {
+
+                        toast("Registration successful")
+
+                        startActivity(
+                            Intent(
+                                this@RegisterActivity,
+                                LoginActivity::class.java
+                            )
+                        )
+
+                        finish()
+                    }
+
+                } catch (exception: Exception) {
+
+                    withContext(Dispatchers.Main) {
+                        toast(
+                            "Account created. Profile sync failed: " +
+                                    (exception.message ?: "Unknown error")
+                        )
+                    }
+                }
+            }
+
+        }.addOnFailureListener { exception ->
+
+            toast(
+                exception.message ?: "Registration failed"
+            )
+        }
+    }
+
+    private fun toast(message: String) {
+        Toast.makeText(
+            this,
+            message,
+            Toast.LENGTH_SHORT
+        ).show()
+    }
+}

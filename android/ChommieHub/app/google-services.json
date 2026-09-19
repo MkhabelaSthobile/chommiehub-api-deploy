@@ -1,26 +1,36 @@
 {
   "project_info": {
-    "project_number": "565167606675",
-    "project_id": "chommiehub-c80ef",
-    "storage_bucket": "chommiehub-c80ef.firebasestorage.app"
+    "project_number": "435628359167",
+    "project_id": "chommiehub-9f3d6",
+    "storage_bucket": "chommiehub-9f3d6.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:565167606675:android:86b5fa9179579807db3666",
+        "mobilesdk_app_id": "1:435628359167:android:0fd895b852d0dc8d823bca",
         "android_client_info": {
           "package_name": "com.chommiehub.app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "435628359167-npjtf8l30coebpgg7b1s9jjnb1aleied.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyDDTOS0pLnU-BZAN-OATzYXeFkKQe7yfm0"
+          "current_key": "AIzaSyBK8sojMqVtwTgkU1l_K_s4p-peXpwXo7I"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "435628359167-npjtf8l30coebpgg7b1s9jjnb1aleied.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

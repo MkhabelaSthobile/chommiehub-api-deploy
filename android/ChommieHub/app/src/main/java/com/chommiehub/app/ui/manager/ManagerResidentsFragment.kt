@@ -13,24 +13,26 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.chommiehub.app.BuildConfig
 import com.chommiehub.app.R
+import com.chommiehub.app.data.model.manager.ResidentResponse
 import com.chommiehub.app.data.remote.ApiClient
 import com.chommiehub.app.data.repository.ManagerRepository
 import com.chommiehub.app.ui.manager.adapter.ManagerResidentAdapter
 
 /**
- *Displays residents currently assigned to the manager's accommodation
+ * Displays residents currently assigned to the
+ * manager's accommodation.
  */
-class ManagerResidentsFragment : Fragment()
-{
+class ManagerResidentsFragment : Fragment() {
+
     private lateinit var viewModel: ManagerResidentsViewModel
 
-    private val adapter = ManagerResidentAdapter()
-
     private lateinit var progressBar: ProgressBar
-
     private lateinit var recyclerView: RecyclerView
-
     private lateinit var tvMessage: TextView
+
+    private val residentAdapter by lazy {
+        ManagerResidentAdapter()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,81 +46,170 @@ class ManagerResidentsFragment : Fragment()
         )
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?)
-    {
-        super.onViewCreated(
-            view,
-            savedInstanceState
-        )
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?
+    ) {
+        super.onViewCreated(view, savedInstanceState)
 
-        progressBar = view.findViewById(R.id.progressResidents)
-
-        recyclerView = view.findViewById(R.id.recyclerResidents)
-
-        tvMessage = view.findViewById(R.id.tvResidentsMessage)
-
-        recyclerView.layoutManager = LinearLayoutManager(requireContext())
-
-        recyclerView.adapter = adapter
-
-        val repository = ManagerRepository(ApiClient.api)
-
-        viewModel = ViewModelProvider(
-                this,
-                ManagerResidentsViewModel.Factory(repository)
-            )[ManagerResidentsViewModel::class.java]
-
-        view.findViewById<Button>(R.id.btnResidentsBack).setOnClickListener{
-            parentFragmentManager.popBackStack()
-        }
-
+        bindViews(view)
+        configureRecyclerView()
+        configureViewModel()
+        configureClickListeners(view)
         observeState()
-
-        viewModel.loadResidents(BuildConfig.MANAGER_ACCOMMODATION_ID)
+        loadResidents()
     }
 
+    /**
+     * Connects the fragment to the views in
+     * fragment_manager_residents.xml.
+     */
+    private fun bindViews(view: View) {
+        progressBar = view.findViewById(
+            R.id.progressResidents
+        )
+
+        recyclerView = view.findViewById(
+            R.id.recyclerResidents
+        )
+
+        tvMessage = view.findViewById(
+            R.id.tvResidentsMessage
+        )
+    }
+
+    /**
+     * Configures the residents RecyclerView.
+     */
+    private fun configureRecyclerView() {
+        recyclerView.layoutManager =
+            LinearLayoutManager(requireContext())
+
+        recyclerView.adapter =
+            residentAdapter
+    }
+
+    /**
+     * Creates the repository and ViewModel.
+     */
+    private fun configureViewModel() {
+        val repository =
+            ManagerRepository(ApiClient.api)
+
+        val factory =
+            ManagerResidentsViewModel.Factory(
+                repository
+            )
+
+        viewModel =
+            ViewModelProvider(
+                this,
+                factory
+            )[ManagerResidentsViewModel::class.java]
+    }
+
+    /**
+     * Configures screen navigation.
+     */
+    private fun configureClickListeners(view: View) {
+        view.findViewById<Button>(
+            R.id.btnResidentsBack
+        ).setOnClickListener {
+            parentFragmentManager.popBackStack()
+        }
+    }
+
+    /**
+     * Loads residents belonging to the manager's accommodation.
+     */
+    private fun loadResidents() {
+        val accommodationId =
+            BuildConfig.MANAGER_ACCOMMODATION_ID
+
+        if (accommodationId.isBlank()) {
+            showMessage(
+                "Manager accommodation could not be identified."
+            )
+            return
+        }
+
+        viewModel.loadResidents(
+            accommodationId
+        )
+    }
+
+    /**
+     * Observes resident data returned by the ViewModel.
+     */
     private fun observeState() {
         viewModel.uiState.observe(
             viewLifecycleOwner
         ) { state ->
+
             when (state) {
                 ManagerResidentsUiState.Loading -> {
-                    progressBar.visibility = View.VISIBLE
-
-                    tvMessage.visibility = View.GONE
+                    showLoading()
                 }
 
                 is ManagerResidentsUiState.Success -> {
-                    progressBar.visibility = View.GONE
-
-                    adapter.submitList(state.residents)
-
-                    if (
+                    showResidents(
                         state.residents
-                            .isEmpty()
-                    ) {
-                        recyclerView.visibility = View.GONE
-
-                        tvMessage.text = "There are currently no residents."
-
-                        tvMessage.visibility = View.VISIBLE
-                    } else {
-                        recyclerView.visibility = View.VISIBLE
-
-                        tvMessage.visibility = View.GONE
-                    }
+                    )
                 }
 
                 is ManagerResidentsUiState.Error -> {
-                    progressBar.visibility = View.GONE
-
-                    recyclerView.visibility = View.GONE
-
-                    tvMessage.text = state.message
-
-                    tvMessage.visibility = View.VISIBLE
+                    showMessage(
+                        state.message
+                    )
                 }
             }
         }
+    }
+
+    /**
+     * Displays the loading state.
+     */
+    private fun showLoading() {
+        progressBar.visibility = View.VISIBLE
+        recyclerView.visibility = View.GONE
+        tvMessage.visibility = View.GONE
+    }
+
+    /**
+     * Displays residents returned by the API.
+     */
+    private fun showResidents(
+        residents: List<ResidentResponse>
+    ) {
+        progressBar.visibility = View.GONE
+
+        residentAdapter.submitList(
+            residents
+        )
+
+        if (residents.isEmpty()) {
+            recyclerView.visibility = View.GONE
+
+            tvMessage.text =
+                "There are currently no residents."
+
+            tvMessage.visibility = View.VISIBLE
+        } else {
+            recyclerView.visibility = View.VISIBLE
+            tvMessage.visibility = View.GONE
+        }
+    }
+
+    /**
+     * Displays an empty or error message.
+     */
+    private fun showMessage(
+        message: String
+    ) {
+        progressBar.visibility = View.GONE
+        recyclerView.visibility = View.GONE
+
+        tvMessage.text = message
+        tvMessage.visibility = View.VISIBLE
     }
 }
