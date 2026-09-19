@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Required for Firebase and the ChommieHub REST API -->
+    <!-- Internet access for Firebase and ChommieHub API -->
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -15,19 +16,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ChommieHub">
 
-        <!-- ================================================= -->
-        <!-- Authentication -->
-        <!-- ================================================= -->
-
-        <activity
-            android:name=".ui.auth.RegisterActivity"
-            android:exported="false"
-            android:windowSoftInputMode="adjustResize" />
-
-        <activity
-            android:name=".ui.auth.BiometricActivity"
-            android:exported="false" />
-
+        <!-- Login / Launcher -->
         <activity
             android:name=".ui.auth.LoginActivity"
             android:exported="true"
@@ -40,28 +29,30 @@
 
         </activity>
 
-        <!-- ================================================= -->
-        <!-- Student -->
-        <!-- ================================================= -->
+        <!-- Registration -->
+        <activity
+            android:name=".ui.auth.RegisterActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
 
+        <!-- Biometric authentication -->
+        <activity
+            android:name=".ui.auth.BiometricActivity"
+            android:exported="false" />
+
+        <!-- Student application -->
         <activity
             android:name=".ui.student.StudentActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
 
-        <!-- ================================================= -->
-        <!-- Manager -->
-        <!-- ================================================= -->
-
+        <!-- Manager application -->
         <activity
             android:name=".ui.manager.ManagerActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
 
-        <!-- ================================================= -->
-        <!-- Main / Development -->
-        <!-- ================================================= -->
-
+        <!-- Main development activity -->
         <activity
             android:name=".MainActivity"
             android:exported="false"
