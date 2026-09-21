@@ -14,6 +14,7 @@ import com.chommiehub.app.R
 import com.chommiehub.app.data.remote.ApiClient
 import com.chommiehub.app.data.repository.AccommodationRepository
 import com.chommiehub.app.ui.student.adapter.AccommodationAdapter
+import kotlinx.coroutines.launch
 
 class StudentHomeFragment : Fragment(R.layout.fragment_student_home) {
 
