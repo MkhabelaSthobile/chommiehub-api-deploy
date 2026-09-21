@@ -12,6 +12,11 @@ import com.chommiehub.app.R
 import com.chommiehub.app.data.remote.ApiClient
 import com.chommiehub.app.data.repository.AccommodationRepository
 import com.chommiehub.app.ui.student.adapter.RoomAdapter
+import org.osmdroid.config.Configuration
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory
+import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.MapView
+import org.osmdroid.views.overlay.Marker
 
 class AccommodationDetailFragment : Fragment(R.layout.fragment_accommodation_detail) {
 
@@ -28,9 +33,16 @@ class AccommodationDetailFragment : Fragment(R.layout.fragment_accommodation_det
     }
 
     private lateinit var viewModel: AccommodationDetailViewModel
+    private lateinit var mapView: MapView
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        Configuration.getInstance().apply {
+            userAgentValue = requireContext().packageName
+            osmdroidBasePath = requireContext().cacheDir
+            osmdroidTileCache = requireContext().cacheDir
+        }
 
         val accommodationId = requireArguments().getString(ARG_ACCOMMODATION_ID)
             ?: throw IllegalStateException("AccommodationDetailFragment requires an accommodationId argument.")
@@ -44,6 +56,9 @@ class AccommodationDetailFragment : Fragment(R.layout.fragment_accommodation_det
         val textAmenities = view.findViewById<TextView>(R.id.textDetailAmenities)
         val recyclerRooms = view.findViewById<RecyclerView>(R.id.recyclerRooms)
         recyclerRooms.layoutManager = LinearLayoutManager(requireContext())
+        mapView = view.findViewById(R.id.mapAccommodation)
+        mapView.setTileSource(TileSourceFactory.MAPNIK)
+        mapView.setMultiTouchControls(true)
 
         val repository = AccommodationRepository(ApiClient.api)
         viewModel = ViewModelProvider(
@@ -68,6 +83,17 @@ class AccommodationDetailFragment : Fragment(R.layout.fragment_accommodation_det
                     textDescription.text = state.accommodation.description
                     textAmenities.text = "Amenities: ${state.accommodation.amenities.joinToString(", ")}"
 
+                    val point = GeoPoint(state.accommodation.latitude, state.accommodation.longitude)
+                    mapView.controller.setZoom(15.0)
+                    mapView.controller.setCenter(point)
+
+                    val marker = Marker(mapView)
+                    marker.position = point
+                    marker.title = state.accommodation.name
+                    mapView.overlays.clear()
+                    mapView.overlays.add(marker)
+                    mapView.invalidate()
+
                     recyclerRooms.adapter = RoomAdapter(state.rooms) { room ->
                         parentFragmentManager.beginTransaction()
                             .replace(
@@ -89,4 +115,15 @@ class AccommodationDetailFragment : Fragment(R.layout.fragment_accommodation_det
 
         viewModel.loadDetail(accommodationId)
     }
+
+    override fun onResume() {
+        super.onResume()
+        mapView.onResume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mapView.onPause()
+    }
+
 }
