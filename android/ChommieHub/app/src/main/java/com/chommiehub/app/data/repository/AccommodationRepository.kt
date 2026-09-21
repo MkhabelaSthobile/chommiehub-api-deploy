@@ -26,4 +26,17 @@ class AccommodationRepository(
     suspend fun getRoom(roomId: String): RoomResponse {
         return api.getRoom(roomId)
     }
+
+    suspend fun getShortlist(studentId: String): List<AccommodationResponse> {
+        return api.getShortlist(studentId)
+    }
+
+    suspend fun addToShortlist(studentId: String, accommodationId: String) {
+        api.addToShortlist(studentId, accommodationId)
+    }
+
+    suspend fun removeFromShortlist(studentId: String, accommodationId: String) {
+        api.removeFromShortlist(studentId, accommodationId)
+    }
+
 }
