@@ -34,6 +34,12 @@
                 android:textColor="#666666"
                 android:textSize="13sp" />
 
+            <org.osmdroid.views.MapView
+                android:id="@+id/mapAccommodation"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_marginTop="12dp" />
+
             <TextView
                 android:id="@+id/textDetailDescription"
                 android:layout_width="wrap_content"
