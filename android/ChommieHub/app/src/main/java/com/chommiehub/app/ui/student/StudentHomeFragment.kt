@@ -1,60 +1,88 @@
 package com.chommiehub.app.ui.student
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
+import android.widget.Button
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.chommiehub.app.R
+import com.chommiehub.app.data.remote.ApiClient
+import com.chommiehub.app.data.repository.AccommodationRepository
+import com.chommiehub.app.ui.student.adapter.AccommodationAdapter
 
 class StudentHomeFragment : Fragment(R.layout.fragment_student_home) {
 
-    data class DummyAccommodation(
-        val name: String,
-        val location: String,
-        val price: String
-    )
+    private lateinit var viewModel: StudentHomeViewModel
+
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var progressBar: ProgressBar
+    private lateinit var tvError: TextView
+    private lateinit var btnRetry: Button
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerAccommodations)
+        recyclerView = view.findViewById(R.id.recyclerAccommodations)
+        progressBar = view.findViewById(R.id.progressHome)
+        tvError = view.findViewById(R.id.tvHomeError)
+        btnRetry = view.findViewById(R.id.btnHomeRetry)
+
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        recyclerView.adapter = AccommodationAdapter(dummyAccommodations())
+
+        val repository = AccommodationRepository(ApiClient.api)
+        viewModel = ViewModelProvider(
+            this,
+            StudentHomeViewModel.Factory(repository)
+        )[StudentHomeViewModel::class.java]
+
+        btnRetry.setOnClickListener { viewModel.loadAccommodations() }
+
+        viewModel.uiState.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is StudentHomeUiState.Loading -> {
+                    progressBar.visibility = View.VISIBLE
+                    tvError.visibility = View.GONE
+                    btnRetry.visibility = View.GONE
+                    recyclerView.visibility = View.GONE
+                }
+                is StudentHomeUiState.Success -> {
+                    progressBar.visibility = View.GONE
+                    tvError.visibility = View.GONE
+                    btnRetry.visibility = View.GONE
+                    recyclerView.visibility = View.VISIBLE
+                    recyclerView.adapter = AccommodationAdapter(
+                        items = state.accommodations,
+                        onViewDetails = { accommodation ->
+                            parentFragmentManager.beginTransaction()
+                                .replace(
+                                    R.id.studentFragmentContainer,
+                                    AccommodationDetailFragment.newInstance(accommodation.id)
+                                )
+                                .addToBackStack(null)
+                                .commit()
+                        },
+                        onToggleShortlist = {
+                            // Wired up once the Shortlist feature is added.
+                        }
+                    )
+                }
+                is StudentHomeUiState.Error -> {
+                    progressBar.visibility = View.GONE
+                    recyclerView.visibility = View.GONE
+                    tvError.visibility = View.VISIBLE
+                    tvError.text = state.message
+                    btnRetry.visibility = View.VISIBLE
+                }
+            }
+        }
     }
 
-    private fun dummyAccommodations() = listOf(
-        DummyAccommodation("Riverside student residence", "Braamfontein, Johannesburg", "From R4,500 / month"),
-        DummyAccommodation("Yale village", "Hatfield, Pretoria", "From R3,200 / month"),
-        DummyAccommodation("The Waterford residence", "Auckland Park, Johannesburg", "From R5,800 / month")
-    )
-}
-
-private class AccommodationAdapter(
-    private val items: List<StudentHomeFragment.DummyAccommodation>
-) : RecyclerView.Adapter<AccommodationAdapter.ViewHolder>() {
-
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val name: TextView = view.findViewById(R.id.textName)
-        val location: TextView = view.findViewById(R.id.textLocation)
-        val price: TextView = view.findViewById(R.id.textPrice)
+    override fun onResume() {
+        super.onResume()
+        viewModel.loadAccommodations()
     }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_accommodation, parent, false)
-        return ViewHolder(view)
-    }
-
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = items[position]
-        holder.name.text = item.name
-        holder.location.text = item.location
-        holder.price.text = item.price
-    }
-
-    override fun getItemCount() = items.size
 }
