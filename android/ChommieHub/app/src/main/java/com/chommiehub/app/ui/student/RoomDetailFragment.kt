@@ -1,0 +1,81 @@
+package com.chommiehub.app.ui.student
+
+import android.os.Bundle
+import android.view.View
+import android.widget.ProgressBar
+import android.widget.TextView
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import com.chommiehub.app.R
+import com.chommiehub.app.data.remote.ApiClient
+import com.chommiehub.app.data.repository.AccommodationRepository
+
+class RoomDetailFragment : Fragment(R.layout.fragment_room_detail) {
+
+    companion object {
+        private const val ARG_ROOM_ID = "roomId"
+
+        fun newInstance(roomId: String): RoomDetailFragment {
+            val fragment = RoomDetailFragment()
+            fragment.arguments = Bundle().apply {
+                putString(ARG_ROOM_ID, roomId)
+            }
+            return fragment
+        }
+    }
+
+    private lateinit var viewModel: RoomDetailViewModel
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val roomId = requireArguments().getString(ARG_ROOM_ID)
+            ?: throw IllegalStateException("RoomDetailFragment requires a roomId argument.")
+
+        val progressBar = view.findViewById<ProgressBar>(R.id.progressRoomDetail)
+        val tvError = view.findViewById<TextView>(R.id.tvRoomDetailError)
+        val content = view.findViewById<View>(R.id.layoutRoomContent)
+        val textType = view.findViewById<TextView>(R.id.textRoomDetailType)
+        val textPrice = view.findViewById<TextView>(R.id.textRoomDetailPrice)
+        val textCapacity = view.findViewById<TextView>(R.id.textRoomDetailCapacity)
+        val textAvailability = view.findViewById<TextView>(R.id.textRoomDetailAvailability)
+
+        val repository = AccommodationRepository(ApiClient.api)
+        viewModel = ViewModelProvider(
+            this,
+            RoomDetailViewModel.Factory(repository)
+        )[RoomDetailViewModel::class.java]
+
+        viewModel.uiState.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is RoomDetailUiState.Loading -> {
+                    progressBar.visibility = View.VISIBLE
+                    tvError.visibility = View.GONE
+                    content.visibility = View.GONE
+                }
+                is RoomDetailUiState.Success -> {
+                    progressBar.visibility = View.GONE
+                    tvError.visibility = View.GONE
+                    content.visibility = View.VISIBLE
+
+                    textType.text = state.room.roomType
+                    textPrice.text = "R${state.room.price.toInt()} / month"
+                    textCapacity.text = "Capacity: ${state.room.capacity}"
+                    textAvailability.text = if (state.room.availability) {
+                        "Available"
+                    } else {
+                        "Not currently available"
+                    }
+                }
+                is RoomDetailUiState.Error -> {
+                    progressBar.visibility = View.GONE
+                    content.visibility = View.GONE
+                    tvError.visibility = View.VISIBLE
+                    tvError.text = state.message
+                }
+            }
+        }
+
+        viewModel.loadRoom(roomId)
+    }
+}
