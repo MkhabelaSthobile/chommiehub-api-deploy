@@ -53,11 +53,11 @@ builder.Services.AddScoped<IRoomService, RoomService>();
 
 builder.Services.AddScoped<IManagerService, ManagerService>();
 
-var app = builder.Build();
-
-
 builder.Services.AddScoped<IShortlistRepository, FirestoreShortlistRepository>();
 builder.Services.AddScoped<IShortlistService, ShortlistService>();
+
+
+var app = builder.Build();
 
 
 // ---------------------------------------------------------
