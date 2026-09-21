@@ -18,12 +18,20 @@ import com.chommiehub.app.data.model.student.StudentResponse
 import com.chommiehub.app.data.model.student.SubmitApplicationRequest
 import com.chommiehub.app.data.model.student.UpdateStudentRequest
 import com.chommiehub.app.data.model.student.UpdateStudentSettingsRequest
+import com.chommiehub.app.data.model.resident.CreateMaintenanceRequest
+import com.chommiehub.app.data.model.resident.CreateVisitorRequest
+import com.chommiehub.app.data.model.resident.MaintenanceRequestResponse
+import com.chommiehub.app.data.model.resident.UpdateMaintenanceStatusRequest
+import com.chommiehub.app.data.model.resident.UpdateVisitorRequestStatusRequest
+import com.chommiehub.app.data.model.resident.VisitorRequestResponse
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
+import retrofit2.http.PATCH
+
 
 interface ChommieHubApi {
 
@@ -95,4 +103,57 @@ interface ChommieHubApi {
 
     @DELETE("api/students/{studentId}/shortlist/{accommodationId}")
     suspend fun removeFromShortlist(@Path("studentId") studentId: String, @Path("accommodationId") accommodationId: String)
+
+    // Resident maintenance services
+
+    @POST("api/maintenance")
+    suspend fun createMaintenanceRequest(
+        @Body request: CreateMaintenanceRequest
+    ): MaintenanceRequestResponse
+
+    @GET("api/maintenance/resident/{residentId}")
+    suspend fun getResidentMaintenanceRequests(
+        @Path("residentId") residentId: String
+    ): List<MaintenanceRequestResponse>
+
+    @GET("api/maintenance/accommodation/{accommodationId}")
+    suspend fun getManagerMaintenanceRequests(
+        @Path("accommodationId") accommodationId: String
+    ): List<MaintenanceRequestResponse>
+
+    @PATCH("api/maintenance/{id}/status")
+    suspend fun updateMaintenanceStatus(
+        @Path("id") id: String,
+        @Body request: UpdateMaintenanceStatusRequest
+    ): MaintenanceRequestResponse
+
+
+    // Resident visitor services
+
+    @POST("api/visitors")
+    suspend fun createVisitorRequest(
+        @Body request: CreateVisitorRequest
+    ): VisitorRequestResponse
+
+    @GET("api/visitors/resident/{residentId}")
+    suspend fun getResidentVisitorRequests(
+        @Path("residentId") residentId: String
+    ): List<VisitorRequestResponse>
+
+    @GET("api/visitors/accommodation/{accommodationId}")
+    suspend fun getManagerVisitorRequests(
+        @Path("accommodationId") accommodationId: String
+    ): List<VisitorRequestResponse>
+
+    @PATCH("api/visitors/{id}/status")
+    suspend fun updateVisitorRequestStatus(
+        @Path("id") id: String,
+        @Body request: UpdateVisitorRequestStatusRequest
+    ): VisitorRequestResponse
+
+    @GET("api/residents/student/{studentId}")
+    suspend fun getResidentByStudentId(
+        @Path("studentId") studentId: String
+    ): ResidentResponse
+
 }

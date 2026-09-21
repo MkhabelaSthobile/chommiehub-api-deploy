@@ -17,6 +17,8 @@ namespace ChommieHub.Api.Services
 
         Task<IReadOnlyList<ResidentResponse>> GetResidentsAsync(string accommodationId, CancellationToken cancellationToken = default);
 
+        Task<ResidentResponse?> GetResidentByStudentIdAsync(string studentId, CancellationToken cancellationToken = default);
+
         Task<ManagerDashboardResponse> GetDashboardAsync(string accommodationId, CancellationToken cancellationToken = default);
     }
 }

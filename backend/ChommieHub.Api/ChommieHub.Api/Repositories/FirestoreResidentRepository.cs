@@ -44,6 +44,24 @@ namespace ChommieHub.Api.Repositories
                 ? null : document.ConvertTo<Resident>();
         }
 
+        public async Task<Resident?> GetByStudentIdAsync(
+    string studentId,
+    CancellationToken cancellationToken = default)
+        {
+            QuerySnapshot snapshot = await _firestore
+                .Collection(CollectionName)
+                .WhereEqualTo("StudentId", studentId)
+                .WhereEqualTo("IsActive", true)
+                .GetSnapshotAsync(cancellationToken);
+
+            DocumentSnapshot? document =
+                snapshot.Documents.FirstOrDefault();
+
+            return document is null
+                ? null
+                : document.ConvertTo<Resident>();
+        }
+
         public async Task<Resident> CreateAsync(Resident resident, CancellationToken cancellationToken = default)
         {
             DocumentReference documentReference =  _firestore

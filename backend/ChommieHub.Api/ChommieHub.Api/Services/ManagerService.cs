@@ -114,6 +114,13 @@ namespace ChommieHub.Api.Services
                 .ToList();
         }
 
+        public async Task<ResidentResponse?> GetResidentByStudentIdAsync(string studentId, CancellationToken cancellationToken = default)
+        {
+            Resident? resident = await _residentRepository.GetByStudentIdAsync(studentId, cancellationToken);
+
+            return resident is null ? null : MapResident(resident);
+        }
+
         /// <summary>
         /// Calculates live dashboard totals from applications, residents and rooms belonging to the selected accommodation
         /// </summary>
