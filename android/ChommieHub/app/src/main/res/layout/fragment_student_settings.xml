@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/chommie_background"
+    android:orientation="vertical"
+    android:padding="22dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/settings"
+        android:textColor="@color/chommie_navy"
+        android:textSize="28sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:labelFor="@+id/spLanguage"
+        android:text="@string/label_preferred_language"
+        android:textColor="@color/chommie_navy"
+        android:textStyle="bold" />
+
+    <Spinner
+        android:id="@+id/spLanguage"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginTop="6dp"
+        android:background="@drawable/bg_input"
+        android:paddingStart="14dp"
+        android:paddingEnd="14dp" />
+
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/swNotifications"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/notifications"
+        android:textColor="@color/chommie_navy" />
+
+    <Button
+        android:id="@+id/btnSaveSettings"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginTop="24dp"
+        android:backgroundTint="@color/chommie_gold"
+        android:text="@string/save_settings"
+        android:textColor="@color/chommie_navy"
+        android:textStyle="bold" />
+</LinearLayout>

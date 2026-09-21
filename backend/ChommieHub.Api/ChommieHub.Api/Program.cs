@@ -55,7 +55,7 @@ builder.Services.AddScoped<IManagerService, ManagerService>();
 
 builder.Services.AddScoped<IShortlistRepository, FirestoreShortlistRepository>();
 builder.Services.AddScoped<IShortlistService, ShortlistService>();
-
+builder.Services.AddScoped<IStudentService, StudentService>();
 
 var app = builder.Build();
 

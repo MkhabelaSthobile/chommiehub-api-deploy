@@ -32,7 +32,6 @@ class StudentHomeFragment : Fragment(R.layout.fragment_student_home) {
         progressBar = view.findViewById(R.id.progressHome)
         tvError = view.findViewById(R.id.tvHomeError)
         btnRetry = view.findViewById(R.id.btnHomeRetry)
-
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
         val repository = AccommodationRepository(ApiClient.api)
@@ -41,8 +40,7 @@ class StudentHomeFragment : Fragment(R.layout.fragment_student_home) {
             StudentHomeViewModel.Factory(repository)
         )[StudentHomeViewModel::class.java]
 
-
-        val editSearch = view.findViewById<android.widget.EditText>(R.id.editSearch)
+        val etSearch = view.findViewById<android.widget.EditText>(R.id.etSearch)
         val chipPopular = view.findViewById<com.google.android.material.chip.Chip>(R.id.chipPopular)
         val chipNearCampus = view.findViewById<com.google.android.material.chip.Chip>(R.id.chipNearCampus)
         val chipVerified = view.findViewById<com.google.android.material.chip.Chip>(R.id.chipVerified)
@@ -53,7 +51,7 @@ class StudentHomeFragment : Fragment(R.layout.fragment_student_home) {
             else -> HomeFilter.ALL
         }
 
-        editSearch.addTextChangedListener(object : android.text.TextWatcher {
+        etSearch.addTextChangedListener(object : android.text.TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 viewModel.applyFilter(s?.toString() ?: "", currentSelectedFilter())
@@ -62,12 +60,11 @@ class StudentHomeFragment : Fragment(R.layout.fragment_student_home) {
         })
 
         val chipListener = { _: View ->
-            viewModel.applyFilter(editSearch.text?.toString() ?: "", currentSelectedFilter())
+            viewModel.applyFilter(etSearch.text?.toString() ?: "", currentSelectedFilter())
         }
         chipPopular.setOnClickListener(chipListener)
         chipNearCampus.setOnClickListener(chipListener)
         chipVerified.setOnClickListener(chipListener)
-
 
         btnRetry.setOnClickListener { viewModel.loadAccommodations() }
 
@@ -89,7 +86,7 @@ class StudentHomeFragment : Fragment(R.layout.fragment_student_home) {
                         onViewDetails = { accommodation ->
                             parentFragmentManager.beginTransaction()
                                 .replace(
-                                    R.id.studentFragmentContainer,
+                                    R.id.studentContainer,
                                     AccommodationDetailFragment.newInstance(accommodation.id)
                                 )
                                 .addToBackStack(null)

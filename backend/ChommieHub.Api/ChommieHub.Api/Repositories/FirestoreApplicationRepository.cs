@@ -4,7 +4,10 @@ using Google.Cloud.Firestore;
 namespace ChommieHub.Api.Repositories
 {
     /// <summary>
-    /// Firestore implementation used to retrieve and update student accommodation applications
+    /// Firestore repository for student accommodation applications.
+    ///
+    /// Student submission and manager review both operate on the same
+    /// "applications" collection.
     /// </summary>
     public sealed class FirestoreApplicationRepository : IApplicationRepository
     {
@@ -17,21 +20,88 @@ namespace ChommieHub.Api.Repositories
             _firestore = firestore;
         }
 
-        public async Task<IReadOnlyList<Application>> GetByAccommodationIdAsync(string accommodationId, CancellationToken cancellationToken = default)
+        /// <summary>
+        /// Creates a new student accommodation application.
+        /// </summary>
+        public async Task<Application> CreateAsync(
+            Application application,
+            CancellationToken cancellationToken = default)
+        {
+            CollectionReference collection =
+                _firestore.Collection(CollectionName);
+
+            // Let Firestore generate the application document ID.
+            DocumentReference documentReference =
+                collection.Document();
+
+            application.Id = documentReference.Id;
+
+            // Make sure a new application always has a submission date.
+            if (application.DateSubmittedUtc == default)
+            {
+                application.DateSubmittedUtc = DateTime.UtcNow;
+            }
+
+            await documentReference.SetAsync(
+                application,
+                cancellationToken: cancellationToken);
+
+            return application;
+        }
+
+        /// <summary>
+        /// Returns all applications submitted by a particular student.
+        /// </summary>
+        public async Task<IReadOnlyList<Application>> GetByStudentIdAsync(
+            string studentId,
+            CancellationToken cancellationToken = default)
         {
             Query query = _firestore
                 .Collection(CollectionName)
-                .WhereEqualTo("AccommodationId", accommodationId);
+                .WhereEqualTo("StudentId", studentId);
 
-            QuerySnapshot snapshot = await query.GetSnapshotAsync(cancellationToken);
+            QuerySnapshot snapshot =
+                await query.GetSnapshotAsync(cancellationToken);
 
             return snapshot.Documents
-                .Select(document => document.ConvertTo<Application>())
-                .OrderByDescending(application => application.DateSubmittedUtc)
+                .Select(document =>
+                    document.ConvertTo<Application>())
+                .OrderByDescending(application =>
+                    application.DateSubmittedUtc)
                 .ToList();
         }
 
-        public async Task<Application?> GetByIdAsync(string id, CancellationToken cancellationToken = default)
+        /// <summary>
+        /// Returns applications submitted to a particular accommodation.
+        /// This is used by the manager workflow.
+        /// </summary>
+        public async Task<IReadOnlyList<Application>> GetByAccommodationIdAsync(
+            string accommodationId,
+            CancellationToken cancellationToken = default)
+        {
+            Query query = _firestore
+                .Collection(CollectionName)
+                .WhereEqualTo(
+                    "AccommodationId",
+                    accommodationId);
+
+            QuerySnapshot snapshot =
+                await query.GetSnapshotAsync(cancellationToken);
+
+            return snapshot.Documents
+                .Select(document =>
+                    document.ConvertTo<Application>())
+                .OrderByDescending(application =>
+                    application.DateSubmittedUtc)
+                .ToList();
+        }
+
+        /// <summary>
+        /// Returns one application using its Firestore document ID.
+        /// </summary>
+        public async Task<Application?> GetByIdAsync(
+            string id,
+            CancellationToken cancellationToken = default)
         {
             DocumentSnapshot snapshot = await _firestore
                 .Collection(CollectionName)
@@ -46,13 +116,29 @@ namespace ChommieHub.Api.Repositories
             return snapshot.ConvertTo<Application>();
         }
 
-        public async Task<bool> UpdateAsync(Application application, CancellationToken cancellationToken = default)
+        /// <summary>
+        /// Updates an existing application.
+        ///
+        /// This allows manager decisions such as Approved or Declined
+        /// to update the same Firestore application originally created
+        /// by the student.
+        /// </summary>
+        public async Task<bool> UpdateAsync(
+            Application application,
+            CancellationToken cancellationToken = default)
         {
+            if (string.IsNullOrWhiteSpace(application.Id))
+            {
+                return false;
+            }
+
             DocumentReference documentReference = _firestore
                 .Collection(CollectionName)
                 .Document(application.Id);
 
-            DocumentSnapshot snapshot = await documentReference.GetSnapshotAsync(cancellationToken);
+            DocumentSnapshot snapshot =
+                await documentReference.GetSnapshotAsync(
+                    cancellationToken);
 
             if (!snapshot.Exists)
             {

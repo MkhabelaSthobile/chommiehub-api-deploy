@@ -1,30 +1,34 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
 
     <!--
         ChommieHub Material 3 theme.
         Navy provides the primary visual identity while gold is used
         for brand emphasis and secondary actions.
     -->
+
     <style
         name="Base.Theme.ChommieHub"
         parent="Theme.Material3.DayNight.NoActionBar">
 
+        <!-- Primary brand colours -->
         <item name="colorPrimary">@color/chommie_navy</item>
         <item name="colorOnPrimary">@color/white</item>
 
+        <!-- Secondary brand colours -->
         <item name="colorSecondary">@color/chommie_gold</item>
         <item name="colorOnSecondary">@color/chommie_navy</item>
 
+        <!-- Surface colours -->
         <item name="colorSurface">@color/chommie_surface</item>
         <item name="colorOnSurface">@color/chommie_text_primary</item>
 
+        <!-- Window background -->
         <item name="android:windowBackground">@color/chommie_background</item>
 
+        <!-- System bars -->
         <item name="android:statusBarColor">@color/chommie_navy</item>
         <item name="android:navigationBarColor">@color/chommie_navy</item>
-
-        <item name="android:windowLightStatusBar">false</item>
-        <item name="android:windowLightNavigationBar">false</item>
 
     </style>
 

@@ -12,108 +12,205 @@ import com.chommiehub.app.data.repository.ManagerRepository
 import kotlinx.coroutines.launch
 
 /**
- *Loads and updates the accommodation managed by the current residence manager
+ * Loads and updates the accommodation managed
+ * by the current residence manager.
  */
-class ManagerResidenceViewModel(private val repository: ManagerRepository) : ViewModel()
-{
+class ManagerResidenceViewModel(
+    private val repository: ManagerRepository
+) : ViewModel() {
+
     companion object {
         private const val TAG = "ManagerResidenceVM"
     }
 
-    private val _uiState = MutableLiveData<ManagerResidenceUiState>()
+    private val _uiState =
+        MutableLiveData<ManagerResidenceUiState>()
 
-    val uiState: LiveData<ManagerResidenceUiState> get() = _uiState
+    val uiState: LiveData<ManagerResidenceUiState>
+        get() = _uiState
 
-    private val _message = MutableLiveData<String?>()
+    private val _message =
+        MutableLiveData<String?>()
 
-    val message: LiveData<String?> get() = _message
+    val message: LiveData<String?>
+        get() = _message
 
-    fun loadAccommodation(accommodationId: String)
-    {
-        _uiState.value = ManagerResidenceUiState.Loading
+    /**
+     * Loads the manager's accommodation information.
+     */
+    fun loadAccommodation(
+        accommodationId: String
+    ) {
+        if (accommodationId.isBlank()) {
+            _uiState.value =
+                ManagerResidenceUiState.Error(
+                    "Accommodation ID is required."
+                )
+
+            Log.e(
+                TAG,
+                "Unable to load accommodation because the accommodation ID is empty."
+            )
+
+            return
+        }
+
+        _uiState.value =
+            ManagerResidenceUiState.Loading
 
         viewModelScope.launch {
             try {
-                val accommodation = repository.getAccommodation(accommodationId)
+                val accommodation =
+                    repository.getAccommodation(
+                        accommodationId
+                    )
 
-                _uiState.value = ManagerResidenceUiState.Success(accommodation)
+                _uiState.value =
+                    ManagerResidenceUiState.Success(
+                        accommodation
+                    )
+
+                Log.i(
+                    TAG,
+                    "Accommodation $accommodationId loaded successfully."
+                )
             } catch (exception: Exception) {
+
                 Log.e(
                     TAG,
                     "Unable to load accommodation.",
                     exception
                 )
 
-                _uiState.value = ManagerResidenceUiState.Error(exception.message ?: "Unable to load residence.")
+                val errorMessage =
+                    exception.message
+                        ?.takeIf { it.isNotBlank() }
+                        ?: "Unable to load residence."
+
+                _uiState.value =
+                    ManagerResidenceUiState.Error(
+                        errorMessage
+                    )
             }
         }
     }
 
     /**
-     * Persists manager-edited accommodation information
+     * Persists manager-edited accommodation information.
      */
     fun updateAccommodation(
         accommodationId: String,
         request: UpdateAccommodationRequest
     ) {
-        _uiState.value = ManagerResidenceUiState.Loading
+        if (accommodationId.isBlank()) {
+            _uiState.value =
+                ManagerResidenceUiState.Error(
+                    "Accommodation ID is required."
+                )
+
+            Log.e(
+                TAG,
+                "Unable to update accommodation because the accommodation ID is empty."
+            )
+
+            return
+        }
+
+        _uiState.value =
+            ManagerResidenceUiState.Loading
 
         viewModelScope.launch {
             try {
-                val accommodation = repository.updateAccommodation(
+                val accommodation =
+                    repository.updateAccommodation(
                         accommodationId,
                         request
                     )
 
-                _uiState.value = ManagerResidenceUiState.Success(accommodation)
+                _uiState.value =
+                    ManagerResidenceUiState.Success(
+                        accommodation
+                    )
 
-                _message.value = "Residence updated successfully."
+                _message.value =
+                    "Residence updated successfully."
 
                 Log.i(
                     TAG,
-                    "Accommodation $accommodationId updated."
+                    "Accommodation $accommodationId updated successfully."
                 )
             } catch (exception: Exception) {
+
                 Log.e(
                     TAG,
                     "Unable to update accommodation.",
                     exception
                 )
 
-                _uiState.value = ManagerResidenceUiState.Error(exception.message ?: "Unable to update residence."
+                val errorMessage =
+                    exception.message
+                        ?.takeIf { it.isNotBlank() }
+                        ?: "Unable to update residence."
+
+                _uiState.value =
+                    ManagerResidenceUiState.Error(
+                        errorMessage
                     )
             }
         }
     }
 
+    /**
+     * Clears a message after the Fragment has displayed it.
+     */
     fun consumeMessage() {
         _message.value = null
     }
 
-    class Factory(private val repository: ManagerRepository) : ViewModelProvider.Factory
-    {
+    /**
+     * Factory used to provide ManagerRepository
+     * to ManagerResidenceViewModel.
+     */
+    class Factory(
+        private val repository: ManagerRepository
+    ) : ViewModelProvider.Factory {
+
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
             modelClass: Class<T>
         ): T {
+
             if (
-                modelClass.isAssignableFrom(ManagerResidenceViewModel::class.java)
+                modelClass.isAssignableFrom(
+                    ManagerResidenceViewModel::class.java
+                )
             ) {
                 return ManagerResidenceViewModel(
                     repository
                 ) as T
             }
 
-            throw IllegalArgumentException("Unknown ViewModel class.")
+            throw IllegalArgumentException(
+                "Unknown ViewModel class: ${modelClass.name}"
+            )
         }
     }
 }
 
+/**
+ * Represents the possible states of the
+ * manager residence screen.
+ */
 sealed interface ManagerResidenceUiState {
 
-    data object Loading : ManagerResidenceUiState
+    data object Loading :
+        ManagerResidenceUiState
 
-    data class Success(val accommodation: AccommodationResponse) : ManagerResidenceUiState
+    data class Success(
+        val accommodation: AccommodationResponse
+    ) : ManagerResidenceUiState
 
-    data class Error(val message: String) : ManagerResidenceUiState
+    data class Error(
+        val message: String
+    ) : ManagerResidenceUiState
 }

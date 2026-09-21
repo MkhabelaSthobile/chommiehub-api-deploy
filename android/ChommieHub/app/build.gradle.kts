@@ -1,22 +1,14 @@
 import java.util.Properties
 
-val localProperties =
-    Properties().apply {
-        val localPropertiesFile =
-            rootProject.file(
-                "local.properties"
-            )
+val localProperties = Properties().apply {
+    val localPropertiesFile = rootProject.file("local.properties")
 
-        if (
-            localPropertiesFile.exists()
-        ) {
-            localPropertiesFile
-                .inputStream()
-                .use {
-                    load(it)
-                }
+    if (localPropertiesFile.exists()) {
+        localPropertiesFile.inputStream().use {
+            load(it)
         }
     }
+}
 
 val managerAccommodationId =
     localProperties.getProperty(
@@ -26,38 +18,41 @@ val managerAccommodationId =
 
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.google.gms.google.services)
 }
 
 android {
     namespace = "com.chommiehub.app"
+
     compileSdk {
         version = release(37)
     }
 
     defaultConfig {
         applicationId = "com.chommiehub.app"
+
         minSdk = 26
         targetSdk = 37
+
         versionCode = 1
         versionName = "1.0"
 
-        // Local development URL used by the Android emulator.
-        // 10.0.2.2 maps from the emulator back to the host computer.
+        // Android Emulator -> local ASP.NET API
         buildConfigField(
             "String",
             "API_BASE_URL",
             "\"http://10.0.2.2:5154/\""
         )
 
-        // Development-only fallback until Firebase Authentication links
-        // the signed-in manager to their accommodation dynamically.
+        // Manager accommodation ID loaded from local.properties
         buildConfigField(
             "String",
             "MANAGER_ACCOMMODATION_ID",
             "\"$managerAccommodationId\""
         )
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner =
+            "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -67,40 +62,77 @@ android {
             }
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
 
     buildFeatures {
-        // Exposes API_BASE_URL through BuildConfig.
         buildConfig = true
     }
 }
 
 dependencies {
+
+    // ---------------------------------------------------------
+    // Android
+    // ---------------------------------------------------------
+
     implementation(libs.androidx.activity.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.core.ktx)
     implementation(libs.material)
 
-    // REST API communication.
+    // ---------------------------------------------------------
+    // Firebase Authentication
+    // ---------------------------------------------------------
+
+    implementation(libs.firebase.auth)
+
+    // Google Sign-In
+    implementation(
+        "com.google.android.gms:play-services-auth:21.4.0"
+    )
+
+    // ---------------------------------------------------------
+    // Biometric Authentication
+    // ---------------------------------------------------------
+
+    implementation(
+        "androidx.biometric:biometric:1.1.0"
+    )
+
+    // ---------------------------------------------------------
+    // Retrofit / REST API
+    // ---------------------------------------------------------
+
     implementation(libs.retrofit)
     implementation(libs.retrofit.gson)
 
-    // Lifecycle-aware Android state management.
+    // ---------------------------------------------------------
+    // Lifecycle / ViewModel
+    // ---------------------------------------------------------
+
     implementation(libs.androidx.lifecycle.viewmodel)
     implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
 
-    // Efficient scrolling lists used by manager application and resident screens.
+    // ---------------------------------------------------------
+    // RecyclerView
+    // ---------------------------------------------------------
+
     implementation(libs.androidx.recyclerview)
 
+    // ---------------------------------------------------------
+    // Testing
+    // ---------------------------------------------------------
+
     testImplementation(libs.junit)
-    // Kotlin-friendly mocks used by local JVM unit tests.
     testImplementation(libs.mockito.kotlin)
+
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
 

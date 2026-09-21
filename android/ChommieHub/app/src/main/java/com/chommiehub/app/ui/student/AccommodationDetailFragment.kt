@@ -2,6 +2,7 @@ package com.chommiehub.app.ui.student
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.fragment.app.Fragment
@@ -50,15 +51,24 @@ class AccommodationDetailFragment : Fragment(R.layout.fragment_accommodation_det
         val progressBar = view.findViewById<ProgressBar>(R.id.progressDetail)
         val tvError = view.findViewById<TextView>(R.id.tvDetailError)
         val scrollDetail = view.findViewById<View>(R.id.scrollDetail)
-        val textName = view.findViewById<TextView>(R.id.textDetailName)
-        val textAddress = view.findViewById<TextView>(R.id.textDetailAddress)
-        val textDescription = view.findViewById<TextView>(R.id.textDetailDescription)
-        val textAmenities = view.findViewById<TextView>(R.id.textDetailAmenities)
+        val textName = view.findViewById<TextView>(R.id.tvDetailName)
+        val textAddress = view.findViewById<TextView>(R.id.tvDetailLocation)
+        val textDescription = view.findViewById<TextView>(R.id.tvDetailDescription)
+        val textAmenities = view.findViewById<TextView>(R.id.tvDetailAmenities)
         val recyclerRooms = view.findViewById<RecyclerView>(R.id.recyclerRooms)
+        val btnApplyNow = view.findViewById<Button>(R.id.btnApplyNow)
         recyclerRooms.layoutManager = LinearLayoutManager(requireContext())
         mapView = view.findViewById(R.id.mapAccommodation)
         mapView.setTileSource(TileSourceFactory.MAPNIK)
         mapView.setMultiTouchControls(true)
+
+        btnApplyNow.isEnabled = false
+        btnApplyNow.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.studentContainer, ApplicationFormFragment.newInstance(accommodationId))
+                .addToBackStack(null)
+                .commit()
+        }
 
         val repository = AccommodationRepository(ApiClient.api)
         viewModel = ViewModelProvider(
@@ -77,16 +87,16 @@ class AccommodationDetailFragment : Fragment(R.layout.fragment_accommodation_det
                     progressBar.visibility = View.GONE
                     tvError.visibility = View.GONE
                     scrollDetail.visibility = View.VISIBLE
+                    btnApplyNow.isEnabled = true
 
                     textName.text = state.accommodation.name
                     textAddress.text = state.accommodation.address
                     textDescription.text = state.accommodation.description
-                    textAmenities.text = "Amenities: ${state.accommodation.amenities.joinToString(", ")}"
+                    textAmenities.text = state.accommodation.amenities.joinToString("\n")
 
                     val point = GeoPoint(state.accommodation.latitude, state.accommodation.longitude)
                     mapView.controller.setZoom(15.0)
                     mapView.controller.setCenter(point)
-
                     val marker = Marker(mapView)
                     marker.position = point
                     marker.title = state.accommodation.name
@@ -96,10 +106,7 @@ class AccommodationDetailFragment : Fragment(R.layout.fragment_accommodation_det
 
                     recyclerRooms.adapter = RoomAdapter(state.rooms) { room ->
                         parentFragmentManager.beginTransaction()
-                            .replace(
-                                R.id.studentFragmentContainer,
-                                RoomDetailFragment.newInstance(room.id)
-                            )
+                            .replace(R.id.studentContainer, RoomDetailFragment.newInstance(room.id))
                             .addToBackStack(null)
                             .commit()
                     }
@@ -125,5 +132,4 @@ class AccommodationDetailFragment : Fragment(R.layout.fragment_accommodation_det
         super.onPause()
         mapView.onPause()
     }
-
 }

@@ -11,58 +11,128 @@ import com.chommiehub.app.data.repository.ManagerRepository
 import kotlinx.coroutines.launch
 
 /**
- * Loads the complete room inventory for manager maintenance
+ * Loads the complete room inventory
+ * for manager maintenance.
  */
-class ManagerRoomsViewModel(private val repository: ManagerRepository) : ViewModel()
-{
+class ManagerRoomsViewModel(
+    private val repository: ManagerRepository
+) : ViewModel() {
+
     companion object {
         private const val TAG = "ManagerRoomsVM"
     }
 
-    private val _uiState = MutableLiveData<ManagerRoomsUiState>()
+    private val _uiState =
+        MutableLiveData<ManagerRoomsUiState>()
 
-    val uiState: LiveData<ManagerRoomsUiState> get() = _uiState
+    val uiState: LiveData<ManagerRoomsUiState>
+        get() = _uiState
 
-    fun loadRooms(accommodationId: String)
-    {
-        _uiState.value = ManagerRoomsUiState.Loading
+    /**
+     * Loads all rooms belonging to the
+     * manager's accommodation.
+     */
+    fun loadRooms(
+        accommodationId: String
+    ) {
+        if (accommodationId.isBlank()) {
+            _uiState.value =
+                ManagerRoomsUiState.Error(
+                    "Accommodation ID is required."
+                )
+
+            Log.e(
+                TAG,
+                "Unable to load rooms because the accommodation ID is empty."
+            )
+
+            return
+        }
+
+        _uiState.value =
+            ManagerRoomsUiState.Loading
 
         viewModelScope.launch {
             try {
-                val rooms = repository.getRooms(accommodationId)
+                val rooms =
+                    repository.getRooms(
+                        accommodationId
+                    )
 
-                _uiState.value = ManagerRoomsUiState.Success(rooms)
+                _uiState.value =
+                    ManagerRoomsUiState.Success(
+                        rooms
+                    )
+
+                Log.i(
+                    TAG,
+                    "Loaded ${rooms.size} rooms for accommodation $accommodationId."
+                )
             } catch (exception: Exception) {
+
                 Log.e(
                     TAG,
                     "Unable to load room inventory.",
                     exception
                 )
 
-                _uiState.value = ManagerRoomsUiState.Error(exception.message ?: "Unable to load rooms.")
+                val errorMessage =
+                    exception.message
+                        ?.takeIf { it.isNotBlank() }
+                        ?: "Unable to load rooms."
+
+                _uiState.value =
+                    ManagerRoomsUiState.Error(
+                        errorMessage
+                    )
             }
         }
     }
 
-    class Factory(private val repository: ManagerRepository) : ViewModelProvider.Factory
-    {
+    /**
+     * Factory used to provide ManagerRepository
+     * to ManagerRoomsViewModel.
+     */
+    class Factory(
+        private val repository: ManagerRepository
+    ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
             modelClass: Class<T>
         ): T {
-            return ManagerRoomsViewModel(
-                repository
-            ) as T
+
+            if (
+                modelClass.isAssignableFrom(
+                    ManagerRoomsViewModel::class.java
+                )
+            ) {
+                return ManagerRoomsViewModel(
+                    repository
+                ) as T
+            }
+
+            throw IllegalArgumentException(
+                "Unknown ViewModel class: ${modelClass.name}"
+            )
         }
     }
 }
 
+/**
+ * Represents the possible states of the
+ * manager rooms screen.
+ */
 sealed interface ManagerRoomsUiState {
 
-    data object Loading : ManagerRoomsUiState
+    data object Loading :
+        ManagerRoomsUiState
 
-    data class Success(val rooms: List<RoomResponse>) : ManagerRoomsUiState
+    data class Success(
+        val rooms: List<RoomResponse>
+    ) : ManagerRoomsUiState
 
-    data class Error(val message: String) : ManagerRoomsUiState
+    data class Error(
+        val message: String
+    ) : ManagerRoomsUiState
 }

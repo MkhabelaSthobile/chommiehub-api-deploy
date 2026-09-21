@@ -11,112 +11,246 @@ import com.chommiehub.app.data.repository.ManagerRepository
 import kotlinx.coroutines.launch
 
 /**
- * Coordinates loading and review actions for a selected accommodation application
+ * Coordinates loading and review actions
+ * for a selected accommodation application.
  */
-class ManagerApplicationDetailViewModel(private val repository: ManagerRepository) : ViewModel() {
+class ManagerApplicationDetailViewModel(
+    private val repository: ManagerRepository
+) : ViewModel() {
 
     companion object {
         private const val TAG = "ManagerApplicationVM"
+
+        private const val DECISION_APPROVED = "Approved"
+        private const val DECISION_DECLINED = "Declined"
     }
 
-    private val _uiState = MutableLiveData<ManagerApplicationDetailUiState>()
+    private val _uiState =
+        MutableLiveData<ManagerApplicationDetailUiState>()
 
-    val uiState: LiveData<ManagerApplicationDetailUiState> get() = _uiState
+    val uiState: LiveData<ManagerApplicationDetailUiState>
+        get() = _uiState
 
-    private val _message = MutableLiveData<String?>()
+    private val _message =
+        MutableLiveData<String?>()
 
-    val message: LiveData<String?> get() = _message
+    val message: LiveData<String?>
+        get() = _message
 
-    fun loadApplication(applicationId: String)
-    {
-        _uiState.value = ManagerApplicationDetailUiState.Loading
+    /**
+     * Loads the selected application.
+     */
+    fun loadApplication(
+        applicationId: String
+    ) {
+        if (applicationId.isBlank()) {
+            _uiState.value =
+                ManagerApplicationDetailUiState.Error(
+                    "Application ID is required."
+                )
+
+            Log.e(
+                TAG,
+                "Unable to load application because the application ID is empty."
+            )
+
+            return
+        }
+
+        _uiState.value =
+            ManagerApplicationDetailUiState.Loading
 
         viewModelScope.launch {
             try {
-                val application = repository.getApplication(applicationId)
+                val application =
+                    repository.getApplication(
+                        applicationId
+                    )
 
-                _uiState.value = ManagerApplicationDetailUiState.Success(application)
+                _uiState.value =
+                    ManagerApplicationDetailUiState.Success(
+                        application
+                    )
+
+                Log.i(
+                    TAG,
+                    "Application $applicationId loaded successfully."
+                )
 
             } catch (exception: Exception) {
+
                 Log.e(
                     TAG,
                     "Unable to load application.",
                     exception
                 )
 
-                _uiState.value = ManagerApplicationDetailUiState.Error(exception.message ?: "Unable to load application.")
+                val errorMessage =
+                    exception.message
+                        ?.takeIf { it.isNotBlank() }
+                        ?: "Unable to load application."
+
+                _uiState.value =
+                    ManagerApplicationDetailUiState.Error(
+                        errorMessage
+                    )
             }
         }
     }
 
     /**
-     * Sends the manager's final approval or decline decision to the custom REST API
+     * Sends the manager's approval or decline decision
+     * to the custom REST API.
      */
     fun reviewApplication(
         applicationId: String,
         decision: String,
         reviewNotes: String
     ) {
-        _uiState.value = ManagerApplicationDetailUiState.Loading
+        if (applicationId.isBlank()) {
+            _uiState.value =
+                ManagerApplicationDetailUiState.Error(
+                    "Application ID is required."
+                )
+            return
+        }
+
+        val normalisedDecision =
+            when {
+                decision.equals(
+                    DECISION_APPROVED,
+                    ignoreCase = true
+                ) -> DECISION_APPROVED
+
+                decision.equals(
+                    DECISION_DECLINED,
+                    ignoreCase = true
+                ) -> DECISION_DECLINED
+
+                else -> null
+            }
+
+        if (normalisedDecision == null) {
+            _uiState.value =
+                ManagerApplicationDetailUiState.Error(
+                    "Invalid application decision."
+                )
+
+            Log.e(
+                TAG,
+                "Invalid application decision supplied: $decision"
+            )
+
+            return
+        }
+
+        _uiState.value =
+            ManagerApplicationDetailUiState.Loading
 
         viewModelScope.launch {
             try {
-                val updatedApplication = repository.reviewApplication(
+                val updatedApplication =
+                    repository.reviewApplication(
                         applicationId = applicationId,
-                        decision = decision,
-                        reviewNotes = reviewNotes
+                        decision = normalisedDecision,
+                        reviewNotes = reviewNotes.trim()
                     )
 
-                _uiState.value = ManagerApplicationDetailUiState.Success(updatedApplication)
+                _uiState.value =
+                    ManagerApplicationDetailUiState.Success(
+                        updatedApplication
+                    )
 
                 _message.value =
-                    if (decision == "Approved") {
-                        "Application approved."
-                    } else {
-                        "Application declined."
+                    when (normalisedDecision) {
+                        DECISION_APPROVED ->
+                            "Application approved."
+
+                        DECISION_DECLINED ->
+                            "Application declined."
+
+                        else ->
+                            "Application updated."
                     }
 
                 Log.i(
                     TAG,
-                    "Application $applicationId reviewed as $decision."
+                    "Application $applicationId reviewed as $normalisedDecision."
                 )
+
             } catch (exception: Exception) {
+
                 Log.e(
                     TAG,
                     "Application review failed.",
                     exception
                 )
 
-                _uiState.value = ManagerApplicationDetailUiState.Error(exception.message ?: "Unable to review application.")
+                val errorMessage =
+                    exception.message
+                        ?.takeIf { it.isNotBlank() }
+                        ?: "Unable to review application."
+
+                _uiState.value =
+                    ManagerApplicationDetailUiState.Error(
+                        errorMessage
+                    )
             }
         }
     }
 
+    /**
+     * Clears the message after the Fragment
+     * has displayed it.
+     */
     fun consumeMessage() {
         _message.value = null
     }
 
-    class Factory(private val repository: ManagerRepository) : ViewModelProvider.Factory
-    {
+    /**
+     * Factory used to provide ManagerRepository
+     * to ManagerApplicationDetailViewModel.
+     */
+    class Factory(
+        private val repository: ManagerRepository
+    ) : ViewModelProvider.Factory {
+
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
             modelClass: Class<T>
         ): T {
+
             if (
-                modelClass.isAssignableFrom(ManagerApplicationDetailViewModel::class.java)
+                modelClass.isAssignableFrom(
+                    ManagerApplicationDetailViewModel::class.java
+                )
             ) {
                 return ManagerApplicationDetailViewModel(
                     repository
                 ) as T
             }
 
-            throw IllegalArgumentException("Unknown ViewModel class.")
+            throw IllegalArgumentException(
+                "Unknown ViewModel class: ${modelClass.name}"
+            )
         }
     }
 }
 
+/**
+ * Represents the possible states of the
+ * manager application-detail screen.
+ */
 sealed interface ManagerApplicationDetailUiState {
-    data object Loading : ManagerApplicationDetailUiState
-    data class Success(val application: ManagerApplicationDetailResponse) : ManagerApplicationDetailUiState
-    data class Error(val message: String) : ManagerApplicationDetailUiState
+
+    data object Loading :
+        ManagerApplicationDetailUiState
+
+    data class Success(
+        val application: ManagerApplicationDetailResponse
+    ) : ManagerApplicationDetailUiState
+
+    data class Error(
+        val message: String
+    ) : ManagerApplicationDetailUiState
 }
