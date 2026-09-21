@@ -103,4 +103,8 @@ dependencies {
     testImplementation(libs.mockito.kotlin)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
+
+    // Maps (OpenStreetMap via osmdroid — no API key required)
+
+    implementation("org.osmdroid:osmdroid-android:6.1.20")
 }
