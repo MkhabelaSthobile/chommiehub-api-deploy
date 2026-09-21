@@ -11,6 +11,10 @@ import com.chommiehub.app.data.repository.AccommodationRepository
 import kotlinx.coroutines.launch
 import com.chommiehub.app.ui.student.CurrentStudent
 
+enum class HomeFilter {
+    ALL, NEAR_CAMPUS, VERIFIED
+}
+
 class StudentHomeViewModel(
     private val repository: AccommodationRepository
 ) : ViewModel() {
@@ -23,14 +27,18 @@ class StudentHomeViewModel(
     val uiState: LiveData<StudentHomeUiState>
         get() = _uiState
 
+    private var allAccommodations: List<AccommodationResponse> = emptyList()
+    private var currentQuery: String = ""
+    private var currentFilter: HomeFilter = HomeFilter.ALL
+
     fun loadAccommodations() {
         _uiState.value = StudentHomeUiState.Loading
 
         viewModelScope.launch {
             try {
-                val accommodations = repository.getAllAccommodations()
-                _uiState.value = StudentHomeUiState.Success(accommodations)
-                Log.i(TAG, "Loaded ${accommodations.size} accommodations.")
+                allAccommodations = repository.getAllAccommodations()
+                applyFilter(currentQuery, currentFilter)
+                Log.i(TAG, "Loaded ${allAccommodations.size} accommodations.")
             } catch (exception: Exception) {
                 Log.e(TAG, "Unable to load accommodations.", exception)
                 _uiState.value = StudentHomeUiState.Error(
@@ -38,6 +46,28 @@ class StudentHomeViewModel(
                 )
             }
         }
+    }
+
+    fun applyFilter(query: String, filter: HomeFilter) {
+        currentQuery = query
+        currentFilter = filter
+
+        val filtered = allAccommodations
+            .filter { accommodation ->
+                query.isBlank() ||
+                        accommodation.name.contains(query, ignoreCase = true) ||
+                        accommodation.address.contains(query, ignoreCase = true) ||
+                        accommodation.institutionArea.contains(query, ignoreCase = true)
+            }
+            .filter { accommodation ->
+                when (filter) {
+                    HomeFilter.ALL -> true
+                    HomeFilter.NEAR_CAMPUS -> accommodation.institutionArea.isNotBlank()
+                    HomeFilter.VERIFIED -> accommodation.isActive
+                }
+            }
+
+        _uiState.value = StudentHomeUiState.Success(filtered)
     }
 
     suspend fun toggleShortlist(accommodationId: String) {
