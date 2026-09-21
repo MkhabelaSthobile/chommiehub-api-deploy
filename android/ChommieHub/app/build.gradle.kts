@@ -105,6 +105,5 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
 
     // Maps (OpenStreetMap via osmdroid — no API key required)
-
     implementation("org.osmdroid:osmdroid-android:6.1.20")
 }
