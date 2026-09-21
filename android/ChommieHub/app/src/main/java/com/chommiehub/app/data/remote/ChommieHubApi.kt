@@ -103,6 +103,13 @@ interface ChommieHubApi {
         @Body request: UpdateAccommodationRequest
     ): AccommodationResponse
 
+    /*// =========================================================
+    // ACCOMMODATION DISCOVERY
+    // =========================================================
+
+    @GET("api/accommodations")
+    suspend fun getAllAccommodations(): List<AccommodationResponse>*/
+
     /**
      * Creates a new room under an accommodation.
      */
