@@ -45,6 +45,8 @@ builder.Services.AddScoped<IResidentRepository, FirestoreResidentRepository>();
 builder.Services.AddScoped<IStudentRepository, FirestoreStudentRepository>();
 
 builder.Services.AddScoped<IManagerWorkflowRepository, FirestoreManagerWorkflowRepository>();
+builder.Services.AddScoped<IMaintenanceRepository, FirestoreMaintenanceRepository>();
+builder.Services.AddScoped<IMaintenanceService, MaintenanceService>();
 
 //Application business services
 builder.Services.AddScoped<IAccommodationService, AccommodationService>();
