@@ -7,6 +7,7 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.chommiehub.app.R
@@ -65,8 +66,14 @@ class StudentHomeFragment : Fragment(R.layout.fragment_student_home) {
                                 .addToBackStack(null)
                                 .commit()
                         },
-                        onToggleShortlist = {
-                            // Wired up once the Shortlist feature is added.
+                        onToggleShortlist = { accommodation ->
+                            viewLifecycleOwner.lifecycleScope.launch {
+                                try {
+                                    viewModel.toggleShortlist(accommodation.id)
+                                } catch (exception: Exception) {
+                                    // Silently ignore for now; a toast/snackbar can be added later.
+                                }
+                            }
                         }
                     )
                 }

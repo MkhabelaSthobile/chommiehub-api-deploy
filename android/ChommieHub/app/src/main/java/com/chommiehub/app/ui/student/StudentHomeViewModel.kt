@@ -9,6 +9,7 @@ import android.util.Log
 import com.chommiehub.app.data.model.manager.AccommodationResponse
 import com.chommiehub.app.data.repository.AccommodationRepository
 import kotlinx.coroutines.launch
+import com.chommiehub.app.ui.student.CurrentStudent
 
 class StudentHomeViewModel(
     private val repository: AccommodationRepository
@@ -37,6 +38,10 @@ class StudentHomeViewModel(
                 )
             }
         }
+    }
+
+    suspend fun toggleShortlist(accommodationId: String) {
+        repository.addToShortlist(CurrentStudent.ID, accommodationId)
     }
 
     class Factory(
