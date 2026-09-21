@@ -26,7 +26,8 @@
         <com.google.android.material.chip.ChipGroup
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:singleLine="true">
+            app:singleLine="true"
+            app:singleSelection="true">
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipPopular"
@@ -42,10 +43,10 @@
                 android:text="Near campus" />
 
             <com.google.android.material.chip.Chip
-                android:id="@+id/chipUnderPrice"
+                android:id="@+id/chipVerified"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Under R5,000" />
+                android:text="Verified" />
 
         </com.google.android.material.chip.ChipGroup>
 
