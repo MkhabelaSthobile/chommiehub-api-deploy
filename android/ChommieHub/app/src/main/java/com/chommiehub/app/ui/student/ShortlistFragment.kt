@@ -55,7 +55,7 @@ class ShortlistFragment : Fragment(R.layout.fragment_shortlist) {
                             onViewDetails = { accommodation ->
                                 parentFragmentManager.beginTransaction()
                                     .replace(
-                                        R.id.studentFragmentContainer,
+                                        R.id.studentContainer,
                                         AccommodationDetailFragment.newInstance(accommodation.id)
                                     )
                                     .addToBackStack(null)
