@@ -205,6 +205,17 @@
                 app:backgroundTint="#0B1F3A"
                 app:cornerRadius="12dp" />
 
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnVisitorRequests"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="12dp"
+                android:text="Visitor Requests"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold"
+                app:backgroundTint="#0B1F3A"
+                app:cornerRadius="12dp" />
+
         </LinearLayout>
 
     </LinearLayout>

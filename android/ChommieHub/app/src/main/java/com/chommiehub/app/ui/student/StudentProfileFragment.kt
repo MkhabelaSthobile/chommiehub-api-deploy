@@ -20,6 +20,7 @@ import com.chommiehub.app.data.repository.StudentRepository
 import com.google.android.material.button.MaterialButton
 import com.google.firebase.auth.FirebaseAuth
 import com.chommiehub.app.ui.resident.MaintenanceFragment
+import com.chommiehub.app.ui.resident.VisitorRequestFragment
 
 /**
  * Displays the signed-in student's profile.
@@ -44,6 +45,7 @@ class StudentProfileFragment : Fragment() {
     private lateinit var tvFormError: TextView
     private lateinit var btnSave: MaterialButton
     private lateinit var btnMaintenance: MaterialButton
+    private lateinit var btnVisitorRequests: MaterialButton
 
     private var isCreateMode = false
 
@@ -108,6 +110,9 @@ class StudentProfileFragment : Fragment() {
 
         btnMaintenance =
             view.findViewById(R.id.btnMaintenance)
+
+        btnVisitorRequests =
+            view.findViewById(R.id.btnVisitorRequests)
     }
 
     private fun configureViewModel() {
@@ -141,6 +146,16 @@ class StudentProfileFragment : Fragment() {
                 .replace(
                     R.id.studentContainer,
                     MaintenanceFragment()
+                )
+                .addToBackStack(null)
+                .commit()
+        }
+
+        btnVisitorRequests.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(
+                    R.id.studentContainer,
+                    VisitorRequestFragment()
                 )
                 .addToBackStack(null)
                 .commit()

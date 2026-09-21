@@ -473,6 +473,22 @@
             android:layout_marginTop="10dp"
             android:text="Manage Residence" />
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnManageMaintenance"
+            style="@style/Widget.ChommieHub.Button.Secondary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Maintenance Requests" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnManageVisitors"
+            style="@style/Widget.ChommieHub.Button.Secondary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Visitor Requests" />
+
     </LinearLayout>
 
 </androidx.core.widget.NestedScrollView>
