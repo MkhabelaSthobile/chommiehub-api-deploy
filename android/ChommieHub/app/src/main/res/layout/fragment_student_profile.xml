@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="#F8F9FB">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="My Profile"
+            android:textColor="#0B1F3A"
+            android:textSize="26sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="6dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Manage your student account information"
+            android:textColor="#666666"
+            android:textSize="14sp"
+            android:layout_marginBottom="24dp" />
+
+        <ProgressBar
+            android:id="@+id/progressProfile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:visibility="gone"
+            android:layout_marginTop="30dp"
+            android:layout_marginBottom="20dp" />
+
+        <TextView
+            android:id="@+id/tvProfileError"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#B00020"
+            android:textSize="14sp"
+            android:visibility="gone"
+            android:layout_marginBottom="12dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnProfileRetry"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Retry"
+            android:visibility="gone"
+            android:layout_marginBottom="16dp"
+            app:backgroundTint="#D9A441" />
+
+        <LinearLayout
+            android:id="@+id/profileFormContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="First Name"
+                android:textColor="#0B1F3A"
+                android:textStyle="bold"
+                android:layout_marginBottom="6dp" />
+
+            <EditText
+                android:id="@+id/etProfileName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter your first name"
+                android:inputType="textPersonName"
+                android:minHeight="48dp"
+                android:padding="12dp"
+                android:backgroundTint="#D9A441"
+                android:layout_marginBottom="16dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Surname"
+                android:textColor="#0B1F3A"
+                android:textStyle="bold"
+                android:layout_marginBottom="6dp" />
+
+            <EditText
+                android:id="@+id/etProfileSurname"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter your surname"
+                android:inputType="textPersonName"
+                android:minHeight="48dp"
+                android:padding="12dp"
+                android:backgroundTint="#D9A441"
+                android:layout_marginBottom="16dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Email Address"
+                android:textColor="#0B1F3A"
+                android:textStyle="bold"
+                android:layout_marginBottom="6dp" />
+
+            <EditText
+                android:id="@+id/etProfileEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter your email address"
+                android:inputType="textEmailAddress"
+                android:minHeight="48dp"
+                android:padding="12dp"
+                android:backgroundTint="#D9A441"
+                android:layout_marginBottom="16dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Phone Number"
+                android:textColor="#0B1F3A"
+                android:textStyle="bold"
+                android:layout_marginBottom="6dp" />
+
+            <EditText
+                android:id="@+id/etProfilePhone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter your phone number"
+                android:inputType="phone"
+                android:minHeight="48dp"
+                android:padding="12dp"
+                android:backgroundTint="#D9A441"
+                android:layout_marginBottom="16dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Preferred Language"
+                android:textColor="#0B1F3A"
+                android:textStyle="bold"
+                android:layout_marginBottom="6dp" />
+
+            <EditText
+                android:id="@+id/etProfileLanguage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="e.g. English"
+                android:inputType="textCapWords"
+                android:minHeight="48dp"
+                android:padding="12dp"
+                android:backgroundTint="#D9A441"
+                android:layout_marginBottom="12dp" />
+
+            <TextView
+                android:id="@+id/tvProfileFormError"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#B00020"
+                android:textSize="13sp"
+                android:visibility="gone"
+                android:layout_marginBottom="12dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSaveProfile"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="Save Profile"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                app:backgroundTint="#0B1F3A"
+                app:cornerRadius="12dp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>

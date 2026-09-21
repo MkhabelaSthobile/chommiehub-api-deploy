@@ -11,68 +11,127 @@ import com.chommiehub.app.data.repository.ManagerRepository
 import kotlinx.coroutines.launch
 
 /**
- * Loads and retains the residence manager's application queue
+ * Loads and retains the residence manager's application queue.
  */
-class ManagerApplicationsViewModel(private val repository: ManagerRepository) : ViewModel() {
+class ManagerApplicationsViewModel(
+    private val repository: ManagerRepository
+) : ViewModel() {
 
     companion object {
         private const val TAG = "ManagerApplicationsVM"
     }
 
-    private val _uiState = MutableLiveData<ManagerApplicationsUiState>()
+    private val _uiState =
+        MutableLiveData<ManagerApplicationsUiState>()
 
-    val uiState:
-            LiveData<ManagerApplicationsUiState>
+    val uiState: LiveData<ManagerApplicationsUiState>
         get() = _uiState
 
-    fun loadApplications(accommodationId: String
+    /**
+     * Loads applications belonging to the
+     * manager's accommodation.
+     */
+    fun loadApplications(
+        accommodationId: String
     ) {
-        _uiState.value = ManagerApplicationsUiState.Loading
+        if (accommodationId.isBlank()) {
+            _uiState.value =
+                ManagerApplicationsUiState.Error(
+                    "Accommodation ID is required."
+                )
+
+            Log.e(
+                TAG,
+                "Unable to load applications because the accommodation ID is empty."
+            )
+
+            return
+        }
+
+        _uiState.value =
+            ManagerApplicationsUiState.Loading
 
         viewModelScope.launch {
             try {
-                val applications = repository.getApplications(accommodationId)
+                val applications =
+                    repository.getApplications(
+                        accommodationId
+                    )
 
-                _uiState.value = ManagerApplicationsUiState.Success(applications)
+                _uiState.value =
+                    ManagerApplicationsUiState.Success(
+                        applications
+                    )
 
                 Log.i(
                     TAG,
                     "Loaded ${applications.size} manager applications."
                 )
             } catch (exception: Exception) {
+
                 Log.e(
                     TAG,
                     "Unable to load manager applications.",
                     exception
                 )
 
-                _uiState.value = ManagerApplicationsUiState.Error(exception.message ?: "Unable to load applications.")
+                val errorMessage =
+                    exception.message
+                        ?.takeIf { it.isNotBlank() }
+                        ?: "Unable to load applications."
+
+                _uiState.value =
+                    ManagerApplicationsUiState.Error(
+                        errorMessage
+                    )
             }
         }
     }
 
-    class Factory(private val repository: ManagerRepository) : ViewModelProvider.Factory {
+    /**
+     * Factory used to provide ManagerRepository
+     * to ManagerApplicationsViewModel.
+     */
+    class Factory(
+        private val repository: ManagerRepository
+    ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
             modelClass: Class<T>
         ): T {
+
             if (
-                modelClass.isAssignableFrom(ManagerApplicationsViewModel::class.java)
+                modelClass.isAssignableFrom(
+                    ManagerApplicationsViewModel::class.java
+                )
             ) {
-                return ManagerApplicationsViewModel(repository) as T
+                return ManagerApplicationsViewModel(
+                    repository
+                ) as T
             }
 
-            throw IllegalArgumentException("Unknown ViewModel class.")
+            throw IllegalArgumentException(
+                "Unknown ViewModel class: ${modelClass.name}"
+            )
         }
     }
 }
 
+/**
+ * Represents the possible states of the
+ * manager applications screen.
+ */
 sealed interface ManagerApplicationsUiState {
 
-    data object Loading : ManagerApplicationsUiState
+    data object Loading :
+        ManagerApplicationsUiState
 
-    data class Success(val applications: List<ManagerApplicationSummaryResponse>) : ManagerApplicationsUiState
+    data class Success(
+        val applications: List<ManagerApplicationSummaryResponse>
+    ) : ManagerApplicationsUiState
 
-    data class Error(val message: String) : ManagerApplicationsUiState
+    data class Error(
+        val message: String
+    ) : ManagerApplicationsUiState
 }
