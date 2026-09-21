@@ -41,6 +41,34 @@ class StudentHomeFragment : Fragment(R.layout.fragment_student_home) {
             StudentHomeViewModel.Factory(repository)
         )[StudentHomeViewModel::class.java]
 
+
+        val editSearch = view.findViewById<android.widget.EditText>(R.id.editSearch)
+        val chipPopular = view.findViewById<com.google.android.material.chip.Chip>(R.id.chipPopular)
+        val chipNearCampus = view.findViewById<com.google.android.material.chip.Chip>(R.id.chipNearCampus)
+        val chipVerified = view.findViewById<com.google.android.material.chip.Chip>(R.id.chipVerified)
+
+        fun currentSelectedFilter(): HomeFilter = when {
+            chipNearCampus.isChecked -> HomeFilter.NEAR_CAMPUS
+            chipVerified.isChecked -> HomeFilter.VERIFIED
+            else -> HomeFilter.ALL
+        }
+
+        editSearch.addTextChangedListener(object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                viewModel.applyFilter(s?.toString() ?: "", currentSelectedFilter())
+            }
+            override fun afterTextChanged(s: android.text.Editable?) {}
+        })
+
+        val chipListener = { _: View ->
+            viewModel.applyFilter(editSearch.text?.toString() ?: "", currentSelectedFilter())
+        }
+        chipPopular.setOnClickListener(chipListener)
+        chipNearCampus.setOnClickListener(chipListener)
+        chipVerified.setOnClickListener(chipListener)
+
+
         btnRetry.setOnClickListener { viewModel.loadAccommodations() }
 
         viewModel.uiState.observe(viewLifecycleOwner) { state ->
