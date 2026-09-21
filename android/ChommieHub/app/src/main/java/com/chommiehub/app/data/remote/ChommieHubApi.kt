@@ -13,6 +13,7 @@ import com.chommiehub.app.data.model.manager.UpdateRoomRequest
 import com.chommiehub.app.data.model.manager.AccommodationResponse
 import com.chommiehub.app.data.model.manager.UpdateAccommodationRequest
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.PATCH
 import retrofit2.http.POST
@@ -138,4 +139,23 @@ interface ChommieHubApi {
         roomId: String,
         @Body request: UpdateRoomRequest
     ): RoomResponse
+
+
+    @GET("api/students/{studentId}/shortlist")
+    suspend fun getShortlist(
+        @Path("studentId") studentId: String
+    ): List<AccommodationResponse>
+
+    @POST("api/students/{studentId}/shortlist/{accommodationId}")
+    suspend fun addToShortlist(
+        @Path("studentId") studentId: String,
+        @Path("accommodationId") accommodationId: String
+    )
+
+    @DELETE("api/students/{studentId}/shortlist/{accommodationId}")
+    suspend fun removeFromShortlist(
+        @Path("studentId") studentId: String,
+        @Path("accommodationId") accommodationId: String
+    )
+
 }
