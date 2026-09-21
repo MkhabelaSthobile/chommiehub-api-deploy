@@ -151,6 +151,14 @@ class ManagerDashboardFragment : Fragment() {
                 ManagerMaintenanceFragment()
             )
         }
+
+        view.findViewById<Button>(
+            R.id.btnManageVisitors
+        ).setOnClickListener {
+            openFragment(
+                ManagerVisitorRequestsFragment()
+            )
+        }
     }
 
     /**
