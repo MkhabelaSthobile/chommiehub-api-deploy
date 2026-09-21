@@ -13,6 +13,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
+import com.chommiehub.app.data.model.manager.ResidentResponse
 
 class MaintenanceViewModel(
     private val repository: ResidentServicesRepository
@@ -27,6 +28,12 @@ class MaintenanceViewModel(
 
     val requests: LiveData<List<MaintenanceRequestResponse>>
         get() = _requests
+
+    private val _resident =
+        MutableLiveData<ResidentResponse?>()
+
+    val resident: LiveData<ResidentResponse?>
+        get() = _resident
 
     private val _isLoading =
         MutableLiveData(false)
@@ -46,6 +53,59 @@ class MaintenanceViewModel(
     val error: LiveData<String?>
         get() = _error
 
+    fun loadResident(studentId: String) {
+
+        if (studentId.isBlank()) {
+            _error.value = "Student ID is unavailable."
+            return
+        }
+
+        _isLoading.value = true
+
+        viewModelScope.launch {
+            try {
+                Log.d(TAG, "Loading resident information.")
+
+                val resident =
+                    repository.getResidentByStudentId(studentId)
+
+                _resident.value = resident
+
+                Log.i(TAG, "Resident information loaded successfully.")
+
+                loadRequests(resident.id)
+
+            } catch (exception: CancellationException) {
+                throw exception
+
+            } catch (exception: IOException) {
+                Log.e(TAG, "Network error while loading resident information.", exception)
+
+                _error.value =
+                    "Unable to connect to the ChommieHub API."
+
+            } catch (exception: HttpException) {
+                Log.e(TAG, "HTTP error while loading resident information.", exception)
+
+                _error.value =
+                    if (exception.code() == 404) {
+                        "No active residence was found for this student."
+                    } else {
+                        "Unable to load residence information. Server returned ${exception.code()}."
+                    }
+
+            } catch (exception: Exception) {
+                Log.e(TAG, "Unable to load resident information.", exception)
+
+                _error.value =
+                    exception.message
+                        ?: "Unable to load residence information."
+
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
     fun loadRequests(residentId: String) {
 
         if (residentId.isBlank()) {
@@ -93,25 +153,14 @@ class MaintenanceViewModel(
     }
 
     fun submitRequest(
-        residentId: String,
-        accommodationId: String,
-        roomId: String,
         category: String,
         description: String
     ) {
 
-        if (residentId.isBlank()) {
-            _error.value = "Resident ID is required."
-            return
-        }
+        val resident = _resident.value
 
-        if (accommodationId.isBlank()) {
-            _error.value = "Accommodation ID is required."
-            return
-        }
-
-        if (roomId.isBlank()) {
-            _error.value = "Room ID is required."
+        if (resident == null) {
+            _error.value = "Resident information is unavailable."
             return
         }
 
@@ -126,9 +175,9 @@ class MaintenanceViewModel(
         }
 
         val request = CreateMaintenanceRequest(
-            residentId = residentId,
-            accommodationId = accommodationId,
-            roomId = roomId,
+            residentId = resident.id,
+            accommodationId = resident.accommodationId,
+            roomId = resident.roomId,
             category = category,
             description = description
         )
@@ -146,7 +195,7 @@ class MaintenanceViewModel(
                 _message.value =
                     "Maintenance request submitted successfully."
 
-                loadRequests(residentId)
+                loadRequests(resident.id)
 
             } catch (exception: CancellationException) {
                 throw exception

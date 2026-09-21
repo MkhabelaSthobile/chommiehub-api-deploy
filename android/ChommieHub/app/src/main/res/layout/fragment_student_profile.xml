@@ -177,6 +177,34 @@
                 app:backgroundTint="#0B1F3A"
                 app:cornerRadius="12dp" />
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="28dp"
+                android:layout_marginBottom="6dp"
+                android:text="Resident Services"
+                android:textColor="#0B1F3A"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="14dp"
+                android:text="Manage services for your residence"
+                android:textColor="#666666"
+                android:textSize="14sp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnMaintenance"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="Maintenance Requests"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold"
+                app:backgroundTint="#0B1F3A"
+                app:cornerRadius="12dp" />
+
         </LinearLayout>
 
     </LinearLayout>

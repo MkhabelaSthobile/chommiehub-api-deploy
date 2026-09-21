@@ -16,6 +16,7 @@ import com.chommiehub.app.data.model.resident.MaintenanceRequestResponse
 import com.chommiehub.app.data.remote.ApiClient
 import com.chommiehub.app.data.repository.ResidentServicesRepository
 import com.google.android.material.button.MaterialButton
+import com.google.firebase.auth.FirebaseAuth
 
 class MaintenanceFragment : Fragment() {
 
@@ -51,6 +52,22 @@ class MaintenanceFragment : Fragment() {
         configureViewModel()
         configureClickListeners()
         observeState()
+        loadResident()
+    }
+
+    private fun loadResident() {
+        val studentId =
+            FirebaseAuth.getInstance().currentUser?.uid
+
+        if (studentId.isNullOrBlank()) {
+            tvError.text =
+                "You must be signed in to access maintenance services."
+
+            tvError.visibility = View.VISIBLE
+            return
+        }
+
+        viewModel.loadResident(studentId)
     }
 
     private fun bindViews(view: View) {
@@ -159,23 +176,7 @@ class MaintenanceFragment : Fragment() {
         val description =
             etDescription.text.toString().trim()
 
-        /*
-         * Temporary values until resident context is wired
-         * from the authenticated student's approved application.
-         */
-        val residentId =
-            arguments?.getString(ARG_RESIDENT_ID).orEmpty()
-
-        val accommodationId =
-            arguments?.getString(ARG_ACCOMMODATION_ID).orEmpty()
-
-        val roomId =
-            arguments?.getString(ARG_ROOM_ID).orEmpty()
-
         viewModel.submitRequest(
-            residentId = residentId,
-            accommodationId = accommodationId,
-            roomId = roomId,
             category = category,
             description = description
         )
@@ -214,45 +215,6 @@ class MaintenanceFragment : Fragment() {
                 }
 
             requestsContainer.addView(requestView)
-        }
-    }
-
-    companion object {
-
-        private const val ARG_RESIDENT_ID =
-            "residentId"
-
-        private const val ARG_ACCOMMODATION_ID =
-            "accommodationId"
-
-        private const val ARG_ROOM_ID =
-            "roomId"
-
-        fun newInstance(
-            residentId: String,
-            accommodationId: String,
-            roomId: String
-        ): MaintenanceFragment {
-
-            return MaintenanceFragment().apply {
-                arguments =
-                    Bundle().apply {
-                        putString(
-                            ARG_RESIDENT_ID,
-                            residentId
-                        )
-
-                        putString(
-                            ARG_ACCOMMODATION_ID,
-                            accommodationId
-                        )
-
-                        putString(
-                            ARG_ROOM_ID,
-                            roomId
-                        )
-                    }
-            }
         }
     }
 }

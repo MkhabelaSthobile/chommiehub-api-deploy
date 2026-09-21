@@ -14,7 +14,7 @@ namespace ChommieHub.Api.Controllers
         private readonly IManagerService _managerService;
 
         public ResidentsController(
-            IManagerService managerService)
+     IManagerService managerService)
         {
             _managerService = managerService;
         }
