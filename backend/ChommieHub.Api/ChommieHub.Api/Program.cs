@@ -1,6 +1,8 @@
 using ChommieHub.Api.Configuration;
 using ChommieHub.Api.Repositories;
+using ChommieHub.Api.Repositories.Interfaces;
 using ChommieHub.Api.Services;
+using ChommieHub.Api.Services.Interfaces;
 using Google.Cloud.Firestore;
 using Microsoft.Extensions.Options;
 
@@ -52,6 +54,11 @@ builder.Services.AddScoped<IRoomService, RoomService>();
 builder.Services.AddScoped<IManagerService, ManagerService>();
 
 var app = builder.Build();
+
+
+builder.Services.AddScoped<IShortlistRepository, FirestoreShortlistRepository>();
+builder.Services.AddScoped<IShortlistService, ShortlistService>();
+
 
 // ---------------------------------------------------------
 // HTTP request pipeline
