@@ -44,6 +44,8 @@ builder.Services.AddScoped<IResidentRepository, FirestoreResidentRepository>();
 
 builder.Services.AddScoped<IStudentRepository, FirestoreStudentRepository>();
 
+builder.Services.AddScoped<IManagerRepository, FirestoreManagerRepository>();
+
 builder.Services.AddScoped<IManagerWorkflowRepository, FirestoreManagerWorkflowRepository>();
 builder.Services.AddScoped<IMaintenanceRepository, FirestoreMaintenanceRepository>();
 builder.Services.AddScoped<IMaintenanceService, MaintenanceService>();
@@ -60,6 +62,8 @@ builder.Services.AddScoped<IManagerService, ManagerService>();
 builder.Services.AddScoped<IShortlistRepository, FirestoreShortlistRepository>();
 builder.Services.AddScoped<IShortlistService, ShortlistService>();
 builder.Services.AddScoped<IStudentService, StudentService>();
+
+builder.Services.AddScoped<IManagerAccountService, ManagerAccountService>();
 
 var app = builder.Build();
 
