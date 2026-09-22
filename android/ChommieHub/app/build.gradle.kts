@@ -10,11 +10,11 @@ val localProperties = Properties().apply {
     }
 }
 
-val managerAccommodationId =
+/*val managerAccommodationId =
     localProperties.getProperty(
         "manager.accommodation.id",
         "NOT_CONFIGURED"
-    )
+    )*/
 
 plugins {
     alias(libs.plugins.android.application)
@@ -48,7 +48,7 @@ android {
         buildConfigField(
             "String",
             "MANAGER_ACCOMMODATION_ID",
-            "\"$managerAccommodationId\""
+            "\"BBTdJM7OQqGHPc1j8zFt\""
         )
 
         testInstrumentationRunner =

@@ -17,7 +17,7 @@ import com.chommiehub.app.data.remote.ApiClient
 import com.chommiehub.app.data.repository.ResidentServicesRepository
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.checkbox.MaterialCheckBox
-import com.google.firebase.auth.FirebaseAuth
+import com.chommiehub.app.ui.student.CurrentStudent
 
 class VisitorRequestFragment : Fragment() {
 
@@ -93,10 +93,9 @@ class VisitorRequestFragment : Fragment() {
     }
 
     private fun loadResident() {
-        val studentId =
-            FirebaseAuth.getInstance().currentUser?.uid
+        val studentId = CurrentStudent.ID
 
-        if (studentId.isNullOrBlank()) {
+        if (studentId.isBlank()) {
             tvError.text =
                 "You must be signed in to access visitor services."
 

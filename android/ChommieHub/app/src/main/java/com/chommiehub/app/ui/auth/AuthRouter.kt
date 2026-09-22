@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.widget.Toast
 import com.chommiehub.app.data.remote.ApiClient
+import com.chommiehub.app.ui.manager.CurrentManager
 import com.chommiehub.app.ui.manager.ManagerActivity
 import com.chommiehub.app.ui.student.CurrentStudent
 import com.chommiehub.app.ui.student.StudentActivity
@@ -62,19 +63,29 @@ object AuthRouter {
      * Looks up the signed-in user's role via the ChommieHub API.
      * Returns null when no student or manager profile is linked to
      * this Firebase UID.
+     *
+     * As a side effect, populates CurrentStudent and CurrentManager so
+     * that downstream screens can query the API with the correct
+     * database identifiers rather than the raw Firebase UID.
      */
     private suspend fun resolveDestination(firebaseUid: String): Class<out Activity>? {
         try {
             val student = ApiClient.api.getStudentByFirebaseUid(firebaseUid)
-            CurrentStudent.ID = student.id
-            return StudentActivity::class.java
+            if (student.id.isNotBlank()) {
+                CurrentStudent.ID = student.id
+                return StudentActivity::class.java
+            }
         } catch (e: HttpException) {
             if (e.code() != 404) throw e
         }
 
         try {
-            ApiClient.api.getManagerByFirebaseUid(firebaseUid)
-            return ManagerActivity::class.java
+            val manager = ApiClient.api.getManagerByFirebaseUid(firebaseUid)
+            if (manager.id.isNotBlank() && manager.accommodationId.isNotBlank()) {
+                CurrentManager.ID = manager.id
+                CurrentManager.ACCOMMODATION_ID = manager.accommodationId
+                return ManagerActivity::class.java
+            }
         } catch (e: HttpException) {
             if (e.code() != 404) throw e
         }

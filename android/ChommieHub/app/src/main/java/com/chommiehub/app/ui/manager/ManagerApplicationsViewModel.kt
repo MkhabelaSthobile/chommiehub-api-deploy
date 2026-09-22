@@ -53,6 +53,8 @@ class ManagerApplicationsViewModel(
 
         viewModelScope.launch {
             try {
+
+                Log.i(TAG, "Loading applications for accommodation: $accommodationId")
                 val applications =
                     repository.getApplications(
                         accommodationId

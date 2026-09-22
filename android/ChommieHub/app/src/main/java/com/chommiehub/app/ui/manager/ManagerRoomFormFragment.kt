@@ -10,7 +10,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.chommiehub.app.BuildConfig
 import com.chommiehub.app.R
 import com.chommiehub.app.data.model.manager.CreateRoomRequest
 import com.chommiehub.app.data.model.manager.UpdateRoomRequest
@@ -315,8 +314,7 @@ class ManagerRoomFormFragment : Fragment() {
         price: Double,
         capacity: Int
     ) {
-        val accommodationId =
-            BuildConfig.MANAGER_ACCOMMODATION_ID
+        val accommodationId = CurrentManager.ACCOMMODATION_ID
 
         if (accommodationId.isBlank()) {
             showError(

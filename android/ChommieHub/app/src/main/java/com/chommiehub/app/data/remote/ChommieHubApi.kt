@@ -93,7 +93,7 @@ interface ChommieHubApi {
     @GET("api/manager/applications/{applicationId}")
     suspend fun getManagerApplication(@Path("applicationId") applicationId: String): ManagerApplicationDetailResponse
 
-    @PUT("api/manager/applications/{applicationId}/review")
+    @PATCH("api/manager/applications/{applicationId}/review")
     suspend fun reviewApplication(@Path("applicationId") applicationId: String, @Body request: ReviewApplicationRequest): ManagerApplicationDetailResponse
 
     @POST("api/manager/applications/{applicationId}/assign-room")

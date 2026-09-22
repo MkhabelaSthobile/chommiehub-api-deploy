@@ -21,6 +21,8 @@ import com.google.android.material.button.MaterialButton
 import com.google.firebase.auth.FirebaseAuth
 import com.chommiehub.app.ui.resident.MaintenanceFragment
 import com.chommiehub.app.ui.resident.VisitorRequestFragment
+import com.chommiehub.app.ui.auth.LoginActivity
+import com.chommiehub.app.ui.manager.CurrentManager
 
 /**
  * Displays the signed-in student's profile.
@@ -46,6 +48,7 @@ class StudentProfileFragment : Fragment() {
     private lateinit var btnSave: MaterialButton
     private lateinit var btnMaintenance: MaterialButton
     private lateinit var btnVisitorRequests: MaterialButton
+    private lateinit var btnStudentSignOut: MaterialButton
 
     private var isCreateMode = false
 
@@ -113,6 +116,10 @@ class StudentProfileFragment : Fragment() {
 
         btnVisitorRequests =
             view.findViewById(R.id.btnVisitorRequests)
+
+        btnStudentSignOut =
+            view.findViewById(R.id.btnStudentSignOut)
+
     }
 
     private fun configureViewModel() {
@@ -160,6 +167,27 @@ class StudentProfileFragment : Fragment() {
                 .addToBackStack(null)
                 .commit()
         }
+
+        btnStudentSignOut.setOnClickListener {
+            FirebaseAuth.getInstance().signOut()
+
+            // Clear all cached identity so the next user starts fresh.
+            CurrentStudent.ID = ""
+            CurrentManager.ID = ""
+            CurrentManager.ACCOMMODATION_ID = ""
+
+            val intent = android.content.Intent(
+                requireContext(),
+                LoginActivity::class.java
+            )
+            // Wipe the back stack so Back cannot return to the profile.
+            intent.flags =
+                android.content.Intent.FLAG_ACTIVITY_NEW_TASK or
+                        android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK
+
+            startActivity(intent)
+        }
+
     }
 
     private fun observeState() {

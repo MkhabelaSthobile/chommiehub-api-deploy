@@ -106,6 +106,7 @@ class RegisterActivity : AppCompatActivity() {
                 try {
 
                     if (isManager) {
+
                         val request = CreateManagerRequest(
                             firebaseUid = firebaseUid,
                             name = name,
@@ -131,7 +132,12 @@ class RegisterActivity : AppCompatActivity() {
 
                     withContext(Dispatchers.Main) {
 
-                        toast("Registration successful")
+                        // Firebase automatically signs a new user in as soon as
+                        // their account is created. Sign them out immediately so
+                        // that they must log in with their new credentials
+                        auth.signOut()
+
+                        toast("Registration successful. Please sign in.")
 
                         startActivity(
                             Intent(

@@ -35,6 +35,13 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
+        // If Firebase already has a signed-in user, skip the login form
+        // and route straight to the correct dashboard.
+        if (FirebaseAuth.getInstance().currentUser != null) {
+            AuthRouter.route(this)
+            return
+        }
+
         findViewById<Button>(R.id.btnLogin).setOnClickListener { login() }
         findViewById<Button>(R.id.btnGoogle).setOnClickListener { googleSignIn() }
         findViewById<TextView>(R.id.tvRegister).setOnClickListener {

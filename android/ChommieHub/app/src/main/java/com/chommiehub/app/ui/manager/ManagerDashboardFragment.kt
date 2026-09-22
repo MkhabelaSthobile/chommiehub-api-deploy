@@ -10,7 +10,6 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.chommiehub.app.BuildConfig
 import com.chommiehub.app.R
 import com.chommiehub.app.data.model.manager.ManagerDashboardResponse
 import com.chommiehub.app.data.remote.ApiClient
@@ -210,8 +209,7 @@ class ManagerDashboardFragment : Fragment() {
      */
     private fun loadDashboard() {
 
-        val accommodationId =
-            BuildConfig.MANAGER_ACCOMMODATION_ID
+        val accommodationId = CurrentManager.ACCOMMODATION_ID
 
         if (accommodationId.isBlank()) {
             Log.e(

@@ -11,7 +11,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.chommiehub.app.BuildConfig
 import com.chommiehub.app.R
 import com.chommiehub.app.data.remote.ApiClient
 import com.chommiehub.app.data.repository.ManagerRepository
@@ -136,8 +135,7 @@ class ManagerRoomsFragment : Fragment() {
      * Loads rooms belonging to the manager's accommodation.
      */
     private fun loadRooms() {
-        val accommodationId =
-            BuildConfig.MANAGER_ACCOMMODATION_ID
+        val accommodationId = CurrentManager.ACCOMMODATION_ID
 
         if (accommodationId.isBlank()) {
             showError(

@@ -216,6 +216,17 @@
                 app:backgroundTint="#0B1F3A"
                 app:cornerRadius="12dp" />
 
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnStudentSignOut"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="28dp"
+                android:text="Sign Out"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                app:backgroundTint="@color/chommie_danger"
+                app:cornerRadius="12dp" />
+
         </LinearLayout>
 
     </LinearLayout>

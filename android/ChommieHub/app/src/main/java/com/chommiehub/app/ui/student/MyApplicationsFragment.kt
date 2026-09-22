@@ -7,16 +7,16 @@ import androidx.lifecycle.lifecycleScope
 import com.chommiehub.app.R
 import com.chommiehub.app.data.remote.ApiClient
 import com.chommiehub.app.data.repository.StudentRepository
-import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 
 class MyApplicationsFragment:Fragment(R.layout.fragment_my_applications){
     override fun onViewCreated(v:View,b:Bundle?){
         val list=v.findViewById<LinearLayout>(R.id.applicationList)
-        val uid=FirebaseAuth.getInstance().currentUser?.uid?:return
+        val studentId = CurrentStudent.ID
+        if (studentId.isBlank()) return
         viewLifecycleOwner.lifecycleScope.launch{
             try{
-                val xs=StudentRepository(ApiClient.api).applications(uid); list.removeAllViews()
+                val xs=StudentRepository(ApiClient.api).applications(studentId); list.removeAllViews()
                 if(xs.isEmpty()) v.findViewById<TextView>(R.id.tvEmpty).visibility=View.VISIBLE
                 xs.forEach{a->
                     val item=layoutInflater.inflate(R.layout.item_student_application,list,false)
