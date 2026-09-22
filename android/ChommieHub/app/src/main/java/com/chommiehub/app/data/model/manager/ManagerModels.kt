@@ -1,6 +1,32 @@
 package com.chommiehub.app.data.model.manager
 
 /**
+ * Complete manager profile information returned by the ChommieHub API.
+ */
+data class ManagerResponse(
+    val id: String,
+    val firebaseUid: String,
+    val name: String,
+    val surname: String,
+    val email: String,
+    val phoneNumber: String,
+    val accommodationId: String,
+    val createdAtUtc: String
+)
+
+/**
+ * Request sent to create a residence manager profile linked to a Firebase UID.
+ */
+data class CreateManagerRequest(
+    val firebaseUid: String,
+    val name: String,
+    val surname: String,
+    val email: String,
+    val phoneNumber: String,
+    val accommodationId: String
+)
+
+/**
  * Aggregated statistics displayed on the residence manager dashboard.
  */
 data class ManagerDashboardResponse(

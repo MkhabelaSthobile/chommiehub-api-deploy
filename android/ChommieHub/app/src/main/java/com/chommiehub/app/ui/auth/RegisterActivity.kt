@@ -5,10 +5,13 @@ import android.os.Bundle
 import android.util.Patterns
 import android.widget.Button
 import android.widget.EditText
+import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.chommiehub.app.BuildConfig
 import com.chommiehub.app.R
+import com.chommiehub.app.data.model.manager.CreateManagerRequest
 import com.chommiehub.app.data.model.student.CreateStudentRequest
 import com.chommiehub.app.data.remote.ApiClient
 import com.google.firebase.auth.FirebaseAuth
@@ -52,6 +55,9 @@ class RegisterActivity : AppCompatActivity() {
         val password = getValue(R.id.etPassword)
         val confirmPassword = getValue(R.id.etConfirmPassword)
 
+        val isManager = findViewById<RadioGroup>(R.id.rgRole)
+            .checkedRadioButtonId == R.id.rbManager
+
         // Validate required fields
         if (
             name.isBlank() ||
@@ -93,21 +99,35 @@ class RegisterActivity : AppCompatActivity() {
                 return@addOnSuccessListener
             }
 
-            // Create the student's profile through the ChommieHub API
+            // Create the user's profile through the ChommieHub API,
+            // as either a student or a residence manager.
             CoroutineScope(Dispatchers.IO).launch {
 
                 try {
 
-                    val request = CreateStudentRequest(
-                        firebaseUid = firebaseUid,
-                        name = name,
-                        surname = surname,
-                        email = email,
-                        phoneNumber = phone,
-                        preferredLanguage = "English"
-                    )
+                    if (isManager) {
+                        val request = CreateManagerRequest(
+                            firebaseUid = firebaseUid,
+                            name = name,
+                            surname = surname,
+                            email = email,
+                            phoneNumber = phone,
+                            accommodationId = BuildConfig.MANAGER_ACCOMMODATION_ID
+                        )
 
-                    ApiClient.api.createStudent(request)
+                        ApiClient.api.createManager(request)
+                    } else {
+                        val request = CreateStudentRequest(
+                            firebaseUid = firebaseUid,
+                            name = name,
+                            surname = surname,
+                            email = email,
+                            phoneNumber = phone,
+                            preferredLanguage = "English"
+                        )
+
+                        ApiClient.api.createStudent(request)
+                    }
 
                     withContext(Dispatchers.Main) {
 
