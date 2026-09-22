@@ -3,10 +3,12 @@ package com.chommiehub.app.data.remote
 import com.chommiehub.app.data.model.HealthResponse
 import com.chommiehub.app.data.model.manager.AccommodationResponse
 import com.chommiehub.app.data.model.manager.AssignRoomRequest
+import com.chommiehub.app.data.model.manager.CreateManagerRequest
 import com.chommiehub.app.data.model.manager.CreateRoomRequest
 import com.chommiehub.app.data.model.manager.ManagerApplicationDetailResponse
 import com.chommiehub.app.data.model.manager.ManagerApplicationSummaryResponse
 import com.chommiehub.app.data.model.manager.ManagerDashboardResponse
+import com.chommiehub.app.data.model.manager.ManagerResponse
 import com.chommiehub.app.data.model.manager.ResidentResponse
 import com.chommiehub.app.data.model.manager.ReviewApplicationRequest
 import com.chommiehub.app.data.model.manager.RoomResponse
@@ -44,6 +46,15 @@ interface ChommieHubApi {
     @POST("api/students")
     suspend fun createStudent(@Body request: CreateStudentRequest): StudentResponse
 
+    /**
+     * Looks up a student profile by Firebase UID. Used at login time to work out
+     * which dashboard a signed-in Firebase user should be routed to. Returns a
+     * 404 (surfaced to the caller as [retrofit2.HttpException]) when no student
+     * profile is linked to this Firebase UID.
+     */
+    @GET("api/students/by-firebase-uid/{firebaseUid}")
+    suspend fun getStudentByFirebaseUid(@Path("firebaseUid") firebaseUid: String): StudentResponse
+
     @PUT("api/students/{id}")
     suspend fun updateStudent(@Path("id") id: String, @Body request: UpdateStudentRequest): StudentResponse
 
@@ -61,6 +72,17 @@ interface ChommieHubApi {
 
     @GET("api/students/{id}/applications")
     suspend fun getStudentApplications(@Path("id") id: String): List<StudentApplicationResponse>
+
+    @POST("api/managers")
+    suspend fun createManager(@Body request: CreateManagerRequest): ManagerResponse
+
+    /**
+     * Looks up a manager profile by Firebase UID. Used at login time, the same
+     * way as [getStudentByFirebaseUid]. Returns a 404 when no manager profile
+     * is linked to this Firebase UID.
+     */
+    @GET("api/managers/by-firebase-uid/{firebaseUid}")
+    suspend fun getManagerByFirebaseUid(@Path("firebaseUid") firebaseUid: String): ManagerResponse
 
     @GET("api/manager/accommodations/{accommodationId}/dashboard")
     suspend fun getManagerDashboard(@Path("accommodationId") accommodationId: String): ManagerDashboardResponse
