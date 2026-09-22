@@ -6,5 +6,5 @@ package com.chommiehub.app.ui.student
  * Person B's login/auth work is merged in.
  */
 object CurrentStudent {
-    const val ID = "test-student-1"
+     var ID = ""
 }
