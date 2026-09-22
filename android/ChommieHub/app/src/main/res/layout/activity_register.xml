@@ -38,6 +38,40 @@
             android:text="@string/register_subtitle"
             android:textColor="@color/chommie_text_secondary" />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginBottom="6dp"
+            android:text="@string/register_role_label"
+            android:textColor="@color/chommie_text_primary"
+            android:textStyle="bold" />
+
+        <RadioGroup
+            android:id="@+id/rgRole"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/rbStudent"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:checked="true"
+                android:text="@string/role_student"
+                android:textColor="@color/chommie_text_primary" />
+
+            <RadioButton
+                android:id="@+id/rbManager"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/role_manager"
+                android:textColor="@color/chommie_text_primary" />
+        </RadioGroup>
+
         <EditText
             android:id="@+id/etName"
             android:layout_width="match_parent"

@@ -69,6 +69,9 @@
     <string name="hint_confirm_password">Confirm password</string>
     <string name="password_helper">Use at least 6 characters</string>
     <string name="register_button">Create account</string>
+    <string name="register_role_label">I am registering as a</string>
+    <string name="role_student">Student</string>
+    <string name="role_manager">Residence Manager</string>
     <string name="have_account">Already have an account? Sign in</string>
 
     <!-- Navigation -->
