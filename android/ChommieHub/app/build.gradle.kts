@@ -37,11 +37,13 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        // Android Emulator -> local ASP.NET API
+        // Physical device on the same Wi-Fi -> local ASP.NET API on the PC's LAN IP.
+        // (Was "http://10.0.2.2:5154/" for the Android Emulator - that address only
+        // works inside the emulator's virtual network, not on a real phone.)
         buildConfigField(
             "String",
             "API_BASE_URL",
-            "\"http://10.0.2.2:5154/\""
+            "\"http://192.168.101.156:5154/\""
         )
 
         // Manager accommodation ID loaded from local.properties
