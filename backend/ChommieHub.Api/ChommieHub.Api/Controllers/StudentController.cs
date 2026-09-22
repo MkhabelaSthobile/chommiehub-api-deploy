@@ -35,6 +35,15 @@ namespace ChommieHub.Api.Controllers
             return Ok(student);
         }
 
+        /// <summary>
+        /// Identical to GetById above - kept as its own route so the Android
+        /// login flow can ask "does a student profile exist for this Firebase
+        /// UID?" with a name that reads the same way as GET /api/managers/by-firebase-uid/{firebaseUid}.
+        /// </summary>
+        [HttpGet("by-firebase-uid/{firebaseUid}")]
+        public Task<ActionResult<StudentResponse>> GetByFirebaseUid(string firebaseUid, CancellationToken cancellationToken)
+            => GetById(firebaseUid, cancellationToken);
+
         [HttpPost]
         public async Task<ActionResult<StudentResponse>> Create(CreateStudentRequest request, CancellationToken cancellationToken)
         {
