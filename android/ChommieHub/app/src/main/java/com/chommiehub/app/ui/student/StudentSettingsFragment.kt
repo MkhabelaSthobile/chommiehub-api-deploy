@@ -1,9 +1,7 @@
 package com.chommiehub.app.ui.student
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.Spinner
@@ -11,33 +9,22 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.chommiehub.app.R
-import com.chommiehub.app.data.model.student.UpdateStudentSettingsRequest
 import com.chommiehub.app.data.remote.ApiClient
 import com.chommiehub.app.data.repository.StudentRepository
 import com.google.android.material.switchmaterial.SwitchMaterial
-import com.google.firebase.auth.FirebaseAuth
 
 /**
  * Lets the signed-in student change their preferred language and whether they receive
  * notifications, consistent with the Part 1 settings specification.
  */
-class StudentSettingsFragment : Fragment() {
+class StudentSettingsFragment : Fragment(R.layout.fragment_student_settings) {
 
     private lateinit var viewModel: StudentSettingsViewModel
-
     private lateinit var spLanguage: Spinner
     private lateinit var swNotifications: SwitchMaterial
     private lateinit var btnSaveSettings: Button
 
     private val languageOptions = listOf("English", "Afrikaans", "isiZulu", "Sesotho")
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        return inflater.inflate(R.layout.fragment_student_settings, container, false)
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -46,76 +33,78 @@ class StudentSettingsFragment : Fragment() {
         swNotifications = view.findViewById(R.id.swNotifications)
         btnSaveSettings = view.findViewById(R.id.btnSaveSettings)
 
-        spLanguage.adapter = ArrayAdapter(
-            requireContext(),
-            android.R.layout.simple_spinner_dropdown_item,
-            languageOptions
-        )
+        spLanguage.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, languageOptions)
 
         val repository = StudentRepository(ApiClient.api)
-        viewModel = ViewModelProvider(
-            this,
-            StudentSettingsViewModel.Factory(repository)
-        )[StudentSettingsViewModel::class.java]
+        viewModel = ViewModelProvider(this, StudentSettingsViewModel.Factory(repository))[StudentSettingsViewModel::class.java]
 
-        observeState()
+        observeViewModel()
 
-        btnSaveSettings.setOnClickListener { save() }
+        btnSaveSettings.setOnClickListener {
+            saveSettings()
+        }
 
-        val firebaseUid = FirebaseAuth.getInstance().currentUser?.uid
-        if (firebaseUid == null) {
-            toast("No signed-in student found.")
+        if (CurrentStudent.ID.isBlank()) {
+            toast("No signed-in user was found.")
+            btnSaveSettings.isEnabled = false
         } else {
-            viewModel.loadSettings(firebaseUid)
+            viewModel.load(CurrentStudent.ID)
         }
     }
 
-    private fun observeState() {
+    /**
+     * Observes the current settings, loading state and save result returned by the ViewModel.
+     */
+    private fun observeViewModel() {
         viewModel.student.observe(viewLifecycleOwner) { student ->
             if (student != null) {
-                val index = languageOptions.indexOf(student.preferredLanguage)
-                spLanguage.setSelection(if (index >= 0) index else 0)
+                val languageIndex = languageOptions.indexOfFirst { language ->
+                    language.equals(student.preferredLanguage, ignoreCase = true)
+                }
+
+                spLanguage.setSelection(if (languageIndex >= 0) languageIndex else 0)
                 swNotifications.isChecked = student.notificationsEnabled
             }
         }
 
-        viewModel.loadError.observe(viewLifecycleOwner) { message ->
-            if (message != null) toast(message)
+        viewModel.loading.observe(viewLifecycleOwner) { loading ->
+            btnSaveSettings.isEnabled = !loading
         }
 
-        viewModel.saveMessage.observe(viewLifecycleOwner) { message ->
-            if (message != null) {
-                toast(message)
-                viewModel.consumeSaveMessage()
+        viewModel.saved.observe(viewLifecycleOwner) { saved ->
+            if (saved) {
+                toast("Settings saved successfully.")
+                viewModel.consumeSaved()
             }
         }
 
-        viewModel.saveError.observe(viewLifecycleOwner) { message ->
-            if (message != null) {
+        viewModel.error.observe(viewLifecycleOwner) { message ->
+            if (!message.isNullOrBlank()) {
                 toast(message)
-                viewModel.consumeSaveError()
+                viewModel.consumeError()
             }
         }
     }
 
-    private fun save() {
-        val firebaseUid = FirebaseAuth.getInstance().currentUser?.uid
-        if (firebaseUid == null) {
-            toast("No signed-in student found.")
+    /**
+     * Saves the currently selected preferences through the ChommieHub REST API.
+     */
+    private fun saveSettings() {
+        if (CurrentStudent.ID.isBlank()) {
+            toast("No signed-in user was found.")
             return
         }
 
-        val language = languageOptions.getOrNull(spLanguage.selectedItemPosition) ?: "English"
+        val preferredLanguage = languageOptions.getOrNull(spLanguage.selectedItemPosition) ?: "English"
 
-        viewModel.saveSettings(
-            firebaseUid,
-            UpdateStudentSettingsRequest(
-                preferredLanguage = language,
-                notificationsEnabled = swNotifications.isChecked
-            )
+        viewModel.save(
+            studentId = CurrentStudent.ID,
+            preferredLanguage = preferredLanguage,
+            notificationsEnabled = swNotifications.isChecked
         )
     }
 
-    private fun toast(message: String) =
+    private fun toast(message: String) {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+    }
 }

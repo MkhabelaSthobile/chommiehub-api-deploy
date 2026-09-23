@@ -8,74 +8,110 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.chommiehub.app.data.model.student.StudentResponse
 import com.chommiehub.app.data.model.student.UpdateStudentSettingsRequest
+import com.chommiehub.app.data.remote.ApiErrorMapper
 import com.chommiehub.app.data.repository.StudentRepository
 import kotlinx.coroutines.launch
 
 /**
- * Loads the signed-in student's current settings (preferred language, notifications) and
- * saves changes back through the student settings endpoint.
+ * Loads and persists application preferences for the signed-in Student or Resident.
+ *
+ * Settings are stored through the ChommieHub REST API so preferences remain available
+ * after the application is closed or the user signs in on another device.
  */
-class StudentSettingsViewModel(
-    private val repository: StudentRepository
-) : ViewModel() {
+class StudentSettingsViewModel(private val repository: StudentRepository) : ViewModel() {
 
     companion object {
         private const val TAG = "StudentSettingsVM"
     }
 
     private val _student = MutableLiveData<StudentResponse?>()
-    val student: LiveData<StudentResponse?>
-        get() = _student
+    val student: LiveData<StudentResponse?> get() = _student
 
-    private val _loadError = MutableLiveData<String?>()
-    val loadError: LiveData<String?>
-        get() = _loadError
+    private val _loading = MutableLiveData(false)
+    val loading: LiveData<Boolean> get() = _loading
 
-    private val _saveMessage = MutableLiveData<String?>()
-    val saveMessage: LiveData<String?>
-        get() = _saveMessage
+    private val _saved = MutableLiveData(false)
+    val saved: LiveData<Boolean> get() = _saved
 
-    private val _saveError = MutableLiveData<String?>()
-    val saveError: LiveData<String?>
-        get() = _saveError
+    private val _error = MutableLiveData<String?>()
+    val error: LiveData<String?> get() = _error
 
-    fun loadSettings(studentId: String) {
+    fun load(studentId: String) {
+        if (studentId.isBlank()) {
+            _error.value = "No signed-in user was found."
+            return
+        }
+
+        _loading.value = true
+
         viewModelScope.launch {
             try {
-                _student.value = repository.getStudent(studentId)
+                val student = repository.getStudent(studentId)
+
+                _student.value = student
+                CurrentStudent.update(student)
+
+                Log.i(TAG, "Student settings loaded for ${student.id}.")
             } catch (exception: Exception) {
-                Log.e(TAG, "Unable to load settings.", exception)
-                _loadError.value = exception.message ?: "Unable to load your settings."
+                _error.value = ApiErrorMapper.message(exception, "Unable to load your settings.")
+            } finally {
+                _loading.value = false
             }
         }
     }
 
-    fun saveSettings(studentId: String, request: UpdateStudentSettingsRequest) {
+    fun save(studentId: String, preferredLanguage: String, notificationsEnabled: Boolean) {
+        if (studentId.isBlank()) {
+            _error.value = "No signed-in user was found."
+            return
+        }
+
+        if (preferredLanguage.isBlank()) {
+            _error.value = "Select a preferred language."
+            return
+        }
+
+        _loading.value = true
+        _saved.value = false
+
         viewModelScope.launch {
             try {
-                _student.value = repository.updateSettings(studentId, request)
-                _saveMessage.value = "Settings saved."
+                val request = UpdateStudentSettingsRequest(
+                    preferredLanguage = preferredLanguage,
+                    notificationsEnabled = notificationsEnabled
+                )
+
+                val updatedStudent = repository.updateSettings(studentId, request)
+
+                _student.value = updatedStudent
+                CurrentStudent.update(updatedStudent)
+                _saved.value = true
+
+                Log.i(TAG, "Settings saved for student ${updatedStudent.id}.")
             } catch (exception: Exception) {
-                Log.e(TAG, "Unable to save settings.", exception)
-                _saveError.value = exception.message ?: "Unable to save your settings."
+                _error.value = ApiErrorMapper.message(exception, "Unable to save your settings.")
+            } finally {
+                _loading.value = false
             }
         }
     }
 
-    fun consumeSaveMessage() {
-        _saveMessage.value = null
+    fun consumeSaved() {
+        _saved.value = false
     }
 
-    fun consumeSaveError() {
-        _saveError.value = null
+    fun consumeError() {
+        _error.value = null
     }
 
     class Factory(private val repository: StudentRepository) : ViewModelProvider.Factory {
+
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(StudentSettingsViewModel::class.java)) {
                 return StudentSettingsViewModel(repository) as T
             }
+
             throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
         }
     }

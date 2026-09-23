@@ -18,7 +18,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:labelFor="@+id/spLanguage"
+        android:labelFor="@id/spLanguage"
         android:text="@string/label_preferred_language"
         android:textColor="@color/chommie_navy"
         android:textStyle="bold" />
@@ -49,4 +49,5 @@
         android:text="@string/save_settings"
         android:textColor="@color/chommie_navy"
         android:textStyle="bold" />
+
 </LinearLayout>

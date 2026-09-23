@@ -41,8 +41,6 @@ class StudentHomeFragment : Fragment(R.layout.fragment_student_home) {
     private lateinit var chipLaundry: Chip
     private lateinit var chipVerified: Chip
 
-    private var availableAreas: List<String> = listOf("All areas")
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -71,6 +69,13 @@ class StudentHomeFragment : Fragment(R.layout.fragment_student_home) {
         observeViewModel()
 
         btnRetry.setOnClickListener { viewModel.loadAccommodations() }
+
+        view.findViewById<Button>(R.id.btnAccommodationMap).setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.studentContainer, AccommodationMapFragment())
+                .addToBackStack(null)
+                .commit()
+        }
     }
 
     override fun onResume() {
@@ -79,11 +84,7 @@ class StudentHomeFragment : Fragment(R.layout.fragment_student_home) {
     }
 
     private fun setupSortSpinner() {
-        spSort.adapter = ArrayAdapter(
-            requireContext(),
-            android.R.layout.simple_spinner_dropdown_item,
-            listOf("Name A-Z", "Name Z-A", "Area A-Z", "Most amenities")
-        )
+        spSort.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, listOf("Name A-Z", "Name Z-A", "Area A-Z", "Most amenities"))
     }
 
     private fun setupListeners() {
@@ -111,8 +112,6 @@ class StudentHomeFragment : Fragment(R.layout.fragment_student_home) {
 
     private fun observeViewModel() {
         viewModel.availableAreas.observe(viewLifecycleOwner) { areas ->
-            availableAreas = areas
-
             val previousArea = spArea.selectedItem?.toString() ?: "All areas"
 
             spArea.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, areas)
@@ -195,7 +194,7 @@ class StudentHomeFragment : Fragment(R.layout.fragment_student_home) {
                     try {
                         viewModel.toggleShortlist(accommodation.id)
                     } catch (_: Exception) {
-                        // Existing shortlist behaviour is preserved; error feedback can be enhanced after rubric-critical work is complete.
+                        // Existing shortlist behaviour is preserved while rubric-critical work is completed.
                     }
                 }
             }

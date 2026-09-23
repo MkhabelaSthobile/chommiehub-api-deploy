@@ -13,9 +13,17 @@ plugins {
     alias(libs.plugins.google.gms.google.services)
 }
 
+// The shared Render API is the default endpoint used by repository builds,
+// physical devices and GitHub Actions.
+//
+// Individual developers can temporarily override the URL by adding:
+//
+// api.base.url=http://10.0.2.2:5154/
+//
+// to local.properties when testing the ASP.NET Core API locally.
 val localApiBaseUrl = localProperties.getProperty("api.base.url")
 val sharedApiBaseUrl = providers.gradleProperty("CHOMMIEHUB_API_BASE_URL").orNull
-val configuredApiBaseUrl = localApiBaseUrl ?: sharedApiBaseUrl ?: "http://10.0.2.2:5154/"
+val configuredApiBaseUrl = localApiBaseUrl ?: sharedApiBaseUrl ?: "https://chommiehub-api.onrender.com/"
 val apiBaseUrl = if (configuredApiBaseUrl.endsWith("/")) configuredApiBaseUrl else "$configuredApiBaseUrl/"
 
 val managerAccommodationId = localProperties.getProperty("manager.accommodation.id", "")
@@ -34,8 +42,6 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        // Supplies the REST API base address to Retrofit.
-        // local.properties can override the shared Render URL when local API testing is required.
         buildConfigField("String", "API_BASE_URL", "\"$apiBaseUrl\"")
         buildConfigField("String", "MANAGER_ACCOMMODATION_ID", "\"$managerAccommodationId\"")
 
@@ -61,25 +67,20 @@ android {
 }
 
 dependencies {
-    // Core Android user-interface libraries.
     implementation(libs.androidx.activity.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.core.ktx)
     implementation(libs.material)
 
-    // Firebase Authentication and Google Single Sign-On.
     implementation(libs.firebase.auth)
     implementation("com.google.android.gms:play-services-auth:21.4.0")
 
-    // Biometric support retained for Final POE preparation.
     implementation("androidx.biometric:biometric:1.1.0")
 
-    // Retrofit REST API communication.
     implementation(libs.retrofit)
     implementation(libs.retrofit.gson)
 
-    // Android lifecycle and ViewModel support.
     implementation(libs.androidx.lifecycle.viewmodel)
     implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -87,14 +88,11 @@ dependencies {
 
     implementation(libs.androidx.recyclerview)
 
-    // OpenStreetMap map support.
     implementation("org.osmdroid:osmdroid-android:6.1.20")
 
-    // Local unit testing.
     testImplementation(libs.junit)
     testImplementation(libs.mockito.kotlin)
 
-    // Android instrumentation testing.
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
 }
