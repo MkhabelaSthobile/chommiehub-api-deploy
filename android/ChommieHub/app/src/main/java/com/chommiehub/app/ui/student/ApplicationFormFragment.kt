@@ -1,9 +1,8 @@
 package com.chommiehub.app.ui.student
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
@@ -13,66 +12,60 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.chommiehub.app.R
 import com.chommiehub.app.data.model.manager.AccommodationResponse
-import com.chommiehub.app.data.model.student.SubmitApplicationRequest
+import com.chommiehub.app.data.model.manager.RoomResponse
 import com.chommiehub.app.data.remote.ApiClient
-import com.chommiehub.app.data.repository.StudentRepository
-import com.google.firebase.auth.FirebaseAuth
+import com.chommiehub.app.data.repository.AccommodationRepository
 
 /**
- * Lets a signed-in student apply for accommodation. Populated the residence spinner from
- * every active accommodation and submits through the same "applications" workflow the
- * residence manager reviews.
+ * Collects the student's selected residence, room and application information before
+ * moving to the review screen. No API submission occurs until the student confirms
+ * the information on ApplicationReviewFragment.
  */
-class ApplicationFormFragment : Fragment() {
+class ApplicationFormFragment : Fragment(R.layout.fragment_application_form) {
 
     private lateinit var viewModel: ApplicationFormViewModel
 
     private lateinit var spAccommodation: Spinner
-    private lateinit var spRoomType: Spinner
+    private lateinit var spRoom: Spinner
     private lateinit var etRentalPeriod: EditText
     private lateinit var etSupportingInfo: EditText
-    private lateinit var btnSubmitApplication: Button
+    private lateinit var btnReviewApplication: Button
 
     private var accommodations: List<AccommodationResponse> = emptyList()
+    private var rooms: List<RoomResponse> = emptyList()
 
-    private val roomTypeOptions = listOf(
-        "Single room",
-        "Shared room",
-        "Bachelor flat"
-    )
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        return inflater.inflate(R.layout.fragment_application_form, container, false)
-    }
+    private var requestedAccommodationId: String? = null
+    private var requestedRoomId: String? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        requestedAccommodationId = arguments?.getString(ARG_ACCOMMODATION_ID)
+        requestedRoomId = arguments?.getString(ARG_ROOM_ID)
+
         spAccommodation = view.findViewById(R.id.spAccommodation)
-        spRoomType = view.findViewById(R.id.spRoomType)
+        spRoom = view.findViewById(R.id.spRoom)
         etRentalPeriod = view.findViewById(R.id.etRentalPeriod)
         etSupportingInfo = view.findViewById(R.id.etSupportingInfo)
-        btnSubmitApplication = view.findViewById(R.id.btnSubmitApplication)
+        btnReviewApplication = view.findViewById(R.id.btnReviewApplication)
 
-        spRoomType.adapter = ArrayAdapter(
-            requireContext(),
-            android.R.layout.simple_spinner_dropdown_item,
-            roomTypeOptions
-        )
-
-        val repository = StudentRepository(ApiClient.api)
-        viewModel = ViewModelProvider(
-            this,
-            ApplicationFormViewModel.Factory(repository)
-        )[ApplicationFormViewModel::class.java]
+        val repository = AccommodationRepository(ApiClient.api)
+        viewModel = ViewModelProvider(this, ApplicationFormViewModel.Factory(repository))[ApplicationFormViewModel::class.java]
 
         observeState()
 
-        btnSubmitApplication.setOnClickListener { submit() }
+        spAccommodation.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, selectedView: View?, position: Int, id: Long) {
+                val accommodation = accommodations.getOrNull(position) ?: return
+                viewModel.loadRooms(accommodation.id)
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) = Unit
+        }
+
+        btnReviewApplication.setOnClickListener {
+            reviewApplication()
+        }
 
         viewModel.loadAccommodations()
     }
@@ -80,62 +73,62 @@ class ApplicationFormFragment : Fragment() {
     private fun observeState() {
         viewModel.accommodations.observe(viewLifecycleOwner) { list ->
             accommodations = list
-            spAccommodation.adapter = ArrayAdapter(
+
+            spAccommodation.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, list.map { it.name })
+
+            requestedAccommodationId?.let { accommodationId ->
+                val index = list.indexOfFirst { it.id == accommodationId }
+
+                if (index >= 0) {
+                    spAccommodation.setSelection(index)
+                }
+            }
+        }
+
+        viewModel.rooms.observe(viewLifecycleOwner) { list ->
+            rooms = list
+
+            spRoom.adapter = ArrayAdapter(
                 requireContext(),
                 android.R.layout.simple_spinner_dropdown_item,
-                list.map { it.name }
+                list.map { "${it.roomType} • R${it.price.toInt()}/month" }
             )
 
-            val preselectId = requireArguments().getString(ARG_ACCOMMODATION_ID)
-            if (preselectId != null) {
-                val index = list.indexOfFirst { it.id == preselectId }
-                if (index >= 0) spAccommodation.setSelection(index)
+            requestedRoomId?.let { roomId ->
+                val index = list.indexOfFirst { it.id == roomId }
+
+                if (index >= 0) {
+                    spRoom.setSelection(index)
+                }
             }
+
+            btnReviewApplication.isEnabled = list.isNotEmpty()
         }
 
-        viewModel.loadError.observe(viewLifecycleOwner) { message ->
-            if (message != null) toast(message)
-        }
-
-        viewModel.isSubmitting.observe(viewLifecycleOwner) { submitting ->
-            btnSubmitApplication.isEnabled = !submitting
-        }
-
-        viewModel.submitResult.observe(viewLifecycleOwner) { application ->
-            if (application != null) {
-                toast("Application submitted.")
-                viewModel.consumeSubmitResult()
-                parentFragmentManager.popBackStack()
-            }
-        }
-
-        viewModel.submitError.observe(viewLifecycleOwner) { message ->
-            if (message != null) {
-                toast(message)
-                viewModel.consumeSubmitError()
+        viewModel.error.observe(viewLifecycleOwner) { message ->
+            if (!message.isNullOrBlank()) {
+                Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
             }
         }
     }
 
-    private fun submit() {
-        if (accommodations.isEmpty()) {
-            toast("No residences are available to apply to right now.")
-            return
-        }
-
+    private fun reviewApplication() {
         val accommodation = accommodations.getOrNull(spAccommodation.selectedItemPosition)
+
         if (accommodation == null) {
             toast("Choose a residence.")
             return
         }
 
-        val roomType = roomTypeOptions.getOrNull(spRoomType.selectedItemPosition)
-        if (roomType == null) {
-            toast("Choose a room preference.")
+        val room = rooms.getOrNull(spRoom.selectedItemPosition)
+
+        if (room == null) {
+            toast("Choose an available room.")
             return
         }
 
         val rentalPeriod = etRentalPeriod.text.toString().trim()
+
         if (rentalPeriod.isBlank()) {
             toast("Enter your preferred rental period.")
             return
@@ -143,33 +136,37 @@ class ApplicationFormFragment : Fragment() {
 
         val supportingInfo = etSupportingInfo.text.toString().trim()
 
-        val firebaseUid = FirebaseAuth.getInstance().currentUser?.uid
-        if (firebaseUid == null) {
-            toast("No signed-in student found.")
-            return
-        }
-
-        viewModel.submit(
-            firebaseUid,
-            SubmitApplicationRequest(
-                accommodationId = accommodation.id,
-                roomTypePreference = roomType,
-                rentalPeriod = rentalPeriod,
-                supportingInfo = supportingInfo
+        parentFragmentManager.beginTransaction()
+            .replace(
+                R.id.studentContainer,
+                ApplicationReviewFragment.newInstance(
+                    accommodationId = accommodation.id,
+                    accommodationName = accommodation.name,
+                    roomId = room.id,
+                    roomType = room.roomType,
+                    roomPrice = room.price,
+                    rentalPeriod = rentalPeriod,
+                    supportingInfo = supportingInfo
+                )
             )
-        )
+            .addToBackStack(null)
+            .commit()
     }
 
-    private fun toast(message: String) =
+    private fun toast(message: String) {
         Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
+    }
 
     companion object {
         private const val ARG_ACCOMMODATION_ID = "accommodationId"
+        private const val ARG_ROOM_ID = "roomId"
 
-        /** Opens the form with a residence already selected, e.g. from the accommodation detail screen. */
-        fun newInstance(accommodationId: String? = null) = ApplicationFormFragment().apply {
-            arguments = Bundle().apply {
-                putString(ARG_ACCOMMODATION_ID, accommodationId)
+        fun newInstance(accommodationId: String? = null, roomId: String? = null): ApplicationFormFragment {
+            return ApplicationFormFragment().apply {
+                arguments = Bundle().apply {
+                    putString(ARG_ACCOMMODATION_ID, accommodationId)
+                    putString(ARG_ROOM_ID, roomId)
+                }
             }
         }
     }

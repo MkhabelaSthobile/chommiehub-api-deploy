@@ -2,14 +2,16 @@ package com.chommiehub.app.data.repository
 
 import com.chommiehub.app.data.model.manager.AccommodationResponse
 import com.chommiehub.app.data.model.manager.RoomResponse
+import com.chommiehub.app.data.model.weather.WeatherResponse
 import com.chommiehub.app.data.remote.ChommieHubApi
 
 /**
  * Repository used by student-facing accommodation discovery features.
+ *
+ * Keeping Retrofit calls inside the repository prevents Android UI classes
+ * from depending directly on REST implementation details.
  */
-class AccommodationRepository(
-    private val api: ChommieHubApi
-) {
+class AccommodationRepository(private val api: ChommieHubApi) {
 
     suspend fun getAllAccommodations(): List<AccommodationResponse> {
         return api.getAllAccommodations()
@@ -39,4 +41,7 @@ class AccommodationRepository(
         api.removeFromShortlist(studentId, accommodationId)
     }
 
+    suspend fun getWeather(accommodationId: String): WeatherResponse {
+        return api.getAccommodationWeather(accommodationId)
+    }
 }

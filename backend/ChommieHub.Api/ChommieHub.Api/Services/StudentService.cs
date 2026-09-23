@@ -14,21 +14,19 @@ namespace ChommieHub.Api.Services
         private readonly IStudentRepository _studentRepository;
         private readonly IApplicationRepository _applicationRepository;
         private readonly IAccommodationRepository _accommodationRepository;
+        private readonly IRoomRepository _roomRepository;
 
-        public StudentService(
-            IStudentRepository studentRepository,
-            IApplicationRepository applicationRepository,
-            IAccommodationRepository accommodationRepository)
+        public StudentService(IStudentRepository studentRepository, IApplicationRepository applicationRepository, IAccommodationRepository accommodationRepository, IRoomRepository roomRepository)
         {
             _studentRepository = studentRepository;
             _applicationRepository = applicationRepository;
             _accommodationRepository = accommodationRepository;
+            _roomRepository = roomRepository;
         }
 
         public async Task<StudentResponse?> GetByIdAsync(string id, CancellationToken cancellationToken = default)
         {
             Student? student = await _studentRepository.GetByIdAsync(id, cancellationToken);
-
             return student is null ? null : MapToResponse(student);
         }
 
@@ -47,7 +45,6 @@ namespace ChommieHub.Api.Services
             };
 
             Student created = await _studentRepository.CreateAsync(student, cancellationToken);
-
             return MapToResponse(created);
         }
 
@@ -91,22 +88,57 @@ namespace ChommieHub.Api.Services
 
         public async Task<StudentApplicationResponse> SubmitApplicationAsync(string studentId, SubmitApplicationRequest request, CancellationToken cancellationToken = default)
         {
+            Student? student = await _studentRepository.GetByIdAsync(studentId, cancellationToken);
+
+            if (student is null)
+            {
+                throw new KeyNotFoundException("Student profile was not found.");
+            }
+
+            Accommodation? accommodation = await _accommodationRepository.GetByIdAsync(request.AccommodationId, cancellationToken);
+
+            if (accommodation is null)
+            {
+                throw new KeyNotFoundException("The selected accommodation was not found.");
+            }
+
+            if (!accommodation.IsActive)
+            {
+                throw new InvalidOperationException("The selected accommodation is not currently accepting applications.");
+            }
+
+            Room? room = await _roomRepository.GetByIdAsync(request.RoomId, cancellationToken);
+
+            if (room is null)
+            {
+                throw new KeyNotFoundException("The selected room was not found.");
+            }
+
+            if (room.AccommodationId != accommodation.Id)
+            {
+                throw new InvalidOperationException("The selected room does not belong to the selected accommodation.");
+            }
+
+            if (!room.Availability)
+            {
+                throw new InvalidOperationException("The selected room is no longer available.");
+            }
+
             var application = new Application
             {
                 StudentId = studentId,
-                AccommodationId = request.AccommodationId,
-                RoomTypePreference = request.RoomTypePreference,
-                RentalPeriod = request.RentalPeriod,
-                SupportingInfo = request.SupportingInfo,
+                AccommodationId = accommodation.Id,
+                RequestedRoomId = room.Id,
+                RoomTypePreference = room.RoomType,
+                RentalPeriod = request.RentalPeriod.Trim(),
+                SupportingInfo = request.SupportingInfo.Trim(),
                 Status = ApplicationStatuses.Submitted,
                 DateSubmittedUtc = DateTime.UtcNow
             };
 
             Application created = await _applicationRepository.CreateAsync(application, cancellationToken);
 
-            string accommodationName = await ResolveAccommodationNameAsync(created.AccommodationId, cancellationToken);
-
-            return MapToResponse(created, accommodationName);
+            return MapToResponse(created, accommodation.Name);
         }
 
         public async Task<IReadOnlyList<StudentApplicationResponse>> GetApplicationsAsync(string studentId, CancellationToken cancellationToken = default)
@@ -114,9 +146,6 @@ namespace ChommieHub.Api.Services
             IReadOnlyList<Application> applications = await _applicationRepository.GetByStudentIdAsync(studentId, cancellationToken);
 
             var responses = new List<StudentApplicationResponse>(applications.Count);
-
-            // Accommodation names are cached per request so a student with several
-            // applications to the same residence does not trigger repeat Firestore reads.
             var accommodationNameCache = new Dictionary<string, string>();
 
             foreach (Application application in applications)
@@ -141,7 +170,6 @@ namespace ChommieHub.Api.Services
             }
 
             Accommodation? accommodation = await _accommodationRepository.GetByIdAsync(accommodationId, cancellationToken);
-
             return accommodation?.Name ?? string.Empty;
         }
 
@@ -167,6 +195,7 @@ namespace ChommieHub.Api.Services
             Id = application.Id,
             AccommodationId = application.AccommodationId,
             AccommodationName = accommodationName,
+            RequestedRoomId = application.RequestedRoomId,
             RoomTypePreference = application.RoomTypePreference,
             RentalPeriod = application.RentalPeriod,
             SupportingInfo = application.SupportingInfo,

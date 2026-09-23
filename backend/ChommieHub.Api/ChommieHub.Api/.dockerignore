@@ -4,9 +4,12 @@
 **/.vscode/
 **/*.user
 **/*.suo
-**/appsettings.Development.json
 **/*.db
 **/*.db-shm
 **/*.db-wal
-Dockerfile
-.dockerignore
+**/firebase-service-account.json
+**/*service-account*.json
+**/*firebase-adminsdk*.json
+.git
+.gitignore
+README.md

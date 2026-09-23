@@ -4,6 +4,7 @@ namespace ChommieHub.Api.Models
 {
     /// <summary>
     /// Represents a student's accommodation application and its review lifecycle.
+    /// The requested room is stored separately from the final assigned room because residence management may assign a different available room after approval.
     /// </summary>
     [FirestoreData]
     public sealed class Application
@@ -16,6 +17,9 @@ namespace ChommieHub.Api.Models
 
         [FirestoreProperty]
         public string AccommodationId { get; set; } = string.Empty;
+
+        [FirestoreProperty]
+        public string RequestedRoomId { get; set; } = string.Empty;
 
         [FirestoreProperty]
         public string RoomTypePreference { get; set; } = string.Empty;

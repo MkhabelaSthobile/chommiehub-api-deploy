@@ -3,9 +3,8 @@ using System.ComponentModel.DataAnnotations;
 namespace ChommieHub.Api.DTOs
 {
     /// <summary>
-    /// Defines the information a student submits when applying for accommodation. The student
-    /// identifier is taken from the route (the signed-in Firebase UID) rather than the body, so a
-    /// student cannot submit an application on behalf of another Student.Id.
+    /// Defines the information submitted by a student when applying for a specific room.
+    /// The server resolves the room type from the selected room so Android cannot submit a room type that does not match the selected Firestore room.
     /// </summary>
     public sealed class SubmitApplicationRequest
     {
@@ -13,8 +12,7 @@ namespace ChommieHub.Api.DTOs
         public string AccommodationId { get; set; } = string.Empty;
 
         [Required]
-        [StringLength(100)]
-        public string RoomTypePreference { get; set; } = string.Empty;
+        public string RoomId { get; set; } = string.Empty;
 
         [Required]
         [StringLength(100)]

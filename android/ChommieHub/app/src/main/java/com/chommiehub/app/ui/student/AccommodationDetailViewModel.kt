@@ -8,20 +8,22 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.chommiehub.app.data.model.manager.AccommodationResponse
 import com.chommiehub.app.data.model.manager.RoomResponse
+import com.chommiehub.app.data.model.weather.WeatherResponse
 import com.chommiehub.app.data.repository.AccommodationRepository
 import kotlinx.coroutines.launch
 
-class AccommodationDetailViewModel(
-    private val repository: AccommodationRepository
-) : ViewModel() {
+/**
+ * Loads accommodation information, available rooms and the weather-aware
+ * operational information displayed on the accommodation detail screen.
+ */
+class AccommodationDetailViewModel(private val repository: AccommodationRepository) : ViewModel() {
 
     companion object {
         private const val TAG = "AccommodationDetailVM"
     }
 
     private val _uiState = MutableLiveData<AccommodationDetailUiState>()
-    val uiState: LiveData<AccommodationDetailUiState>
-        get() = _uiState
+    val uiState: LiveData<AccommodationDetailUiState> get() = _uiState
 
     fun loadDetail(accommodationId: String) {
         _uiState.value = AccommodationDetailUiState.Loading
@@ -30,24 +32,29 @@ class AccommodationDetailViewModel(
             try {
                 val accommodation = repository.getAccommodation(accommodationId)
                 val rooms = repository.getRooms(accommodationId)
-                _uiState.value = AccommodationDetailUiState.Success(accommodation, rooms)
+
+                val weather = try {
+                    repository.getWeather(accommodationId)
+                } catch (exception: Exception) {
+                    Log.w(TAG, "Weather could not be loaded. Accommodation information will remain available.", exception)
+                    null
+                }
+
+                _uiState.value = AccommodationDetailUiState.Success(accommodation, rooms, weather)
             } catch (exception: Exception) {
                 Log.e(TAG, "Unable to load accommodation detail.", exception)
-                _uiState.value = AccommodationDetailUiState.Error(
-                    exception.message ?: "Unable to load accommodation."
-                )
+                _uiState.value = AccommodationDetailUiState.Error(exception.message ?: "Unable to load accommodation.")
             }
         }
     }
 
-    class Factory(
-        private val repository: AccommodationRepository
-    ) : ViewModelProvider.Factory {
+    class Factory(private val repository: AccommodationRepository) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(AccommodationDetailViewModel::class.java)) {
                 return AccommodationDetailViewModel(repository) as T
             }
+
             throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
         }
     }
@@ -55,9 +62,12 @@ class AccommodationDetailViewModel(
 
 sealed interface AccommodationDetailUiState {
     data object Loading : AccommodationDetailUiState
+
     data class Success(
         val accommodation: AccommodationResponse,
-        val rooms: List<RoomResponse>
+        val rooms: List<RoomResponse>,
+        val weather: WeatherResponse?
     ) : AccommodationDetailUiState
+
     data class Error(val message: String) : AccommodationDetailUiState
 }

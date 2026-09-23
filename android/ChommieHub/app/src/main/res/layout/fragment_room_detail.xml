@@ -1,9 +1,10 @@
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    android:background="@color/chommie_background"
+    android:padding="22dp">
 
     <LinearLayout
         android:id="@+id/layoutRoomContent"
@@ -18,30 +19,43 @@
             android:id="@+id/textRoomDetailType"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            android:textColor="@color/chommie_navy"
+            android:textSize="24sp"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/textRoomDetailPrice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:textSize="14sp" />
+            android:layout_marginTop="8dp"
+            android:textColor="@color/chommie_gold_dark"
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/textRoomDetailCapacity"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:textColor="#666666"
-            android:textSize="13sp" />
+            android:layout_marginTop="8dp"
+            android:textColor="@color/chommie_text_secondary" />
 
         <TextView
             android:id="@+id/textRoomDetailAvailability"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:textSize="13sp" />
+            android:layout_marginTop="8dp"
+            android:textColor="@color/chommie_success"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btnApplyForRoom"
+            android:layout_width="match_parent"
+            android:layout_height="58dp"
+            android:layout_marginTop="24dp"
+            android:backgroundTint="@color/chommie_gold"
+            android:text="Apply for this Room"
+            android:textColor="@color/chommie_navy"
+            android:textStyle="bold" />
 
     </LinearLayout>
 
@@ -58,6 +72,7 @@
         android:id="@+id/tvRoomDetailError"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="@color/chommie_danger"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/chommie_background">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="22dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Review Application"
+            android:textColor="@color/chommie_navy"
+            android:textSize="28sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="Check your information before submitting."
+            android:textColor="@color/chommie_text_secondary" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Residence"
+            android:textColor="@color/chommie_navy"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvReviewResidence"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:background="@drawable/bg_card"
+            android:padding="16dp"
+            android:textColor="@color/chommie_text_primary" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Room"
+            android:textColor="@color/chommie_navy"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvReviewRoom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:background="@drawable/bg_card"
+            android:padding="16dp"
+            android:textColor="@color/chommie_text_primary" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Rental Period"
+            android:textColor="@color/chommie_navy"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvReviewRentalPeriod"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:background="@drawable/bg_card"
+            android:padding="16dp"
+            android:textColor="@color/chommie_text_primary" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Supporting Information"
+            android:textColor="@color/chommie_navy"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvReviewSupportingInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:background="@drawable/bg_card"
+            android:padding="16dp"
+            android:textColor="@color/chommie_text_secondary" />
+
+        <ProgressBar
+            android:id="@+id/progressApplicationReview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="16dp"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/btnConfirmSubmitApplication"
+            android:layout_width="match_parent"
+            android:layout_height="58dp"
+            android:layout_marginTop="20dp"
+            android:backgroundTint="@color/chommie_gold"
+            android:text="Submit Application"
+            android:textColor="@color/chommie_navy"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+</ScrollView>

@@ -40,6 +40,7 @@
                 android:text="@string/role_student"
                 android:textColor="@color/chommie_gold_soft"
                 android:textStyle="bold" />
+
         </LinearLayout>
 
         <TextView
@@ -67,15 +68,40 @@
             android:hint="@string/hint_search"
             android:imeOptions="actionSearch"
             android:inputType="text"
-            android:paddingStart="18dp"
-            android:paddingEnd="18dp"
+            android:paddingHorizontal="18dp"
             android:textColor="@color/chommie_text_primary"
             android:textColorHint="@color/chommie_text_secondary" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:orientation="horizontal">
+
+            <Spinner
+                android:id="@+id/spArea"
+                android:layout_width="0dp"
+                android:layout_height="52dp"
+                android:layout_marginEnd="6dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_input"
+                android:paddingHorizontal="10dp" />
+
+            <Spinner
+                android:id="@+id/spSort"
+                android:layout_width="0dp"
+                android:layout_height="52dp"
+                android:layout_marginStart="6dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_input"
+                android:paddingHorizontal="10dp" />
+
+        </LinearLayout>
 
         <HorizontalScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
+            android:layout_marginTop="12dp"
             android:scrollbars="none">
 
             <com.google.android.material.chip.ChipGroup
@@ -85,17 +111,29 @@
                 app:singleSelection="true">
 
                 <com.google.android.material.chip.Chip
-                    android:id="@+id/chipPopular"
+                    android:id="@+id/chipAll"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:checked="true"
-                    android:text="Popular" />
+                    android:text="All" />
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipNearCampus"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Near campus" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipWifi"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Wi-Fi" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipLaundry"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Laundry" />
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipVerified"
@@ -109,15 +147,14 @@
 
     </LinearLayout>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="16dp"
-        android:text="@string/explore_title"
-        android:textColor="@color/chommie_navy"
-        android:textSize="22sp"
-        android:textStyle="bold"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerAccommodations"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/heroSection" />
 
@@ -131,9 +168,23 @@
         app:layout_constraintTop_toBottomOf="@id/heroSection" />
 
     <TextView
+        android:id="@+id/tvHomeEmpty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="No residences match your current search or filters."
+        android:textColor="@color/chommie_text_secondary"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/heroSection" />
+
+    <TextView
         android:id="@+id/tvHomeError"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="@color/chommie_danger"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -149,16 +200,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvHomeError" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerAccommodations"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="16dp"
-        android:paddingHorizontal="20dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/heroSection" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

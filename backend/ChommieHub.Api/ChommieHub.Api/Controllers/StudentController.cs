@@ -42,7 +42,9 @@ namespace ChommieHub.Api.Controllers
         /// </summary>
         [HttpGet("by-firebase-uid/{firebaseUid}")]
         public Task<ActionResult<StudentResponse>> GetByFirebaseUid(string firebaseUid, CancellationToken cancellationToken)
-            => GetById(firebaseUid, cancellationToken);
+        {
+            return GetById(firebaseUid, cancellationToken);
+        }
 
         [HttpPost]
         public async Task<ActionResult<StudentResponse>> Create(CreateStudentRequest request, CancellationToken cancellationToken)
@@ -77,8 +79,6 @@ namespace ChommieHub.Api.Controllers
                 return NotFound(new { message = "Student profile was not found." });
             }
 
-            _logger.LogInformation("Settings for student {StudentId} were updated.", id);
-
             return Ok(student);
         }
 
@@ -89,11 +89,22 @@ namespace ChommieHub.Api.Controllers
         [HttpPost("{id}/applications")]
         public async Task<ActionResult<StudentApplicationResponse>> SubmitApplication(string id, SubmitApplicationRequest request, CancellationToken cancellationToken)
         {
-            StudentApplicationResponse application = await _studentService.SubmitApplicationAsync(id, request, cancellationToken);
+            try
+            {
+                StudentApplicationResponse application = await _studentService.SubmitApplicationAsync(id, request, cancellationToken);
 
-            _logger.LogInformation("Student {StudentId} submitted application {ApplicationId}.", id, application.Id);
+                _logger.LogInformation("Student {StudentId} submitted application {ApplicationId} for room {RoomId}.", id, application.Id, application.RequestedRoomId);
 
-            return Created($"/api/students/{id}/applications/{application.Id}", application);
+                return Created($"/api/students/{id}/applications/{application.Id}", application);
+            }
+            catch (KeyNotFoundException exception)
+            {
+                return NotFound(new { message = exception.Message });
+            }
+            catch (InvalidOperationException exception)
+            {
+                return Conflict(new { message = exception.Message });
+            }
         }
 
         /// <summary>
@@ -104,7 +115,6 @@ namespace ChommieHub.Api.Controllers
         public async Task<ActionResult<IReadOnlyList<StudentApplicationResponse>>> GetApplications(string id, CancellationToken cancellationToken)
         {
             IReadOnlyList<StudentApplicationResponse> applications = await _studentService.GetApplicationsAsync(id, cancellationToken);
-
             return Ok(applications);
         }
     }

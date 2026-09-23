@@ -1,35 +1,32 @@
 package com.chommiehub.app.ui.student
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import android.util.Log
 import com.chommiehub.app.data.model.manager.AccommodationResponse
 import com.chommiehub.app.data.repository.AccommodationRepository
 import kotlinx.coroutines.launch
-import com.chommiehub.app.ui.student.CurrentStudent
 
-enum class HomeFilter {
-    ALL, NEAR_CAMPUS, VERIFIED
-}
-
-class StudentHomeViewModel(
-    private val repository: AccommodationRepository
-) : ViewModel() {
+class StudentHomeViewModel(private val repository: AccommodationRepository) : ViewModel() {
 
     companion object {
         private const val TAG = "StudentHomeVM"
     }
 
     private val _uiState = MutableLiveData<StudentHomeUiState>()
-    val uiState: LiveData<StudentHomeUiState>
-        get() = _uiState
+    val uiState: LiveData<StudentHomeUiState> get() = _uiState
+
+    private val _availableAreas = MutableLiveData<List<String>>(listOf("All areas"))
+    val availableAreas: LiveData<List<String>> get() = _availableAreas
 
     private var allAccommodations: List<AccommodationResponse> = emptyList()
-    private var currentQuery: String = ""
-    private var currentFilter: HomeFilter = HomeFilter.ALL
+    private var currentQuery = ""
+    private var currentArea = "All areas"
+    private var currentFilter = HomeFilter.ALL
+    private var currentSort = HomeSort.NAME_ASCENDING
 
     fun loadAccommodations() {
         _uiState.value = StudentHomeUiState.Loading
@@ -37,35 +34,38 @@ class StudentHomeViewModel(
         viewModelScope.launch {
             try {
                 allAccommodations = repository.getAllAccommodations()
-                applyFilter(currentQuery, currentFilter)
+
+                val areas = allAccommodations
+                    .map { it.institutionArea.trim() }
+                    .filter { it.isNotBlank() }
+                    .distinct()
+                    .sortedBy { it.lowercase() }
+
+                _availableAreas.value = listOf("All areas") + areas
+
+                applySearch(currentQuery, currentArea, currentFilter, currentSort)
+
                 Log.i(TAG, "Loaded ${allAccommodations.size} accommodations.")
             } catch (exception: Exception) {
                 Log.e(TAG, "Unable to load accommodations.", exception)
-                _uiState.value = StudentHomeUiState.Error(
-                    exception.message ?: "Unable to load accommodations."
-                )
+                _uiState.value = StudentHomeUiState.Error(exception.message ?: "Unable to load accommodations.")
             }
         }
     }
 
-    fun applyFilter(query: String, filter: HomeFilter) {
+    fun applySearch(query: String, area: String, filter: HomeFilter, sort: HomeSort) {
         currentQuery = query
+        currentArea = area
         currentFilter = filter
+        currentSort = sort
 
-        val filtered = allAccommodations
-            .filter { accommodation ->
-                query.isBlank() ||
-                        accommodation.name.contains(query, ignoreCase = true) ||
-                        accommodation.address.contains(query, ignoreCase = true) ||
-                        accommodation.institutionArea.contains(query, ignoreCase = true)
-            }
-            .filter { accommodation ->
-                when (filter) {
-                    HomeFilter.ALL -> true
-                    HomeFilter.NEAR_CAMPUS -> accommodation.institutionArea.isNotBlank()
-                    HomeFilter.VERIFIED -> accommodation.isActive
-                }
-            }
+        val filtered = AccommodationSearchEngine.apply(
+            accommodations = allAccommodations,
+            query = query,
+            selectedArea = area,
+            filter = filter,
+            sort = sort
+        )
 
         _uiState.value = StudentHomeUiState.Success(filtered)
     }
@@ -74,14 +74,14 @@ class StudentHomeViewModel(
         repository.addToShortlist(CurrentStudent.ID, accommodationId)
     }
 
-    class Factory(
-        private val repository: AccommodationRepository
-    ) : ViewModelProvider.Factory {
+    class Factory(private val repository: AccommodationRepository) : ViewModelProvider.Factory {
+
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(StudentHomeViewModel::class.java)) {
                 return StudentHomeViewModel(repository) as T
             }
+
             throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
         }
     }

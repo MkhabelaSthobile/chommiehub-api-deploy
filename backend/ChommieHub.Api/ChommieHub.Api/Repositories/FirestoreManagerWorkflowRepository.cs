@@ -1,11 +1,14 @@
 ﻿using ChommieHub.Api.Models;
 using Google.Cloud.Firestore;
+using ApplicationModel = ChommieHub.Api.Models.Application;
 
 namespace ChommieHub.Api.Repositories
 {
     /// <summary>
-    /// Coordinates Firestore operations that must succeed or fail together
-    /// during residence-manager workflows.
+    /// Coordinates Firestore operations that must succeed or fail together when a residence manager assigns an approved applicant to a room.
+    ///
+    /// The transaction updates the room, application and student profile while also creating the resident record. This ensures that the Applicant-to-Resident transition remains
+    /// consistent across all related Firestore documents.
     /// </summary>
     public sealed class FirestoreManagerWorkflowRepository : IManagerWorkflowRepository
     {
@@ -16,97 +19,96 @@ namespace ChommieHub.Api.Repositories
             _firestore = firestore;
         }
 
+        /// <summary>
+        /// Assigns an available room to an approved application and converts the linked student account from Applicant to Resident.
+        /// </summary>
         public async Task<Resident?> AssignRoomAsync(string applicationId, string roomId, CancellationToken cancellationToken = default)
         {
             DocumentReference applicationReference = _firestore.Collection("applications").Document(applicationId);
-
             DocumentReference roomReference = _firestore.Collection("rooms").Document(roomId);
-
-            // The application ID is used as the resident document ID.
-            // This guarantees one resident record per approved application.
             DocumentReference residentReference = _firestore.Collection("residents").Document(applicationId);
 
-            // Transaction pattern follows the official Google Cloud Firestore .NET transaction guidance.
             return await _firestore.RunTransactionAsync(async transaction =>
-            { // Firestore requires transaction reads to occur before transactional writes are queued
-              IList<DocumentSnapshot> snapshots = await transaction.GetAllSnapshotsAsync(
-                  new[]
-                  {
-                      applicationReference,
-                      roomReference,
-                      residentReference
-                  },
-                  
-                  fieldMask: null, cancellationToken);
-                
-                DocumentSnapshot applicationSnapshot = snapshots[0];
+            {
+                DocumentSnapshot applicationSnapshot = await transaction.GetSnapshotAsync(applicationReference, cancellationToken);
 
-                DocumentSnapshot roomSnapshot = snapshots[1];
+                if (!applicationSnapshot.Exists)
+                {
+                    return null;
+                }
 
-                DocumentSnapshot residentSnapshot = snapshots[2];
+                ApplicationModel application = applicationSnapshot.ConvertTo<ApplicationModel>();
 
-                    if (!applicationSnapshot.Exists)
-                    {
-                        return null;
-                    }
+                if (application.Status != ApplicationStatuses.Approved)
+                {
+                    throw new InvalidOperationException("Only approved applications can receive a room assignment.");
+                }
 
-                    Application application = applicationSnapshot.ConvertTo<Application>();
+                DocumentSnapshot roomSnapshot = await transaction.GetSnapshotAsync(roomReference, cancellationToken);
 
-                    if (application.Status != ApplicationStatuses.Approved)
-                    {
-                        throw new InvalidOperationException("Only approved applications can receive a room assignment.");
-                    }
+                if (!roomSnapshot.Exists)
+                {
+                    throw new KeyNotFoundException("The selected room was not found.");
+                }
 
-                    if (!roomSnapshot.Exists)
-                    {
-                        throw new KeyNotFoundException("The selected room was not found.");
-                    }
+                DocumentSnapshot residentSnapshot = await transaction.GetSnapshotAsync(residentReference, cancellationToken);
 
-                    if (residentSnapshot.Exists)
-                    {
-                        throw new InvalidOperationException("A resident has already been created for this application.");
-                    }
+                if (residentSnapshot.Exists)
+                {
+                    throw new InvalidOperationException("A resident has already been created for this application.");
+                }
 
-                    Room room = roomSnapshot.ConvertTo<Room>();
+                Room room = roomSnapshot.ConvertTo<Room>();
 
-                    if (room.AccommodationId != application.AccommodationId)
-                    {
-                        throw new InvalidOperationException("The selected room does not belong to the application's accommodation.");
-                    }
+                if (room.AccommodationId != application.AccommodationId)
+                {
+                    throw new InvalidOperationException("The selected room does not belong to the application's accommodation.");
+                }
 
-                    if (!room.Availability)
-                    {
-                        throw new InvalidOperationException("The selected room is not available.");
-                    }
+                if (!room.Availability)
+                {
+                    throw new InvalidOperationException("The selected room is not available.");
+                }
 
-                    DateTime now = DateTime.UtcNow;
+                DocumentReference studentReference = _firestore.Collection("students").Document(application.StudentId);
+                DocumentSnapshot studentSnapshot = await transaction.GetSnapshotAsync(studentReference, cancellationToken);
 
-                    room.Availability = false;
-                    room.UpdatedAtUtc = now;
+                if (!studentSnapshot.Exists)
+                {
+                    throw new KeyNotFoundException("The student profile linked to this application was not found.");
+                }
 
-                    application.AssignedRoomId = room.Id;
+                Student student = studentSnapshot.ConvertTo<Student>();
+                DateTime now = DateTime.UtcNow;
 
-                    var resident = new Resident
-                    {
-                        Id = application.Id,
-                        StudentId = application.StudentId,
-                        AccommodationId = application.AccommodationId,
-                        RoomId = room.Id,
-                        ApplicationId = application.Id,
-                        IsActive = true,
-                        CreatedAtUtc = now
-                    };
+                room.Availability = false;
+                room.UpdatedAtUtc = now;
 
-                    //these writes are committed together. If the transactionfails, none of the three documents are partially updated.
-                    transaction.Set(roomReference, room, SetOptions.Overwrite);
+                application.AssignedRoomId = room.Id;
 
-                    transaction.Set(applicationReference, application, SetOptions.Overwrite);
+                student.UserType = "Resident";
+                student.AccommodationId = application.AccommodationId;
+                student.RoomId = room.Id;
+                student.UpdatedAtUtc = now;
 
-                    transaction.Create(residentReference, resident);
+                Resident resident = new()
+                {
+                    Id = application.Id,
+                    StudentId = application.StudentId,
+                    AccommodationId = application.AccommodationId,
+                    RoomId = room.Id,
+                    ApplicationId = application.Id,
+                    IsActive = true,
+                    CreatedAtUtc = now
+                };
 
-                    return resident;
-                },
-                cancellationToken: cancellationToken);
+                transaction.Set(roomReference, room, SetOptions.Overwrite);
+                transaction.Set(applicationReference, application, SetOptions.Overwrite);
+                transaction.Set(studentReference, student, SetOptions.Overwrite);
+                transaction.Create(residentReference, resident);
+
+                return resident;
+            }, cancellationToken: cancellationToken);
         }
     }
 }

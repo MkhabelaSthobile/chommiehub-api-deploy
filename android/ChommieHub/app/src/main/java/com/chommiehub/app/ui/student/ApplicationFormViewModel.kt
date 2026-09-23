@@ -7,83 +7,58 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.chommiehub.app.data.model.manager.AccommodationResponse
-import com.chommiehub.app.data.model.student.StudentApplicationResponse
-import com.chommiehub.app.data.model.student.SubmitApplicationRequest
-import com.chommiehub.app.data.repository.StudentRepository
+import com.chommiehub.app.data.model.manager.RoomResponse
+import com.chommiehub.app.data.repository.AccommodationRepository
 import kotlinx.coroutines.launch
 
 /**
- * Loads the accommodations available to apply to and submits the student's application.
+ * Loads residences and their currently available rooms for the student application form.
  */
-class ApplicationFormViewModel(
-    private val repository: StudentRepository
-) : ViewModel() {
+class ApplicationFormViewModel(private val repository: AccommodationRepository) : ViewModel() {
 
     companion object {
         private const val TAG = "ApplicationFormVM"
     }
 
     private val _accommodations = MutableLiveData<List<AccommodationResponse>>(emptyList())
-    val accommodations: LiveData<List<AccommodationResponse>>
-        get() = _accommodations
+    val accommodations: LiveData<List<AccommodationResponse>> get() = _accommodations
 
-    private val _loadError = MutableLiveData<String?>()
-    val loadError: LiveData<String?>
-        get() = _loadError
+    private val _rooms = MutableLiveData<List<RoomResponse>>(emptyList())
+    val rooms: LiveData<List<RoomResponse>> get() = _rooms
 
-    private val _submitResult = MutableLiveData<StudentApplicationResponse?>()
-    val submitResult: LiveData<StudentApplicationResponse?>
-        get() = _submitResult
-
-    private val _submitError = MutableLiveData<String?>()
-    val submitError: LiveData<String?>
-        get() = _submitError
-
-    private val _isSubmitting = MutableLiveData(false)
-    val isSubmitting: LiveData<Boolean>
-        get() = _isSubmitting
+    private val _error = MutableLiveData<String?>()
+    val error: LiveData<String?> get() = _error
 
     fun loadAccommodations() {
         viewModelScope.launch {
             try {
-                _accommodations.value = repository.getAccommodations()
+                _accommodations.value = repository.getAllAccommodations()
             } catch (exception: Exception) {
                 Log.e(TAG, "Unable to load accommodations.", exception)
-                _loadError.value = exception.message ?: "Unable to load residences."
+                _error.value = exception.message ?: "Unable to load residences."
             }
         }
     }
 
-    fun submit(studentId: String, request: SubmitApplicationRequest) {
-        _isSubmitting.value = true
-
+    fun loadRooms(accommodationId: String) {
         viewModelScope.launch {
             try {
-                val application = repository.submitApplication(studentId, request)
-                _submitResult.value = application
+                _rooms.value = repository.getRooms(accommodationId).filter { it.availability }
             } catch (exception: Exception) {
-                Log.e(TAG, "Unable to submit application.", exception)
-                _submitError.value = exception.message ?: "Unable to submit your application."
-            } finally {
-                _isSubmitting.value = false
+                Log.e(TAG, "Unable to load rooms.", exception)
+                _rooms.value = emptyList()
+                _error.value = exception.message ?: "Unable to load available rooms."
             }
         }
     }
 
-    fun consumeSubmitResult() {
-        _submitResult.value = null
-    }
-
-    fun consumeSubmitError() {
-        _submitError.value = null
-    }
-
-    class Factory(private val repository: StudentRepository) : ViewModelProvider.Factory {
+    class Factory(private val repository: AccommodationRepository) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(ApplicationFormViewModel::class.java)) {
                 return ApplicationFormViewModel(repository) as T
             }
+
             throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
         }
     }
