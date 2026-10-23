@@ -76,6 +76,9 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation("com.google.android.gms:play-services-auth:21.4.0")
 
+    // Firebase Cloud Messaging for real-time push notifications
+    implementation("com.google.firebase:firebase-messaging:25.0.1")
+
     implementation("androidx.biometric:biometric:1.1.0")
 
     implementation(libs.retrofit)

@@ -5,6 +5,9 @@
     <!-- Internet access for Firebase and ChommieHub API -->
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <!-- Required to display notifications on Android 13 and above -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -37,6 +40,7 @@
             android:name=".ui.auth.BiometricActivity"
             android:exported="false" />
 
+
         <!-- Student application -->
         <activity
             android:name=".ui.student.StudentActivity"
@@ -53,6 +57,17 @@
         <activity
             android:name=".MainActivity"
             android:exported="false" />
+
+        <!-- Firebase Cloud Messaging Service -->
+        <service
+            android:name=".firebase.ChommieHubMessagingService"
+            android:exported="false">
+
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+
+        </service>
 
     </application>
 
