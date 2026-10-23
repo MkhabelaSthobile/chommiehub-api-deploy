@@ -67,10 +67,13 @@ class LoginActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_login)
 
-        // If Firebase already has a signed-in user, skip the login form
-        // and route straight to the correct dashboard.
+        // Returning users must verify their identity before
+        // accessing their account again.
         if (auth.currentUser != null) {
-            AuthRouter.route(this)
+            startActivity(
+                Intent(this, BiometricActivity::class.java)
+            )
+            finish()
             return
         }
 
