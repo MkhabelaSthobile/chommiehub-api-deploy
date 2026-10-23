@@ -11,6 +11,7 @@ import com.chommiehub.app.ui.student.CurrentStudent
 import com.chommiehub.app.ui.student.StudentActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import kotlinx.coroutines.tasks.await
 import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -64,6 +65,14 @@ object AuthRouter {
      */
     private suspend fun resolveDestination(user: FirebaseUser): Class<out Activity>? {
         val firebaseUid = user.uid
+        val tokenResult = user.getIdToken(false).await()
+        val role = tokenResult.claims["role"] as? String
+
+        if (role == "admin") {
+            throw IllegalStateException(
+                "Administrator account recognised. Administrator dashboard is not available yet."
+            )
+        }
 
         try {
             val student = ApiClient.api.getStudentByFirebaseUid(firebaseUid)
