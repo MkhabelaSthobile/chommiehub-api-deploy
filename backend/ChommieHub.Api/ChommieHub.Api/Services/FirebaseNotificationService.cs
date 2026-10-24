@@ -29,6 +29,9 @@ public sealed class FirebaseNotificationService
     /// Sends a notification to all registered devices
     /// belonging to the specified Firebase user.
     ///
+    /// Permanently unregistered device tokens are removed
+    /// from Firestore.
+    ///
     /// This method must only be called by trusted
     /// backend application code.
     /// </summary>
@@ -58,14 +61,14 @@ public sealed class FirebaseNotificationService
                 nameof(body));
         }
 
-        // Retrieve this user's registered devices.
-        var devices =
+        IReadOnlyList<ChommieHub.Api.Models.FcmDeviceRegistration> devices =
             await _deviceRepository.GetDevicesForUserAsync(userId);
 
         if (devices.Count == 0)
         {
             _logger.LogInformation(
                 "No registered FCM devices found for notification.");
+
             return 0;
         }
 
@@ -73,6 +76,7 @@ public sealed class FirebaseNotificationService
             FirebaseMessaging.GetMessaging(_firebaseApp);
 
         int successCount = 0;
+        int removedCount = 0;
 
         foreach (var device in devices)
         {
@@ -86,11 +90,13 @@ public sealed class FirebaseNotificationService
                 var message = new Message
                 {
                     Token = device.FcmToken,
+
                     Notification = new Notification
                     {
                         Title = title,
                         Body = body
                     },
+
                     Android = new AndroidConfig
                     {
                         Priority = Priority.High
@@ -107,13 +113,44 @@ public sealed class FirebaseNotificationService
                 _logger.LogWarning(
                     "FCM delivery failed. Error code: {ErrorCode}",
                     exception.MessagingErrorCode);
+
+                // Unregistered means Firebase no longer
+                // recognizes this device registration token.
+                //
+                // Do not delete tokens for temporary failures,
+                // quota limits or ambiguous errors.
+                if (exception.MessagingErrorCode ==
+                    MessagingErrorCode.Unregistered)
+                {
+                    try
+                    {
+                        bool removed =
+                            await _deviceRepository.RemoveDeviceAsync(
+                                userId,
+                                device.FcmToken);
+
+                        if (removed)
+                        {
+                            removedCount++;
+                        }
+                    }
+                    catch (Exception cleanupException)
+                    {
+                        // Cleanup failure must not stop notifications
+                        // from being sent to other registered devices.
+                        _logger.LogWarning(
+                            cleanupException,
+                            "Failed to remove an unregistered FCM device.");
+                    }
+                }
             }
         }
 
         _logger.LogInformation(
-            "FCM notification sent to {SuccessfulDevices} of {TotalDevices} devices.",
+            "FCM notification accepted for {SuccessfulDevices} of {TotalDevices} devices. Removed {RemovedDevices} unregistered tokens.",
             successCount,
-            devices.Count);
+            devices.Count,
+            removedCount);
 
         return successCount;
     }
