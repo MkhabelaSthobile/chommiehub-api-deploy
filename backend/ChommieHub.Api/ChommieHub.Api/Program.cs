@@ -212,6 +212,12 @@ builder.Services.AddHttpClient<
     WeatherService>();
 
 // ---------------------------------------------------------
+// Firebase authentication services
+// ---------------------------------------------------------
+
+builder.Services.AddScoped<FirebaseTokenVerificationService>();
+
+// ---------------------------------------------------------
 // Build the ASP.NET Core application
 // ---------------------------------------------------------
 
