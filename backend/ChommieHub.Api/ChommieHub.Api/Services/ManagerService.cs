@@ -10,17 +10,24 @@ namespace ChommieHub.Api.Services
     public sealed class ManagerService : IManagerService
     {
         private readonly IApplicationRepository _applicationRepository;
+        private readonly FirebaseNotificationService _notificationService;
+        private readonly ILogger<ManagerService> _logger;
         private readonly IResidentRepository _residentRepository;
         private readonly IRoomRepository _roomRepository;
         private readonly IManagerWorkflowRepository _managerWorkflowRepository;
 
-        public ManagerService(IApplicationRepository applicationRepository, IResidentRepository residentRepository, IRoomRepository roomRepository, IManagerWorkflowRepository managerWorkflowRepository)
+
+        public ManagerService(IApplicationRepository applicationRepository, IResidentRepository residentRepository, IRoomRepository roomRepository, IManagerWorkflowRepository managerWorkflowRepository, FirebaseNotificationService notificationService, ILogger<ManagerService> logger)
+
         {
             _applicationRepository = applicationRepository;
             _residentRepository = residentRepository;
             _roomRepository = roomRepository;
             _managerWorkflowRepository = managerWorkflowRepository;
+            _notificationService = notificationService;
+            _logger = logger;
         }
+
 
         public async Task<IReadOnlyList<ManagerApplicationSummaryResponse>> GetApplicationsAsync(string accommodationId, CancellationToken cancellationToken = default)
         {
@@ -43,49 +50,100 @@ namespace ChommieHub.Api.Services
                 ? null : MapApplicationDetail(application);
         }
 
-        public async Task<ManagerApplicationDetailResponse?> ReviewApplicationAsync(string applicationId, ReviewApplicationRequest request, CancellationToken cancellationToken = default)
+
+        public async Task<ManagerApplicationDetailResponse?> ReviewApplicationAsync(
+            string applicationId,
+            ReviewApplicationRequest request,
+            CancellationToken cancellationToken = default)
         {
-            Application? application = await _applicationRepository.GetByIdAsync(
-                applicationId,
-                cancellationToken);
+            Application? application =
+                await _applicationRepository.GetByIdAsync(
+                    applicationId,
+                    cancellationToken);
 
             if (application is null)
             {
                 return null;
             }
 
-            string decision = request.Decision.Trim();
+            string decision = request.Decision?.Trim() ?? string.Empty;
 
-            //Only final manager decisions are accepted by this operation.
-            bool approved = decision.Equals(ApplicationStatuses.Approved, StringComparison.OrdinalIgnoreCase);
+            bool approved = decision.Equals(
+                ApplicationStatuses.Approved,
+                StringComparison.OrdinalIgnoreCase);
 
-            bool declined = decision.Equals(ApplicationStatuses.Declined, StringComparison.OrdinalIgnoreCase);
+            bool declined = decision.Equals(
+                ApplicationStatuses.Declined,
+                StringComparison.OrdinalIgnoreCase);
 
             if (!approved && !declined)
             {
-                throw new InvalidOperationException( "Decision must be either Approved or Declined.");
+                throw new InvalidOperationException(
+                    "Decision must be either Approved or Declined.");
             }
 
-            //Prevent an already-finalised application from being reviewed a second time
-            if (application.Status == ApplicationStatuses.Approved || application.Status == ApplicationStatuses.Declined)
+            if (application.Status == ApplicationStatuses.Approved ||
+                application.Status == ApplicationStatuses.Declined)
             {
-                throw new InvalidOperationException("This application has already been reviewed.");
+                throw new InvalidOperationException(
+                    "This application has already been reviewed.");
             }
 
             application.Status = approved
                 ? ApplicationStatuses.Approved
                 : ApplicationStatuses.Declined;
 
-            application.ReviewNotes = request.ReviewNotes.Trim();
+            application.ReviewNotes =
+                request.ReviewNotes?.Trim() ?? string.Empty;
 
             application.DateReviewedUtc = DateTime.UtcNow;
 
+            // Save the decision before attempting any notification.
             await _applicationRepository.UpdateAsync(
                 application,
                 cancellationToken);
 
+            // FCM uses Firebase UIDs. This relies on StudentId being
+            // the student's Firebase UID in the existing data model.
+            string title = approved
+                ? "Residence application approved"
+                : "Residence application declined";
+
+            string body = approved
+                ? "Your residence application has been approved. Open ChommieHub to view your application."
+                : "Your residence application has been declined. Open ChommieHub to view your application.";
+
+            try
+            {
+                int sentCount =
+                    await _notificationService.SendToUserAsync(
+                        application.StudentId,
+                        title,
+                        body);
+
+                _logger.LogInformation(
+                    "Application {ApplicationId} review notification accepted for {DeviceCount} devices.",
+                    applicationId,
+                    sentCount);
+            }
+            catch (OperationCanceledException)
+                when (cancellationToken.IsCancellationRequested)
+            {
+                throw;
+            }
+            catch (Exception exception)
+            {
+                // The application decision is already saved.
+                // A notification failure must not reverse it.
+                _logger.LogWarning(
+                    exception,
+                    "Application {ApplicationId} was reviewed, but its notification could not be sent.",
+                    applicationId);
+            }
+
             return MapApplicationDetail(application);
         }
+
 
         /// <summary>
         /// Assigns a room through an atomic Firestore transaction so that the room, application and resident records cannot become partially updated
