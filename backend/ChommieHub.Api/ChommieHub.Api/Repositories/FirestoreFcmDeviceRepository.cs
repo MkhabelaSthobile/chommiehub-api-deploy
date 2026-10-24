@@ -6,7 +6,9 @@ using Google.Cloud.Firestore;
 
 namespace ChommieHub.Api.Repositories;
 
+/// <summary>
 /// Stores and manages Firebase Cloud Messaging device registrations in Firestore.
+/// </summary>
 public sealed class FirestoreFcmDeviceRepository
 {
     private const string CollectionName = "fcm_device_registrations";
@@ -18,8 +20,11 @@ public sealed class FirestoreFcmDeviceRepository
         _collection = firestoreDb.Collection(CollectionName);
     }
 
+    /// <summary>
     /// Registers an FCM token for the verified Firebase user.
-    /// Re-registering the same token updates the existing document.
+    /// Re-registering the same token preserves CreatedAt
+    /// and updates UpdatedAt.
+    /// </summary>
     public async Task RegisterDeviceAsync(
         string userId,
         string fcmToken)
@@ -41,18 +46,39 @@ public sealed class FirestoreFcmDeviceRepository
         string documentId = GetTokenDocumentId(fcmToken);
         DocumentReference document = _collection.Document(documentId);
 
-        await document.SetAsync(new Dictionary<string, object>
-        {
-            [nameof(FcmDeviceRegistration.UserId)] = userId,
-            [nameof(FcmDeviceRegistration.FcmToken)] = fcmToken,
-            [nameof(FcmDeviceRegistration.Platform)] = "android",
-            [nameof(FcmDeviceRegistration.CreatedAt)] = FieldValue.ServerTimestamp,
-            [nameof(FcmDeviceRegistration.UpdatedAt)] = FieldValue.ServerTimestamp
-        }, SetOptions.MergeAll);
+        await _collection.Database.RunTransactionAsync(
+            async transaction =>
+            {
+                DocumentSnapshot snapshot =
+                    await transaction.GetSnapshotAsync(document);
+
+                var registration = new Dictionary<string, object>
+                {
+                    [nameof(FcmDeviceRegistration.UserId)] = userId,
+                    [nameof(FcmDeviceRegistration.FcmToken)] = fcmToken,
+                    [nameof(FcmDeviceRegistration.Platform)] = "android",
+                    [nameof(FcmDeviceRegistration.UpdatedAt)] =
+                        FieldValue.ServerTimestamp
+                };
+
+                // Only set CreatedAt for a new device registration.
+                // Existing registrations keep their original timestamp.
+                if (!snapshot.Exists)
+                {
+                    registration[nameof(FcmDeviceRegistration.CreatedAt)] =
+                        FieldValue.ServerTimestamp;
+                }
+
+                transaction.Set(
+                    document,
+                    registration,
+                    SetOptions.MergeAll);
+            });
     }
 
-    
+    /// <summary>
     /// Removes a token only when it belongs to the authenticated Firebase user.
+    /// </summary>
     public async Task<bool> RemoveDeviceAsync(
         string userId,
         string fcmToken)
@@ -66,31 +92,34 @@ public sealed class FirestoreFcmDeviceRepository
         string documentId = GetTokenDocumentId(fcmToken);
         DocumentReference document = _collection.Document(documentId);
 
-        return await _collection.Database.RunTransactionAsync(async transaction =>
-        {
-            DocumentSnapshot snapshot = await transaction.GetSnapshotAsync(document);
-
-            if (!snapshot.Exists)
+        return await _collection.Database.RunTransactionAsync(
+            async transaction =>
             {
-                return false;
-            }
+                DocumentSnapshot snapshot =
+                    await transaction.GetSnapshotAsync(document);
 
-            string storedUserId = snapshot.GetValue<string>(
-                nameof(FcmDeviceRegistration.UserId));
+                if (!snapshot.Exists)
+                {
+                    return false;
+                }
 
-            if (storedUserId != userId)
-            {
-                return false;
-            }
+                string storedUserId = snapshot.GetValue<string>(
+                    nameof(FcmDeviceRegistration.UserId));
 
-            transaction.Delete(document);
-            return true;
-        });
+                if (storedUserId != userId)
+                {
+                    return false;
+                }
+
+                transaction.Delete(document);
+                return true;
+            });
     }
 
-
+    /// <summary>
     /// Retrieves all registered FCM devices for a user.
     /// This method must only be called by trusted backend services.
+    /// </summary>
     public async Task<IReadOnlyList<FcmDeviceRegistration>> GetDevicesForUserAsync(
         string userId)
     {
@@ -104,13 +133,15 @@ public sealed class FirestoreFcmDeviceRepository
             .GetSnapshotAsync();
 
         return snapshot.Documents
-            .Select(document => document.ConvertTo<FcmDeviceRegistration>())
+            .Select(document =>
+                document.ConvertTo<FcmDeviceRegistration>())
             .ToList();
     }
 
-
+    /// <summary>
     /// Generates a stable Firestore document ID without
     /// exposing the raw FCM token in the document path.
+    /// </summary>
     private static string GetTokenDocumentId(string fcmToken)
     {
         byte[] tokenBytes = Encoding.UTF8.GetBytes(fcmToken);
@@ -119,4 +150,3 @@ public sealed class FirestoreFcmDeviceRepository
         return Convert.ToHexString(hash).ToLowerInvariant();
     }
 }
-
