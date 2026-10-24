@@ -166,6 +166,9 @@ builder.Services.AddScoped<
     IInspectionRepository,
     FirestoreInspectionRepository>();
 
+builder.Services.AddScoped<
+    FirestoreFcmDeviceRepository>();
+
 // ---------------------------------------------------------
 // Business services
 // ---------------------------------------------------------
