@@ -169,6 +169,9 @@ builder.Services.AddScoped<
 builder.Services.AddScoped<
     FirestoreFcmDeviceRepository>();
 
+builder.Services.AddScoped<
+    FirebaseNotificationService>();
+
 // ---------------------------------------------------------
 // Business services
 // ---------------------------------------------------------
