@@ -1,17 +1,18 @@
+
 package com.chommiehub.app.firebase
 
-import android.util.Log
-import com.google.firebase.messaging.FirebaseMessagingService
-import com.google.firebase.messaging.RemoteMessage
 import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.pm.PackageManager
 import android.os.Build
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import com.chommiehub.app.R
+import com.google.firebase.messaging.FirebaseMessagingService
+import com.google.firebase.messaging.RemoteMessage
 
 /**
  * Handles Firebase Cloud Messaging notifications
@@ -31,15 +32,14 @@ class ChommieHubMessagingService : FirebaseMessagingService() {
     override fun onNewToken(token: String) {
         super.onNewToken(token)
 
-        // Never log the full token in production.
+        // Never log the actual token.
         Log.d(TAG, "FCM registration token refreshed")
 
-        // TODO: Register the token with the authenticated backend.
+        FcmTokenManager.handleRefreshedToken(token)
     }
 
     /**
-     * Handles messages delivered to the application
-     * while this service is active.
+     * Handles messages delivered to this service.
      */
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
@@ -57,52 +57,63 @@ class ChommieHubMessagingService : FirebaseMessagingService() {
         showNotification(title, body)
     }
 
-    // Displays the received notification on the device.
+    /**
+     * Displays a notification on the device.
+     */
     private fun showNotification(title: String, body: String) {
 
-            val notificationManager =
-                getSystemService(NotificationManager::class.java)
+        val notificationManager =
+            getSystemService(NotificationManager::class.java)
 
-            // Create a notification channel on Android 8.0+
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        // Create the notification channel.
+        // ChommieHub's minimum Android version is API 26+.
+        val channel = NotificationChannel(
+            CHANNEL_ID,
+            "ChommieHub Updates",
+            NotificationManager.IMPORTANCE_DEFAULT
+        ).apply {
+            description =
+                "Residence applications, approvals and important updates"
+        }
 
-                val channel = NotificationChannel(
-                    CHANNEL_ID,
-                    "ChommieHub Updates",
-                    NotificationManager.IMPORTANCE_DEFAULT
-                ).apply {
-                    description = "Residence applications, approvals and important updates"
-                }
+        notificationManager.createNotificationChannel(channel)
 
-                notificationManager.createNotificationChannel(channel)
-            }
+        // Android 13+ requires runtime notification permission.
+        if (
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            Log.w(TAG, "Notification permission not granted")
+            return
+        }
 
-            // Android 13+ requires notification permission.
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-                ContextCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.POST_NOTIFICATIONS
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                Log.w(TAG, "Notification permission not granted")
-                return
-            }
+        val notification = NotificationCompat.Builder(this, CHANNEL_ID)
+            .setSmallIcon(R.mipmap.chommiehub_app_icon)
+            .setContentTitle(title)
+            .setContentText(body)
+            .setStyle(
+                NotificationCompat.BigTextStyle().bigText(body)
+            )
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setAutoCancel(true)
+            .build()
 
-            val notification = NotificationCompat.Builder(this, CHANNEL_ID)
-                .setSmallIcon(R.mipmap.chommiehub_app_icon)
-                .setContentTitle(title)
-                .setContentText(body)
-                .setStyle(NotificationCompat.BigTextStyle().bigText(body))
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                .setAutoCancel(true)
-                .build()
-
+        try {
             NotificationManagerCompat.from(this).notify(
                 System.currentTimeMillis().toInt(),
                 notification
             )
+        } catch (exception: SecurityException) {
+            Log.e(
+                TAG,
+                "Notification could not be displayed",
+                exception
+            )
         }
-
-
-        // TODO: Route notification actions to the correct screen.
     }
+
+    // TODO: Add safe notification tap navigation.
+}
