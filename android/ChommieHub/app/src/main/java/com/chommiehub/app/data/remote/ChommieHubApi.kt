@@ -37,6 +37,7 @@ import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
+import retrofit2.http.Header
 
 interface ChommieHubApi {
 
@@ -159,4 +160,16 @@ interface ChommieHubApi {
 
     @PATCH("api/inspections/{id}/confirm")
     suspend fun confirmInspection(@Path("id") id: String, @Body request: ConfirmInspectionRequest): InspectionResponse
+
+    @POST("api/notifications/devices")
+    suspend fun registerFcmDevice(
+        @Header("Authorization") authorization: String,
+        @Body request: FcmDeviceRequest
+    ): retrofit2.Response<Unit>
+
+    @DELETE("api/notifications/devices")
+    suspend fun removeFcmDevice(
+        @Header("Authorization") authorization: String,
+        @Body request: FcmDeviceRequest
+    ): retrofit2.Response<Unit>
 }
