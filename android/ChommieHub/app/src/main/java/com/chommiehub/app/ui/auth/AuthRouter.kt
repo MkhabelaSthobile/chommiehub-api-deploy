@@ -18,6 +18,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
+import com.chommiehub.app.firebase.FcmTokenManager
 
 /** Routes an authenticated Firebase user without asking them to choose their own role. */
 object AuthRouter {
@@ -47,6 +48,9 @@ object AuthRouter {
                     FirebaseAuth.getInstance().signOut()
                     activity.startActivity(Intent(activity, LoginActivity::class.java))
                 } else {
+                    // Retrieve the FCM token after successful account routing.
+                    FcmTokenManager.refreshTokenForCurrentUser()
+
                     activity.startActivity(Intent(activity, destination))
                 }
 
