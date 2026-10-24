@@ -7,13 +7,15 @@ import com.chommiehub.app.data.remote.FcmDeviceRequest
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.messaging.FirebaseMessaging
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withTimeoutOrNull
 
 /**
- * Retrieves and registers FCM device tokens
+ * Retrieves, registers and unregisters FCM device tokens
  * for authenticated ChommieHub users.
  */
 object FcmTokenManager {
@@ -98,6 +100,8 @@ object FcmTokenManager {
                     )
                 }
 
+            } catch (exception: CancellationException) {
+                throw exception
             } catch (exception: Exception) {
                 Log.e(
                     TAG,
@@ -105,6 +109,82 @@ object FcmTokenManager {
                     exception
                 )
             }
+        }
+    }
+
+    /**
+     * Attempts to remove this device's FCM registration
+     * before the user signs out.
+     *
+     * Returns true when removal is confirmed or no
+     * signed-in user exists.
+     *
+     * Returns false when cleanup cannot be confirmed.
+     */
+    suspend fun unregisterCurrentDevice(): Boolean {
+        val user = FirebaseAuth.getInstance().currentUser ?: return true
+
+        return try {
+            val result = withTimeoutOrNull(10_000L) {
+                // Retrieve this device's current FCM token.
+                val fcmToken = FirebaseMessaging.getInstance()
+                    .token.await()
+
+                if (fcmToken.isBlank()) {
+                    return@withTimeoutOrNull true
+                }
+
+                // Retrieve the Firebase Authentication ID token.
+                val idToken = user.getIdToken(false)
+                    .await()
+                    .token
+
+                if (idToken.isNullOrBlank()) {
+                    Log.w(TAG, "Firebase ID token unavailable for removal.")
+                    return@withTimeoutOrNull false
+                }
+
+                // Ensure the same user is still signed in.
+                if (FirebaseAuth.getInstance().currentUser?.uid != user.uid) {
+                    Log.d(TAG, "User changed. FCM removal cancelled.")
+                    return@withTimeoutOrNull false
+                }
+
+                // Request removal from the ASP.NET Core backend.
+                val response = ApiClient.api.removeFcmDevice(
+                    authorization = "Bearer $idToken",
+                    request = FcmDeviceRequest(fcmToken = fcmToken)
+                )
+
+                when (response.code()) {
+                    200, 204, 404 -> {
+                        Log.d(TAG, "FCM device removal completed.")
+                        true
+                    }
+
+                    else -> {
+                        Log.w(
+                            TAG,
+                            "FCM device removal failed. HTTP ${response.code()}"
+                        )
+                        false
+                    }
+                }
+            }
+
+            result ?: run {
+                Log.w(TAG, "FCM device removal timed out.")
+                false
+            }
+
+        } catch (exception: CancellationException) {
+            throw exception
+        } catch (exception: Exception) {
+            Log.w(
+                TAG,
+                "FCM device removal could not be completed."
+            )
+            false
         }
     }
 }
