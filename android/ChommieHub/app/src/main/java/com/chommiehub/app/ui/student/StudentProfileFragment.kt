@@ -11,6 +11,9 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import com.chommiehub.app.firebase.FcmTokenManager
+import kotlinx.coroutines.launch
 import com.chommiehub.app.R
 import com.chommiehub.app.data.model.student.CreateStudentRequest
 import com.chommiehub.app.data.model.student.StudentResponse
@@ -117,8 +120,49 @@ class StudentProfileFragment : Fragment() {
         btnVisitorRequests =
             view.findViewById(R.id.btnVisitorRequests)
 
-        btnStudentSignOut =
-            view.findViewById(R.id.btnStudentSignOut)
+        btnStudentSignOut.setOnClickListener {
+            // Prevent repeated taps while logout is in progress.
+            btnStudentSignOut.isEnabled = false
+
+            // Keep the logout process tied to the Fragment lifecycle.
+            lifecycleScope.launch {
+                // Remove the device registration while the user
+                // still has a valid Firebase authentication session.
+                val removed = FcmTokenManager.unregisterCurrentDevice()
+
+                if (!removed) {
+                    android.util.Log.w(
+                        "StudentProfile",
+                        "FCM cleanup was not confirmed before sign-out."
+                    )
+                }
+
+                // Sign out even if device removal failed.
+                FirebaseAuth.getInstance().signOut()
+
+                // Clear all cached identity so the next user starts fresh.
+                CurrentStudent.ID = ""
+                CurrentManager.ID = ""
+                CurrentManager.ACCOMMODATION_ID = ""
+
+                // The Fragment might have been detached during
+                // the network request, so check before navigating.
+                val currentActivity = activity ?: return@launch
+
+                val intent = android.content.Intent(
+                    currentActivity,
+                    LoginActivity::class.java
+                )
+
+                // Wipe the back stack so Back cannot return
+                // to the student's profile.
+                intent.flags =
+                    android.content.Intent.FLAG_ACTIVITY_NEW_TASK or
+                            android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK
+
+                startActivity(intent)
+            }
+        }
 
     }
 
