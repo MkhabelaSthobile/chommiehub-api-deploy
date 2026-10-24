@@ -1,3 +1,4 @@
+
 package com.chommiehub.app.ui.manager
 
 import android.content.Intent
@@ -10,18 +11,22 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.chommiehub.app.R
 import com.chommiehub.app.data.model.manager.AccommodationResponse
 import com.chommiehub.app.data.model.manager.ManagerResponse
 import com.chommiehub.app.data.remote.ApiClient
 import com.chommiehub.app.data.repository.ManagerRepository
+import com.chommiehub.app.firebase.FcmTokenManager
 import com.chommiehub.app.ui.auth.LoginActivity
+import com.chommiehub.app.ui.student.CurrentStudent
 import com.google.android.material.button.MaterialButton
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.launch
 
 /**
- * Displays the signed-in manager's profile information and
- * provides the sign-out action.
+ * Displays the signed-in manager's profile information
+ * and provides the sign-out action.
  */
 class ManagerProfileFragment : Fragment() {
 
@@ -67,15 +72,29 @@ class ManagerProfileFragment : Fragment() {
     }
 
     private fun bindViews(view: View) {
-        progressBar = view.findViewById(R.id.progressManagerProfile)
-        tvError = view.findViewById(R.id.tvManagerProfileError)
-        content = view.findViewById(R.id.managerProfileContent)
+        progressBar =
+            view.findViewById(R.id.progressManagerProfile)
 
-        tvName = view.findViewById(R.id.tvManagerProfileName)
-        tvEmail = view.findViewById(R.id.tvManagerProfileEmail)
-        tvPhone = view.findViewById(R.id.tvManagerProfilePhone)
-        tvAccommodation = view.findViewById(R.id.tvManagerProfileAccommodation)
-        btnSignOut = view.findViewById(R.id.btnManagerSignOut)
+        tvError =
+            view.findViewById(R.id.tvManagerProfileError)
+
+        content =
+            view.findViewById(R.id.managerProfileContent)
+
+        tvName =
+            view.findViewById(R.id.tvManagerProfileName)
+
+        tvEmail =
+            view.findViewById(R.id.tvManagerProfileEmail)
+
+        tvPhone =
+            view.findViewById(R.id.tvManagerProfilePhone)
+
+        tvAccommodation =
+            view.findViewById(R.id.tvManagerProfileAccommodation)
+
+        btnSignOut =
+            view.findViewById(R.id.btnManagerSignOut)
     }
 
     private fun configureViewModel() {
@@ -96,15 +115,20 @@ class ManagerProfileFragment : Fragment() {
 
     private fun observeState() {
         viewModel.manager.observe(viewLifecycleOwner) { manager ->
-            if (manager != null) showManager(manager)
+            if (manager != null) {
+                showManager(manager)
+            }
         }
 
         viewModel.accommodation.observe(viewLifecycleOwner) { accommodation ->
-            if (accommodation != null) showAccommodation(accommodation)
+            if (accommodation != null) {
+                showAccommodation(accommodation)
+            }
         }
 
         viewModel.isLoading.observe(viewLifecycleOwner) { loading ->
-            progressBar.visibility = if (loading) View.VISIBLE else View.GONE
+            progressBar.visibility =
+                if (loading) View.VISIBLE else View.GONE
         }
 
         viewModel.error.observe(viewLifecycleOwner) { message ->
@@ -120,18 +144,23 @@ class ManagerProfileFragment : Fragment() {
     }
 
     private fun loadProfile() {
-        val firebaseUid = FirebaseAuth.getInstance().currentUser?.uid
+        val firebaseUid =
+            FirebaseAuth.getInstance().currentUser?.uid
+
         if (firebaseUid.isNullOrBlank()) {
             tvError.text = "You are not signed in."
             tvError.visibility = View.VISIBLE
             return
         }
 
-        // Try to render whatever AuthRouter already cached, then
-        // fetch fresh data from the API.
+        // Show cached accommodation information when available,
+        // then fetch fresh manager information from the API.
         if (CurrentManager.ACCOMMODATION_ID.isNotBlank()) {
-            viewModel.loadAccommodation(CurrentManager.ACCOMMODATION_ID)
+            viewModel.loadAccommodation(
+                CurrentManager.ACCOMMODATION_ID
+            )
         }
+
         viewModel.loadManager(firebaseUid)
     }
 
@@ -140,26 +169,67 @@ class ManagerProfileFragment : Fragment() {
 
         tvName.text = "${manager.name} ${manager.surname}"
         tvEmail.text = manager.email
-        tvPhone.text = if (manager.phoneNumber.isBlank()) {
-            "No phone number on file"
-        } else {
-            manager.phoneNumber
-        }
+
+        tvPhone.text =
+            if (manager.phoneNumber.isBlank()) {
+                "No phone number on file"
+            } else {
+                manager.phoneNumber
+            }
     }
 
-    private fun showAccommodation(accommodation: AccommodationResponse) {
-        tvAccommodation.text = "Assigned residence: ${accommodation.name}"
+    private fun showAccommodation(
+        accommodation: AccommodationResponse
+    ) {
+        tvAccommodation.text =
+            "Assigned residence: ${accommodation.name}"
     }
 
+    /**
+     * Unregisters this device from FCM before signing
+     * the manager out of Firebase Authentication.
+     */
     private fun signOut() {
         Log.i(TAG, "Manager signing out.")
 
-        FirebaseAuth.getInstance().signOut()
-        CurrentManager.ID = ""
-        CurrentManager.ACCOMMODATION_ID = ""
+        // Prevent repeated logout requests.
+        btnSignOut.isEnabled = false
 
-        val intent = Intent(requireContext(), LoginActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        startActivity(intent)
+        lifecycleScope.launch {
+            // The Firebase session is still active here,
+            // allowing the backend to verify the ID token.
+            val removed =
+                FcmTokenManager.unregisterCurrentDevice()
+
+            if (!removed) {
+                Log.w(
+                    TAG,
+                    "FCM cleanup was not confirmed before sign-out."
+                )
+            }
+
+            // Logout must continue even when cleanup fails.
+            FirebaseAuth.getInstance().signOut()
+
+            // Clear cached account information.
+            CurrentManager.ID = ""
+            CurrentManager.ACCOMMODATION_ID = ""
+            CurrentStudent.ID = ""
+
+            // Avoid accessing a detached Fragment.
+            val currentActivity = activity ?: return@launch
+
+            val intent = Intent(
+                currentActivity,
+                LoginActivity::class.java
+            )
+
+            // Prevent Back from reopening the manager profile.
+            intent.flags =
+                Intent.FLAG_ACTIVITY_NEW_TASK or
+                        Intent.FLAG_ACTIVITY_CLEAR_TASK
+
+            startActivity(intent)
+        }
     }
 }
