@@ -2,86 +2,109 @@
 package com.chommiehub.app.firebase
 
 import android.util.Log
+import com.chommiehub.app.data.remote.ApiClient
+import com.chommiehub.app.data.remote.FcmDeviceRequest
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.messaging.FirebaseMessaging
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 /**
- * Manages Firebase Cloud Messaging device tokens.
+ * Retrieves and registers FCM device tokens
+ * for authenticated ChommieHub users.
  */
 object FcmTokenManager {
 
     private const val TAG = "ChommieHubFCM"
 
     /**
-     * Retrieves the current FCM token after a user signs in.
+     * Called after a user successfully signs in.
      */
     fun refreshTokenForCurrentUser() {
-
         val user = FirebaseAuth.getInstance().currentUser
 
         if (user == null) {
-            Log.d(
-                TAG,
-                "No signed-in user. Token registration skipped."
-            )
+            Log.d(TAG, "No signed-in user. FCM registration skipped.")
             return
         }
 
         FirebaseMessaging.getInstance().token
             .addOnSuccessListener { token ->
-
-                val currentUser =
-                    FirebaseAuth.getInstance().currentUser
-
-                if (currentUser?.uid != user.uid) {
-                    Log.d(
-                        TAG,
-                        "User session changed. Registration skipped."
-                    )
+                if (FirebaseAuth.getInstance().currentUser?.uid != user.uid) {
+                    Log.d(TAG, "User changed before token retrieval completed.")
                     return@addOnSuccessListener
                 }
 
-                Log.d(TAG, "FCM token retrieved successfully")
-
-                // TODO: Register token with authenticated backend.
-                // Never log the full FCM token.
+                registerToken(user, token)
             }
             .addOnFailureListener { exception ->
-
-                Log.e(
-                    TAG,
-                    "Failed to retrieve FCM token",
-                    exception
-                )
+                Log.e(TAG, "Failed to retrieve FCM token", exception)
             }
     }
 
     /**
-     * Handles a newly generated or refreshed FCM token.
+     * Called when Firebase generates a new FCM token.
      */
     fun handleRefreshedToken(token: String) {
-
         val user = FirebaseAuth.getInstance().currentUser
 
         if (user == null) {
-            Log.d(
-                TAG,
-                "No signed-in user. Refreshed token registration deferred."
-            )
+            Log.d(TAG, "No signed-in user. Token registration deferred.")
             return
         }
 
-        if (token.isBlank()) {
-            Log.w(TAG, "Received an empty FCM token")
+        registerToken(user, token)
+    }
+
+    /**
+     * Sends the FCM token to the authenticated backend.
+     */
+    private fun registerToken(user: FirebaseUser, fcmToken: String) {
+        if (fcmToken.isBlank()) {
+            Log.w(TAG, "Empty FCM token. Registration skipped.")
             return
         }
 
-        Log.d(
-            TAG,
-            "FCM token refresh detected for an authenticated user"
-        )
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                // Obtain a valid Firebase Authentication ID token.
+                val idToken = user.getIdToken(false).await().token
 
-        // TODO: Register refreshed token with authenticated backend.
-        // Backend must verify Firebase ID token and user identity.
+                if (idToken.isNullOrBlank()) {
+                    Log.w(TAG, "Firebase ID token unavailable.")
+                    return@launch
+                }
+
+                // Check whether the same user is still signed in.
+                if (FirebaseAuth.getInstance().currentUser?.uid != user.uid) {
+                    Log.d(TAG, "User session changed. Registration cancelled.")
+                    return@launch
+                }
+
+                val response = ApiClient.api.registerFcmDevice(
+                    authorization = "Bearer $idToken",
+                    request = FcmDeviceRequest(fcmToken = fcmToken)
+                )
+
+                if (response.isSuccessful) {
+                    Log.d(TAG, "FCM device registered successfully.")
+                } else {
+                    Log.w(
+                        TAG,
+                        "FCM registration failed. HTTP ${response.code()}"
+                    )
+                }
+
+            } catch (exception: Exception) {
+                Log.e(
+                    TAG,
+                    "Unable to register FCM device",
+                    exception
+                )
+            }
+        }
     }
 }
