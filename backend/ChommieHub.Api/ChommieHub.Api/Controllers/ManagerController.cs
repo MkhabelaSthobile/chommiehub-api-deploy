@@ -11,12 +11,16 @@ namespace ChommieHub.Api.Controllers
     [Route("api/manager")]
     public sealed class ManagerController : ControllerBase
     {
+        private readonly FirebaseTokenVerificationService _tokenVerifier;
+        private readonly IManagerAccountService _managerAccountService;
         private readonly IManagerService _managerService;
         private readonly ILogger<ManagerController> _logger;
 
-        public ManagerController(IManagerService managerService, ILogger<ManagerController> logger)
+        public ManagerController(IManagerService managerService, IManagerAccountService managerAccountService, FirebaseTokenVerificationService tokenVerifier, ILogger<ManagerController> logger)
         {
             _managerService = managerService;
+            _managerAccountService = managerAccountService;
+            _tokenVerifier = tokenVerifier;
             _logger = logger;
         }
 
@@ -61,16 +65,96 @@ namespace ChommieHub.Api.Controllers
         /// <summary>
         ///Records a manager's approval or decline decision for an accommodation application.
         /// </summary>
+
         [HttpPatch("applications/{applicationId}/review")]
-        public async Task<ActionResult<ManagerApplicationDetailResponse>> ReviewApplication(string applicationId, ReviewApplicationRequest request, CancellationToken cancellationToken)
+        public async Task<ActionResult<ManagerApplicationDetailResponse>> ReviewApplication(
+            string applicationId,
+            [FromBody] ReviewApplicationRequest request,
+            CancellationToken cancellationToken)
         {
+            string? authorization = Request.Headers.Authorization.ToString();
+
+            if (string.IsNullOrWhiteSpace(authorization) ||
+                !authorization.StartsWith(
+                    "Bearer ",
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                return Unauthorized(new
+                {
+                    message = "A Firebase ID token is required."
+                });
+            }
+
+            string idToken = authorization["Bearer ".Length..].Trim();
+
+            if (string.IsNullOrWhiteSpace(idToken))
+            {
+                return Unauthorized(new
+                {
+                    message = "A Firebase ID token is required."
+                });
+            }
+
+            string? firebaseUid =
+                await _tokenVerifier.VerifyUserIdAsync(idToken);
+
+            if (string.IsNullOrWhiteSpace(firebaseUid))
+            {
+                return Unauthorized(new
+                {
+                    message = "Invalid or revoked Firebase ID token."
+                });
+            }
+
+            ManagerResponse? manager =
+                await _managerAccountService.GetByIdAsync(
+                    firebaseUid,
+                    cancellationToken);
+
+            if (manager is null ||
+                !string.Equals(
+                    manager.FirebaseUid,
+                    firebaseUid,
+                    StringComparison.Ordinal) ||
+                string.IsNullOrWhiteSpace(manager.AccommodationId))
+            {
+                return StatusCode(403, new
+                {
+                    message = "An authorized residence manager is required."
+                });
+            }
+
+            ManagerApplicationDetailResponse? existingApplication =
+                await _managerService.GetApplicationAsync(
+                    applicationId,
+                    cancellationToken);
+
+            if (existingApplication is null)
+            {
+                return NotFound(new
+                {
+                    message = "Application was not found."
+                });
+            }
+
+            if (!string.Equals(
+                manager.AccommodationId,
+                existingApplication.AccommodationId,
+                StringComparison.Ordinal))
+            {
+                return StatusCode(403, new
+                {
+                    message = "You cannot review applications for this accommodation."
+                });
+            }
+
             try
             {
-                ManagerApplicationDetailResponse? 
-                    application = await _managerService.ReviewApplicationAsync(
+                ManagerApplicationDetailResponse? application =
+                    await _managerService.ReviewApplicationAsync(
                         applicationId,
                         request,
-                         cancellationToken);
+                        cancellationToken);
 
                 if (application is null)
                 {
@@ -80,7 +164,10 @@ namespace ChommieHub.Api.Controllers
                     });
                 }
 
-                _logger.LogInformation("Application {ApplicationId} was reviewed with decision {Decision}.", applicationId, request.Decision);
+                _logger.LogInformation(
+                    "Application {ApplicationId} was reviewed with decision {Decision}.",
+                    applicationId,
+                    application.Status);
 
                 return Ok(application);
             }
@@ -92,6 +179,7 @@ namespace ChommieHub.Api.Controllers
                 });
             }
         }
+
 
         /// <summary>
         /// Assigns an available room to an approved application and creates the corresponding resident record
