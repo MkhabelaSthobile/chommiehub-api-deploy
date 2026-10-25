@@ -36,6 +36,7 @@ namespace ChommieHub.Api.Repositories
         /// Creates the backend student profile using the Firebase Authentication UID as the Firestore document identifier. 
         /// This keeps authentication and application data linked through one stable student ID
         /// </summary>
+
         public async Task<Student> CreateAsync(
             Student student,
             CancellationToken cancellationToken = default)
@@ -51,16 +52,23 @@ namespace ChommieHub.Api.Repositories
                 .Collection(CollectionName)
                 .Document(student.FirebaseUid);
 
+            // Preserve the identity contract:
+            // Firebase UID = Student.Id = Firestore document ID.
             student.Id = student.FirebaseUid;
-            student.CreatedAtUtc = DateTime.UtcNow;
-            student.UpdatedAtUtc = DateTime.UtcNow;
 
-            await documentReference.SetAsync(
+            DateTime now = DateTime.UtcNow;
+            student.CreatedAtUtc = now;
+            student.UpdatedAtUtc = now;
+
+            // CreateAsync fails if the document already exists.
+            // Unlike SetAsync, it will not overwrite an existing profile.
+            await documentReference.CreateAsync(
                 student,
                 cancellationToken: cancellationToken);
 
             return student;
         }
+
 
         public async Task<bool> UpdateAsync(Student student, CancellationToken cancellationToken = default)
         {
