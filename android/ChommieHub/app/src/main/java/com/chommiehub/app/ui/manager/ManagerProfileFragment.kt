@@ -214,7 +214,7 @@ class ManagerProfileFragment : Fragment() {
             // Clear cached account information.
             CurrentManager.ID = ""
             CurrentManager.ACCOMMODATION_ID = ""
-            CurrentStudent.ID = ""
+            CurrentStudent.clear()
 
             // Avoid accessing a detached Fragment.
             val currentActivity = activity ?: return@launch
