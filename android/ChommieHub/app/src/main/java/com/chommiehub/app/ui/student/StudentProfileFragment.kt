@@ -120,50 +120,8 @@ class StudentProfileFragment : Fragment() {
         btnVisitorRequests =
             view.findViewById(R.id.btnVisitorRequests)
 
-        btnStudentSignOut.setOnClickListener {
-            // Prevent repeated taps while logout is in progress.
-            btnStudentSignOut.isEnabled = false
-
-            // Keep the logout process tied to the Fragment lifecycle.
-            lifecycleScope.launch {
-                // Remove the device registration while the user
-                // still has a valid Firebase authentication session.
-                val removed = FcmTokenManager.unregisterCurrentDevice()
-
-                if (!removed) {
-                    android.util.Log.w(
-                        "StudentProfile",
-                        "FCM cleanup was not confirmed before sign-out."
-                    )
-                }
-
-                // Sign out even if device removal failed.
-                FirebaseAuth.getInstance().signOut()
-
-                // Clear all cached identity so the next user starts fresh.
-                CurrentStudent.ID = ""
-                CurrentManager.ID = ""
-                CurrentManager.ACCOMMODATION_ID = ""
-
-                // The Fragment might have been detached during
-                // the network request, so check before navigating.
-                val currentActivity = activity ?: return@launch
-
-                val intent = android.content.Intent(
-                    currentActivity,
-                    LoginActivity::class.java
-                )
-
-                // Wipe the back stack so Back cannot return
-                // to the student's profile.
-                intent.flags =
-                    android.content.Intent.FLAG_ACTIVITY_NEW_TASK or
-                            android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK
-
-                startActivity(intent)
-            }
-        }
-
+        btnStudentSignOut =
+            view.findViewById(R.id.btnStudentSignOut)
     }
 
     private fun configureViewModel() {
@@ -213,25 +171,39 @@ class StudentProfileFragment : Fragment() {
         }
 
         btnStudentSignOut.setOnClickListener {
-            FirebaseAuth.getInstance().signOut()
+            btnStudentSignOut.isEnabled = false
 
-            // Clear all cached identity so the next user starts fresh.
-            CurrentStudent.ID = ""
-            CurrentManager.ID = ""
-            CurrentManager.ACCOMMODATION_ID = ""
+            viewLifecycleOwner.lifecycleScope.launch {
+                // Remove the FCM registration before Firebase sign-out.
+                val removed = FcmTokenManager.unregisterCurrentDevice()
 
-            val intent = android.content.Intent(
-                requireContext(),
-                LoginActivity::class.java
-            )
-            // Wipe the back stack so Back cannot return to the profile.
-            intent.flags =
-                android.content.Intent.FLAG_ACTIVITY_NEW_TASK or
-                        android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK
+                if (!removed) {
+                    android.util.Log.w(
+                        "StudentProfile",
+                        "FCM cleanup was not confirmed before sign-out."
+                    )
+                }
 
-            startActivity(intent)
+                // Logout must remain possible even if cleanup fails.
+                FirebaseAuth.getInstance().signOut()
+
+                CurrentStudent.clear()
+                CurrentManager.ID = ""
+                CurrentManager.ACCOMMODATION_ID = ""
+
+                val currentActivity = activity ?: return@launch
+                val intent = android.content.Intent(
+                    currentActivity,
+                    LoginActivity::class.java
+                ).apply {
+                    flags = android.content.Intent.FLAG_ACTIVITY_NEW_TASK or
+                            android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK
+                }
+
+                currentActivity.startActivity(intent)
+                currentActivity.finish()
+            }
         }
-
     }
 
     private fun observeState() {
