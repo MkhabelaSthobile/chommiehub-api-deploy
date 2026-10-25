@@ -181,6 +181,29 @@ namespace ChommieHub.Api.Controllers
                 });
             }
 
+
+            // Ensure the inspection belongs to the authenticated student
+            // and matches their actual accommodation and room.
+            if (!string.Equals(
+                    request.StudentId,
+                    userId,
+                    StringComparison.Ordinal) ||
+                !string.Equals(
+                    request.AccommodationId,
+                    resident.AccommodationId,
+                    StringComparison.Ordinal) ||
+                !string.Equals(
+                    request.RoomId,
+                    resident.RoomId,
+                    StringComparison.Ordinal))
+            {
+                return StatusCode(403, new
+                {
+                    message = "Inspection student, accommodation and room must match your active residence."
+                });
+            }
+
+
             try
             {
                 InspectionResponse inspection =
