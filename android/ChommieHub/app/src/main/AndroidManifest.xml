@@ -9,6 +9,7 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
+        android:name=".ChommieHubApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -18,6 +19,11 @@
         android:roundIcon="@mipmap/chommiehub_app_icon"
         android:supportsRtl="true"
         android:theme="@style/Theme.ChommieHub">
+
+        <!-- Default channel for Firebase background notifications -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="chommiehub_updates" />
 
         <!-- Login / Launcher -->
         <activity
@@ -39,7 +45,6 @@
         <activity
             android:name=".ui.auth.BiometricActivity"
             android:exported="false" />
-
 
         <!-- Student application -->
         <activity
