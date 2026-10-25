@@ -22,7 +22,37 @@ class ChommieHubMessagingService : FirebaseMessagingService() {
 
     companion object {
         private const val TAG = "ChommieHubFCM"
-        private const val CHANNEL_ID = "chommiehub_updates"
+
+        const val CHANNEL_ID = "chommiehub_updates"
+
+        /**
+         * Creates the notification channel if it does not exist.
+         *
+         * Safe to call more than once.
+         */
+        fun createNotificationChannel(
+            notificationManager: NotificationManager
+        ) {
+            val channel = NotificationChannel(
+                CHANNEL_ID,
+                "ChommieHub Updates",
+                NotificationManager.IMPORTANCE_DEFAULT
+            ).apply {
+                description =
+                    "Residence applications, approvals and important updates"
+            }
+
+            notificationManager.createNotificationChannel(channel)
+        }
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+
+        val notificationManager =
+            getSystemService(NotificationManager::class.java)
+
+        createNotificationChannel(notificationManager)
     }
 
     /**
@@ -52,7 +82,7 @@ class ChommieHubMessagingService : FirebaseMessagingService() {
             ?: message.data["body"]
             ?: "You have a new notification."
 
-        Log.d(TAG, "Notification received: $title")
+        Log.d(TAG, "FCM notification received")
 
         showNotification(title, body)
     }
@@ -60,23 +90,15 @@ class ChommieHubMessagingService : FirebaseMessagingService() {
     /**
      * Displays a notification on the device.
      */
-    private fun showNotification(title: String, body: String) {
-
+    private fun showNotification(
+        title: String,
+        body: String
+    ) {
         val notificationManager =
             getSystemService(NotificationManager::class.java)
 
-        // Create the notification channel.
-        // ChommieHub's minimum Android version is API 26+.
-        val channel = NotificationChannel(
-            CHANNEL_ID,
-            "ChommieHub Updates",
-            NotificationManager.IMPORTANCE_DEFAULT
-        ).apply {
-            description =
-                "Residence applications, approvals and important updates"
-        }
-
-        notificationManager.createNotificationChannel(channel)
+        // Ensure the channel exists.
+        createNotificationChannel(notificationManager)
 
         // Android 13+ requires runtime notification permission.
         if (
@@ -86,11 +108,17 @@ class ChommieHubMessagingService : FirebaseMessagingService() {
                 Manifest.permission.POST_NOTIFICATIONS
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            Log.w(TAG, "Notification permission not granted")
+            Log.w(
+                TAG,
+                "Notification permission not granted"
+            )
             return
         }
 
-        val notification = NotificationCompat.Builder(this, CHANNEL_ID)
+        val notification = NotificationCompat.Builder(
+            this,
+            CHANNEL_ID
+        )
             .setSmallIcon(R.mipmap.chommiehub_app_icon)
             .setContentTitle(title)
             .setContentText(body)
