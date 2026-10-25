@@ -1,3 +1,4 @@
+
 package com.chommiehub.app.ui.auth
 
 import android.content.Intent
@@ -9,16 +10,14 @@ import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.chommiehub.app.BuildConfig
+import androidx.lifecycle.lifecycleScope
 import com.chommiehub.app.R
-import com.chommiehub.app.data.model.manager.CreateManagerRequest
 import com.chommiehub.app.data.model.student.CreateStudentRequest
 import com.chommiehub.app.data.remote.ApiClient
+import com.chommiehub.app.ui.manager.CurrentManager
+import com.chommiehub.app.ui.student.CurrentStudent
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class RegisterActivity : AppCompatActivity() {
 
@@ -26,20 +25,29 @@ class RegisterActivity : AppCompatActivity() {
         FirebaseAuth.getInstance()
     }
 
+    private lateinit var btnRegister: Button
+
+    private var registrationInProgress = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
 
-        findViewById<Button>(R.id.btnRegister).setOnClickListener {
+        btnRegister = findViewById(R.id.btnRegister)
+
+        btnRegister.setOnClickListener {
             register()
         }
 
         findViewById<TextView>(R.id.tvLogin).setOnClickListener {
-            finish()
+            if (!registrationInProgress) {
+                finish()
+            }
         }
     }
 
     private fun register() {
+        if (registrationInProgress) return
 
         fun getValue(id: Int): String {
             return findViewById<EditText>(id)
@@ -55,10 +63,17 @@ class RegisterActivity : AppCompatActivity() {
         val password = getValue(R.id.etPassword)
         val confirmPassword = getValue(R.id.etConfirmPassword)
 
-        val isManager = findViewById<RadioGroup>(R.id.rgRole)
-            .checkedRadioButtonId == R.id.rbManager
+        val isManager =
+            findViewById<RadioGroup>(R.id.rgRole)
+                .checkedRadioButtonId == R.id.rbManager
 
-        // Validate required fields
+        if (isManager) {
+            toast(
+                "Manager accounts must be created by an administrator."
+            )
+            return
+        }
+
         if (
             name.isBlank() ||
             surname.isBlank() ||
@@ -68,25 +83,24 @@ class RegisterActivity : AppCompatActivity() {
             return
         }
 
-        // Validate email
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             toast("Enter a valid email")
             return
         }
 
-        // Validate password
         if (password.length < 6) {
             toast("Password must be at least 6 characters")
             return
         }
 
-        // Confirm passwords match
         if (password != confirmPassword) {
             toast("Passwords do not match")
             return
         }
 
-        // Create Firebase Authentication account
+        registrationInProgress = true
+        btnRegister.isEnabled = false
+
         auth.createUserWithEmailAndPassword(
             email,
             password
@@ -95,72 +109,61 @@ class RegisterActivity : AppCompatActivity() {
             val firebaseUid = result.user?.uid
 
             if (firebaseUid == null) {
+                registrationInProgress = false
+                btnRegister.isEnabled = true
                 toast("Could not retrieve Firebase user ID")
                 return@addOnSuccessListener
             }
 
-            // Create the user's profile through the ChommieHub API,
-            // as either a student or a residence manager.
-            CoroutineScope(Dispatchers.IO).launch {
-
+            lifecycleScope.launch {
                 try {
+                    val request = CreateStudentRequest(
+                        firebaseUid = firebaseUid,
+                        name = name,
+                        surname = surname,
+                        email = email,
+                        phoneNumber = phone,
+                        preferredLanguage = "English"
+                    )
 
-                    if (isManager) {
+                    // Create the student profile through the API.
+                    ApiClient.api.createStudent(request)
 
-                        val request = CreateManagerRequest(
-                            firebaseUid = firebaseUid,
-                            name = name,
-                            surname = surname,
-                            email = email,
-                            phoneNumber = phone,
-                            accommodationId = BuildConfig.MANAGER_ACCOMMODATION_ID
-                        )
-
-                        ApiClient.api.createManager(request)
-                    } else {
-                        val request = CreateStudentRequest(
-                            firebaseUid = firebaseUid,
-                            name = name,
-                            surname = surname,
-                            email = email,
-                            phoneNumber = phone,
-                            preferredLanguage = "English"
-                        )
-
-                        ApiClient.api.createStudent(request)
-                    }
-
-                    withContext(Dispatchers.Main) {
-
-                        // Firebase automatically signs a new user in as soon as
-                        // their account is created. Sign them out immediately so
-                        // that they must log in with their new credentials
-                        auth.signOut()
-
-                        toast("Registration successful. Please sign in.")
-
-                        startActivity(
-                            Intent(
-                                this@RegisterActivity,
-                                LoginActivity::class.java
-                            )
-                        )
-
-                        finish()
-                    }
+                    toast(
+                        "Registration successful. Please sign in."
+                    )
 
                 } catch (exception: Exception) {
+                    toast(
+                        "Account created, but profile setup may be incomplete. " +
+                                "Please sign in to finish setup."
+                    )
+                } finally {
+                    // Registration does not register an FCM device.
+                    // End the temporary Firebase session.
+                    auth.signOut()
 
-                    withContext(Dispatchers.Main) {
-                        toast(
-                            "Account created. Profile sync failed: " +
-                                    (exception.message ?: "Unknown error")
-                        )
-                    }
+                    CurrentStudent.clear()
+                    CurrentManager.ID = ""
+                    CurrentManager.ACCOMMODATION_ID = ""
+
+                    val intent = Intent(
+                        this@RegisterActivity,
+                        LoginActivity::class.java
+                    )
+
+                    intent.flags =
+                        Intent.FLAG_ACTIVITY_NEW_TASK or
+                                Intent.FLAG_ACTIVITY_CLEAR_TASK
+
+                    startActivity(intent)
+                    finish()
                 }
             }
 
         }.addOnFailureListener { exception ->
+            registrationInProgress = false
+            btnRegister.isEnabled = true
 
             toast(
                 exception.message ?: "Registration failed"
