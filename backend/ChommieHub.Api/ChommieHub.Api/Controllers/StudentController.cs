@@ -1,6 +1,7 @@
 
 using ChommieHub.Api.DTOs;
 using ChommieHub.Api.Services;
+using Grpc.Core;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ChommieHub.Api.Controllers
@@ -139,6 +140,7 @@ namespace ChommieHub.Api.Controllers
 
         /// <summary>
         /// Creates a student profile for the authenticated Firebase user.
+        /// Duplicate profiles return HTTP 409 Conflict.
         /// </summary>
         [HttpPost]
         public async Task<ActionResult<StudentResponse>> Create(
@@ -183,16 +185,9 @@ namespace ChommieHub.Api.Controllers
                 });
             }
 
-            // Important: The service must create the profile
-            // using the authenticated Firebase UID, not an
-            // arbitrary identity supplied in the request body.
-            //
-            // We will verify that contract in IStudentService
-            // and StudentService before treating profile creation
-            // as fully secured.
-
             // Never trust a Firebase UID supplied by the client.
             // The verified Firebase token is the source of identity.
+            // Check ownership BEFORE writing anything to Firestore.
             if (!string.Equals(
                 request.FirebaseUid,
                 firebaseUid,
@@ -204,35 +199,47 @@ namespace ChommieHub.Api.Controllers
                 });
             }
 
-            StudentResponse student =
-                await _studentService.CreateAsync(
-                    request,
-                    cancellationToken);
-
-            if (!string.Equals(
-                student.Id,
-                firebaseUid,
-                StringComparison.Ordinal))
+            try
             {
-                _logger.LogError(
-                    "Student creation identity mismatch. Authenticated UID {FirebaseUid}, created student ID {StudentId}.",
+                StudentResponse student =
+                    await _studentService.CreateAsync(
+                        request,
+                        cancellationToken);
+
+                // Defensive identity check after creation.
+                if (!string.Equals(
+                    student.Id,
                     firebaseUid,
+                    StringComparison.Ordinal))
+                {
+                    _logger.LogError(
+                        "Student creation identity mismatch. Authenticated UID {FirebaseUid}, created student ID {StudentId}.",
+                        firebaseUid,
+                        student.Id);
+
+                    return StatusCode(500, new
+                    {
+                        message = "Student profile identity does not match the authenticated user."
+                    });
+                }
+
+                _logger.LogInformation(
+                    "Student profile {StudentId} was created.",
                     student.Id);
 
-                return StatusCode(500, new
+                return CreatedAtAction(
+                    nameof(GetById),
+                    new { id = student.Id },
+                    student);
+            }
+            catch (RpcException exception)
+    when (exception.StatusCode == Grpc.Core.StatusCode.AlreadyExists)
+            {
+                return Conflict(new
                 {
-                    message = "Student profile identity does not match the authenticated user."
+                    message = "A student profile already exists for this Firebase account."
                 });
             }
-
-            _logger.LogInformation(
-                "Student profile {StudentId} was created.",
-                student.Id);
-
-            return CreatedAtAction(
-                nameof(GetById),
-                new { id = student.Id },
-                student);
         }
 
         /// <summary>
