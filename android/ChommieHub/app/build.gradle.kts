@@ -11,6 +11,7 @@ val localProperties = Properties().apply {
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.google.gms.google.services)
+    alias(libs.plugins.google.devtools.ksp)
 }
 
 // The shared Render API is the default endpoint used by repository builds,
@@ -90,7 +91,8 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
 
     implementation(libs.androidx.recyclerview)
-
+    implementation(libs.androidx.room.runtime)
+    ksp(libs.androidx.room.compiler)
     implementation("org.osmdroid:osmdroid-android:6.1.20")
 
     testImplementation(libs.junit)
