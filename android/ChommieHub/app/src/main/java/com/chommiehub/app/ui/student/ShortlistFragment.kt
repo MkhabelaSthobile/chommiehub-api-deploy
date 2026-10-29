@@ -53,7 +53,7 @@ class ShortlistFragment : Fragment(R.layout.fragment_shortlist) {
                         recyclerView.adapter = AccommodationAdapter(
                             items = state.accommodations,
                             onViewDetails = { accommodation ->
-                                parentFragmentManager.beginTransaction()
+                                requireActivity().supportFragmentManager.beginTransaction()
                                     .replace(
                                         R.id.studentContainer,
                                         AccommodationDetailFragment.newInstance(accommodation.id)
