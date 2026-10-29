@@ -144,5 +144,7 @@
     <string name="icon_favourite">♡</string>
     <string name="view_residence">View residence →</string>
 
+    <string name="tab_applications">Applications</string>
+    <string name="tab_shortlist">Shortlist</string>
 
 </resources>
