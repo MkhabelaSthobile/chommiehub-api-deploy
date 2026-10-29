@@ -13,8 +13,6 @@ import com.chommiehub.app.data.local.entity.SyncState
 import com.chommiehub.app.data.remote.ApiClient
 import com.chommiehub.app.data.repository.AccommodationRepository
 import com.chommiehub.app.ui.student.adapter.AccommodationAdapter
-import androidx.lifecycle.asLiveData
-import com.chommiehub.app.data.network.NetworkMonitor
 
 class ShortlistFragment : Fragment(R.layout.fragment_shortlist) {
 
@@ -31,13 +29,6 @@ class ShortlistFragment : Fragment(R.layout.fragment_shortlist) {
         val tvError = view.findViewById<TextView>(R.id.tvShortlistError)
         val tvEmpty = view.findViewById<TextView>(R.id.tvShortlistEmpty)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-
-        // Show a banner while the phone has no internet connection.
-        val tvOfflineBanner = view.findViewById<TextView>(R.id.tvOfflineBanner)
-        NetworkMonitor.getInstance(requireContext()).isOnline.asLiveData()
-            .observe(viewLifecycleOwner) { isOnline ->
-                tvOfflineBanner.visibility = if (isOnline) View.GONE else View.VISIBLE
-            }
 
         val repository = AccommodationRepository(ApiClient.api)
         viewModel = ViewModelProvider(
