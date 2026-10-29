@@ -12,6 +12,10 @@ import com.chommiehub.app.ui.resident.ResidentHomeFragment
 import com.chommiehub.app.ui.resident.ResidentServicesFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.launch
+import android.view.View
+import android.widget.TextView
+import androidx.lifecycle.asLiveData
+import com.chommiehub.app.data.network.NetworkMonitor
 
 /**
  * Hosts the student's Android feature area.
@@ -35,6 +39,13 @@ class StudentActivity : AppCompatActivity() {
         setContentView(R.layout.activity_student)
 
         bottomNav = findViewById(R.id.bottomNav)
+
+        // Show a banner on every student screen while the phone is offline.
+        val tvOfflineBanner = findViewById<TextView>(R.id.tvOfflineBanner)
+        NetworkMonitor.getInstance(this).isOnline.asLiveData()
+            .observe(this) { isOnline ->
+                tvOfflineBanner.visibility = if (isOnline) View.GONE else View.VISIBLE
+            }
 
         configureNavigation(CurrentStudent.USER_TYPE.equals("Resident", ignoreCase = true))
     }
