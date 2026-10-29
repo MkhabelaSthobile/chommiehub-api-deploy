@@ -151,6 +151,6 @@
     <string name="sync_status_synced">Synced</string>
     <string name="sync_status_failed">Sync failed</string>
     <string name="remove_from_shortlist">Remove from shortlist</string>
-    <string name="offline_banner">You are offline. Changes are saved on your phone and will sync when you reconnect.</string>
+    <string name="offline_banner">You are offline. Some features need internet. Shortlist changes are saved and will sync when you reconnect.</string>
 
 </resources>
