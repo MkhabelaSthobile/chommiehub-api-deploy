@@ -56,7 +56,51 @@ class AccommodationRepository(private val api: ChommieHubApi) {
     }
 
     suspend fun getShortlist(studentId: String): List<AccommodationResponse> {
-        return api.getShortlist(studentId)
+        try {
+            val serverShortlist = api.getShortlist(studentId)
+            saveServerShortlist(studentId, serverShortlist)
+        } catch (_: IOException) {
+            // Offline: show what is saved on the phone.
+        } catch (exception: HttpException) {
+            if (!exception.isServerError()) throw exception
+        }
+
+        return dao.getShortlistedAccommodations(studentId).map { it.toResponse() }
+    }
+
+    /** Merges the server's shortlist into the phone's, keeping unsent changes. */
+    private suspend fun saveServerShortlist(
+        studentId: String,
+        serverShortlist: List<AccommodationResponse>
+    ) {
+        dao.upsertAccommodations(serverShortlist.map { it.toEntity() })
+
+        val serverIds = serverShortlist.map { it.id }.toSet()
+        val localEntries = dao.getEntries(studentId).associateBy { it.accommodationId }
+        val now = System.currentTimeMillis()
+
+        // Remove synced rows the server no longer has (for example removed on another device).
+        localEntries.values
+            .filter { it.syncState == SyncState.SYNCED && it.accommodationId !in serverIds }
+            .forEach { dao.deleteEntry(studentId, it.accommodationId) }
+
+        // Add or refresh what the server has, unless a local change is still waiting.
+        val entriesToSave = serverIds
+            .filter { id ->
+                val state = localEntries[id]?.syncState
+                state == null || state == SyncState.SYNCED
+            }
+            .map { id ->
+                ShortlistEntryEntity(
+                    studentId = studentId,
+                    accommodationId = id,
+                    isShortlisted = true,
+                    syncState = SyncState.SYNCED,
+                    updatedAtMillis = localEntries[id]?.updatedAtMillis ?: now
+                )
+            }
+
+        dao.upsertEntries(entriesToSave)
     }
 
     suspend fun addToShortlist(studentId: String, accommodationId: String) {
