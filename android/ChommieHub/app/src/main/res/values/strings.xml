@@ -147,4 +147,9 @@
     <string name="tab_applications">Applications</string>
     <string name="tab_shortlist">Shortlist</string>
 
+    <string name="sync_status_pending">Waiting to sync</string>
+    <string name="sync_status_synced">Synced</string>
+    <string name="sync_status_failed">Sync failed</string>
+    <string name="remove_from_shortlist">Remove from shortlist</string>
+
 </resources>
