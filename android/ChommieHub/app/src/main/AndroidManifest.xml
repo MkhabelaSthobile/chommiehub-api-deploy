@@ -4,7 +4,8 @@
 
     <!-- Internet access for Firebase and ChommieHub API -->
     <uses-permission android:name="android.permission.INTERNET" />
-
+    <!-- Lets the app check whether the phone is online -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <!-- Required to display notifications on Android 13 and above -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
