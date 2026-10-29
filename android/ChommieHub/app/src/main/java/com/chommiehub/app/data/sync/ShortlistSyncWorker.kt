@@ -11,6 +11,7 @@ import com.chommiehub.app.data.remote.ChommieHubApi
 import retrofit2.HttpException
 import java.io.IOException
 import com.google.firebase.auth.FirebaseAuth
+import android.util.Log
 
 /**
  * Background job that sends shortlist changes saved on the phone to the API.
@@ -22,18 +23,24 @@ class ShortlistSyncWorker(
 
     override suspend fun doWork(): Result {
         // Nothing can be sent without a signed-in user. Changes stay PENDING.
-        if (FirebaseAuth.getInstance().currentUser == null)
+        if (FirebaseAuth.getInstance().currentUser == null) {
+            Log.d(TAG, "Skipped: no signed-in user")
             return Result.success()
+        }
 
         val dao = AppDatabase.getInstance(applicationContext).shortlistDao()
         val api = ApiClient.api
 
         while (true) {
             val pending = dao.getPendingEntries()
+            Log.d(TAG, "Pending changes: ${pending.size}")
             if (pending.isEmpty()) return Result.success()
 
             for (entry in pending) {
-                when (send(api, entry)) {
+                val result = send(api, entry)
+                Log.d(TAG, "Change for ${entry.accommodationId}: $result")
+
+                when (result) {
                     SendResult.SENT -> dao.markSyncedIfUnchanged(
                         entry.studentId,
                         entry.accommodationId,
@@ -101,6 +108,7 @@ class ShortlistSyncWorker(
     }
 
     private companion object {
+        const val TAG = "ShortlistSync"
         const val MAX_ATTEMPTS = 5
     }
 }
