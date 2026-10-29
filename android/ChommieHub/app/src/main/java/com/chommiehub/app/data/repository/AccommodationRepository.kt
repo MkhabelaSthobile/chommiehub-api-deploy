@@ -9,6 +9,9 @@ import com.chommiehub.app.data.local.dao.ShortlistDao
 import com.chommiehub.app.data.local.entity.toEntity
 import com.chommiehub.app.data.local.entity.toResponse
 import java.io.IOException
+import com.chommiehub.app.data.local.entity.ShortlistEntryEntity
+import com.chommiehub.app.data.local.entity.SyncState
+import retrofit2.HttpException
 
 /**
  * Repository used by student-facing accommodation discovery features.
@@ -57,12 +60,70 @@ class AccommodationRepository(private val api: ChommieHubApi) {
     }
 
     suspend fun addToShortlist(studentId: String, accommodationId: String) {
-        api.addToShortlist(studentId, accommodationId)
+        val entry = saveShortlistChange(studentId, accommodationId, isShortlisted = true)
+        sendOrQueue(entry) { api.addToShortlist(studentId, accommodationId) }
     }
 
     suspend fun removeFromShortlist(studentId: String, accommodationId: String) {
-        api.removeFromShortlist(studentId, accommodationId)
+        val entry = saveShortlistChange(studentId, accommodationId, isShortlisted = false)
+        sendOrQueue(entry) { api.removeFromShortlist(studentId, accommodationId) }
     }
+
+    /** Saves the student's choice on the phone first, marked as waiting to be sent. */
+    private suspend fun saveShortlistChange(
+        studentId: String,
+        accommodationId: String,
+        isShortlisted: Boolean
+    ): ShortlistEntryEntity {
+        val entry = ShortlistEntryEntity(
+            studentId = studentId,
+            accommodationId = accommodationId,
+            isShortlisted = isShortlisted,
+            syncState = SyncState.PENDING,
+            updatedAtMillis = System.currentTimeMillis()
+        )
+        dao.upsertEntry(entry)
+        return entry
+    }
+
+    /** Tries the server now. If that is not possible, the change stays PENDING. */
+    private suspend fun sendOrQueue(entry: ShortlistEntryEntity, send: suspend () -> Unit) {
+        try {
+            send()
+            markSyncedIfUnchanged(entry)
+        } catch (_: IOException) {
+            // Offline: the change stays PENDING and is sent later.
+        } catch (exception: HttpException) {
+            if (exception.isServerError()) {
+                // Server trouble: the change stays PENDING so it can be retried.
+            } else {
+                markFailedIfUnchanged(entry)
+                throw exception
+            }
+        }
+    }
+
+    // Only update the row if the student has not changed it again in the meantime.
+    private suspend fun markSyncedIfUnchanged(entry: ShortlistEntryEntity) {
+        val current = dao.getEntry(entry.studentId, entry.accommodationId) ?: return
+        if (current.updatedAtMillis == entry.updatedAtMillis) {
+            dao.upsertEntry(current.copy(syncState = SyncState.SYNCED, attemptCount = 0))
+        }
+    }
+
+    private suspend fun markFailedIfUnchanged(entry: ShortlistEntryEntity) {
+        val current = dao.getEntry(entry.studentId, entry.accommodationId) ?: return
+        if (current.updatedAtMillis == entry.updatedAtMillis) {
+            dao.upsertEntry(
+                current.copy(
+                    syncState = SyncState.FAILED,
+                    attemptCount = current.attemptCount + 1
+                )
+            )
+        }
+    }
+
+    private fun HttpException.isServerError(): Boolean = code() >= 500
 
     suspend fun getWeather(accommodationId: String): WeatherResponse {
         return api.getAccommodationWeather(accommodationId)
