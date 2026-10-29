@@ -9,6 +9,8 @@ import androidx.lifecycle.viewModelScope
 import com.chommiehub.app.data.model.manager.AccommodationResponse
 import com.chommiehub.app.data.repository.AccommodationRepository
 import kotlinx.coroutines.launch
+import androidx.lifecycle.asLiveData
+import com.chommiehub.app.data.local.entity.SyncState
 
 class ShortlistViewModel(
     private val repository: AccommodationRepository
@@ -21,6 +23,10 @@ class ShortlistViewModel(
     private val _uiState = MutableLiveData<ShortlistUiState>()
     val uiState: LiveData<ShortlistUiState>
         get() = _uiState
+
+    // Live sync status for each shortlisted residence.
+    val statuses: LiveData<Map<String, SyncState>> =
+        repository.observeShortlistStatuses(CurrentStudent.ID).asLiveData()
 
     fun loadShortlist() {
         _uiState.value = ShortlistUiState.Loading
