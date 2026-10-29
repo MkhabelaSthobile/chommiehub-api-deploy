@@ -10,6 +10,7 @@ import com.chommiehub.app.data.remote.ApiClient
 import com.chommiehub.app.data.remote.ChommieHubApi
 import retrofit2.HttpException
 import java.io.IOException
+import com.google.firebase.auth.FirebaseAuth
 
 /**
  * Background job that sends shortlist changes saved on the phone to the API.
@@ -20,6 +21,10 @@ class ShortlistSyncWorker(
 ) : CoroutineWorker(appContext, params) {
 
     override suspend fun doWork(): Result {
+        // Nothing can be sent without a signed-in user. Changes stay PENDING.
+        if (FirebaseAuth.getInstance().currentUser == null)
+            return Result.success()
+
         val dao = AppDatabase.getInstance(applicationContext).shortlistDao()
         val api = ApiClient.api
 
