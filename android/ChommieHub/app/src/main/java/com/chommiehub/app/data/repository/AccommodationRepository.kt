@@ -13,6 +13,8 @@ import com.chommiehub.app.data.local.entity.ShortlistEntryEntity
 import com.chommiehub.app.data.local.entity.SyncState
 import retrofit2.HttpException
 import com.chommiehub.app.data.sync.ShortlistSyncScheduler
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 /**
  * Repository used by student-facing accommodation discovery features.
@@ -67,6 +69,15 @@ class AccommodationRepository(private val api: ChommieHubApi) {
         }
 
         return dao.getShortlistedAccommodations(studentId).map { it.toResponse() }
+    }
+
+    /** Sync status (PENDING / SYNCED / FAILED) of each shortlisted residence, kept up to date. */
+    fun observeShortlistStatuses(studentId: String): Flow<Map<String, SyncState>> {
+        return dao.observeEntries(studentId).map { entries ->
+            entries
+                .filter { it.isShortlisted }
+                .associate { it.accommodationId to it.syncState }
+        }
     }
 
     /** Merges the server's shortlist into the phone's, keeping unsent changes. */
