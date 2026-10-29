@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.chommiehub.app.R
+import com.chommiehub.app.data.local.entity.SyncState
 import com.chommiehub.app.data.remote.ApiClient
 import com.chommiehub.app.data.repository.AccommodationRepository
 import com.chommiehub.app.ui.student.adapter.AccommodationAdapter
@@ -16,6 +17,9 @@ import com.chommiehub.app.ui.student.adapter.AccommodationAdapter
 class ShortlistFragment : Fragment(R.layout.fragment_shortlist) {
 
     private lateinit var viewModel: ShortlistViewModel
+
+    // Latest sync status per residence, kept so a new adapter can use it straight away.
+    private var latestStatuses: Map<String, SyncState> = emptyMap()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -31,6 +35,11 @@ class ShortlistFragment : Fragment(R.layout.fragment_shortlist) {
             this,
             ShortlistViewModel.Factory(repository)
         )[ShortlistViewModel::class.java]
+
+        viewModel.statuses.observe(viewLifecycleOwner) { statuses ->
+            latestStatuses = statuses
+            (recyclerView.adapter as? AccommodationAdapter)?.updateStatuses(statuses)
+        }
 
         viewModel.uiState.observe(viewLifecycleOwner) { state ->
             when (state) {
@@ -50,7 +59,8 @@ class ShortlistFragment : Fragment(R.layout.fragment_shortlist) {
                     } else {
                         tvEmpty.visibility = View.GONE
                         recyclerView.visibility = View.VISIBLE
-                        recyclerView.adapter = AccommodationAdapter(
+
+                        val adapter = AccommodationAdapter(
                             items = state.accommodations,
                             onViewDetails = { accommodation ->
                                 requireActivity().supportFragmentManager.beginTransaction()
@@ -63,8 +73,11 @@ class ShortlistFragment : Fragment(R.layout.fragment_shortlist) {
                             },
                             onToggleShortlist = { accommodation ->
                                 viewModel.removeFromShortlist(accommodation.id)
-                            }
+                            },
+                            showAsShortlisted = true
                         )
+                        adapter.updateStatuses(latestStatuses)
+                        recyclerView.adapter = adapter
                     }
                 }
                 is ShortlistUiState.Error -> {
