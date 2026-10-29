@@ -53,4 +53,49 @@ interface ShortlistDao {
                 "ORDER BY s.updatedAtMillis DESC"
     )
     suspend fun getShortlistedAccommodations(studentId: String): List<CachedAccommodationEntity>
+
+    // ---- Background sync ----
+
+    // Changes still waiting to be sent, oldest first.
+    @Query(
+        "SELECT * FROM shortlist_entries " +
+                "WHERE syncState = 'PENDING' " +
+                "ORDER BY updatedAtMillis ASC"
+    )
+    suspend fun getPendingEntries(): List<ShortlistEntryEntity>
+
+    // The three updates below only apply if the row has not been changed again.
+    @Query(
+        "UPDATE shortlist_entries SET syncState = 'SYNCED', attemptCount = 0 " +
+                "WHERE studentId = :studentId AND accommodationId = :accommodationId " +
+                "AND updatedAtMillis = :updatedAtMillis"
+    )
+    suspend fun markSyncedIfUnchanged(
+        studentId: String,
+        accommodationId: String,
+        updatedAtMillis: Long
+    ): Int
+
+    @Query(
+        "UPDATE shortlist_entries SET syncState = 'FAILED', attemptCount = attemptCount + 1 " +
+                "WHERE studentId = :studentId AND accommodationId = :accommodationId " +
+                "AND updatedAtMillis = :updatedAtMillis"
+    )
+    suspend fun markFailedIfUnchanged(
+        studentId: String,
+        accommodationId: String,
+        updatedAtMillis: Long
+    ): Int
+
+    @Query(
+        "UPDATE shortlist_entries SET attemptCount = attemptCount + 1 " +
+                "WHERE studentId = :studentId AND accommodationId = :accommodationId " +
+                "AND updatedAtMillis = :updatedAtMillis"
+    )
+    suspend fun addAttemptIfUnchanged(
+        studentId: String,
+        accommodationId: String,
+        updatedAtMillis: Long
+    ): Int
+
 }
