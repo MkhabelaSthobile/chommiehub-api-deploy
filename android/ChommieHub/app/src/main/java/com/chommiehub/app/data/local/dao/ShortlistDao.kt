@@ -5,6 +5,7 @@ import androidx.room.Query
 import androidx.room.Upsert
 import com.chommiehub.app.data.local.entity.CachedAccommodationEntity
 import com.chommiehub.app.data.local.entity.ShortlistEntryEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ShortlistDao {
@@ -36,6 +37,10 @@ interface ShortlistDao {
 
     @Query("SELECT * FROM shortlist_entries WHERE studentId = :studentId")
     suspend fun getEntries(studentId: String): List<ShortlistEntryEntity>
+
+    // Emits a new list every time a shortlist row changes (used for live status labels).
+    @Query("SELECT * FROM shortlist_entries WHERE studentId = :studentId")
+    fun observeEntries(studentId: String): Flow<List<ShortlistEntryEntity>>
 
     @Query(
         "DELETE FROM shortlist_entries " +
