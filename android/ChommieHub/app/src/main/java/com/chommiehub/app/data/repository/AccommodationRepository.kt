@@ -12,6 +12,7 @@ import java.io.IOException
 import com.chommiehub.app.data.local.entity.ShortlistEntryEntity
 import com.chommiehub.app.data.local.entity.SyncState
 import retrofit2.HttpException
+import com.chommiehub.app.data.sync.ShortlistSyncScheduler
 
 /**
  * Repository used by student-facing accommodation discovery features.
@@ -137,9 +138,11 @@ class AccommodationRepository(private val api: ChommieHubApi) {
             markSyncedIfUnchanged(entry)
         } catch (_: IOException) {
             // Offline: the change stays PENDING and is sent later.
+            ShortlistSyncScheduler.schedule()
         } catch (exception: HttpException) {
             if (exception.isServerError()) {
                 // Server trouble: the change stays PENDING so it can be retried.
+                ShortlistSyncScheduler.schedule()
             } else {
                 markFailedIfUnchanged(entry)
                 throw exception
