@@ -223,6 +223,11 @@ builder.Services.AddHttpClient<
 
 builder.Services.AddScoped<FirebaseTokenVerificationService>();
 
+
+builder.Services.AddScoped<
+    IAuditRepository,
+    FirestoreAuditRepository>();
+
 // ---------------------------------------------------------
 // Build the ASP.NET Core application
 // ---------------------------------------------------------
