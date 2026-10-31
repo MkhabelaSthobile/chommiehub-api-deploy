@@ -58,5 +58,51 @@ namespace ChommieHub.Api.Repositories
 
             return manager;
         }
+
+        public async Task<IReadOnlyList<Manager>> GetAllAsync(CancellationToken cancellationToken = default)
+        {
+            QuerySnapshot snapshot = await _firestore
+                .Collection(CollectionName)
+                .GetSnapshotAsync(cancellationToken);
+
+            return snapshot.Documents
+                .Select(document => document.ConvertTo<Manager>())
+                .ToList();
+        }
+
+        public async Task<Manager?> GetByAccommodationIdAsync(
+            string accommodationId,
+            CancellationToken cancellationToken = default)
+        {
+            QuerySnapshot snapshot = await _firestore
+                .Collection(CollectionName)
+                .WhereEqualTo("AccommodationId", accommodationId)
+                .Limit(1)
+                .GetSnapshotAsync(cancellationToken);
+
+            DocumentSnapshot? document = snapshot.Documents.FirstOrDefault();
+            return document?.ConvertTo<Manager>();
+        }
+
+        public async Task<bool> UpdateAsync(Manager manager, CancellationToken cancellationToken = default)
+        {
+            DocumentReference documentReference = _firestore
+                .Collection(CollectionName)
+                .Document(manager.Id);
+
+            DocumentSnapshot snapshot = await documentReference.GetSnapshotAsync(cancellationToken);
+
+            if (!snapshot.Exists)
+            {
+                return false;
+            }
+
+            await documentReference.SetAsync(
+                manager,
+                SetOptions.Overwrite,
+                cancellationToken);
+
+            return true;
+        }
     }
 }

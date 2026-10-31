@@ -90,5 +90,16 @@ namespace ChommieHub.Api.Repositories
 
             return true;
         }
+
+        public async Task<IReadOnlyList<Student>> GetAllAsync(CancellationToken cancellationToken = default)
+        {
+            QuerySnapshot snapshot = await _firestore
+                .Collection(CollectionName)
+                .GetSnapshotAsync(cancellationToken);
+
+            return snapshot.Documents
+                .Select(document => document.ConvertTo<Student>())
+                .ToList();
+        }
     }
 }
