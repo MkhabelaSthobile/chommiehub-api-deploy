@@ -39,6 +39,28 @@ namespace ChommieHub.Api.Models
         public bool IsActive { get; set; } = true;
 
         [FirestoreProperty]
+        public string ReviewStatus { get; set; } = ListingStatuses.Approved;
+
+        [FirestoreProperty]
+        public string ReviewReason { get; set; } = string.Empty;
+
+        [FirestoreProperty]
+        public string ReviewedByUid { get; set; } = string.Empty;
+
+        [FirestoreProperty]
+        public DateTime? SubmittedAtUtc { get; set; }
+
+        [FirestoreProperty]
+        public DateTime? ReviewedAtUtc { get; set; }
+
+        /// <summary>Set by an administrator to hide a listing without deleting it.</summary>
+        [FirestoreProperty]
+        public bool IsArchived { get; set; }
+
+        [FirestoreProperty]
+        public List<string> ImageUrls { get; set; } = [];
+
+        [FirestoreProperty]
         public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
 
         [FirestoreProperty]
