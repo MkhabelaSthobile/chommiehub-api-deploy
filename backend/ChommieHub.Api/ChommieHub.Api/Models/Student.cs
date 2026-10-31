@@ -42,6 +42,9 @@ namespace ChommieHub.Api.Models
         public string RoomId { get; set; } = string.Empty;
 
         [FirestoreProperty]
+        public bool IsDisabled { get; set; }
+
+        [FirestoreProperty]
         public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
 
         [FirestoreProperty]
