@@ -5,10 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ChommieHub.Api.Controllers
 {
-    /// <summary>
-    /// Exposes residence-manager operations including dashboard statistics,
-    /// application review, room assignment and resident retrieval.
-    /// </summary>
+    // Exposes residence-manager operations including dashboard statistics,
+    // application review, room assignment and resident retrieval.
+    
     [ApiController]
     [Route("api/manager")]
     public sealed class ManagerController : ControllerBase
@@ -30,10 +29,8 @@ namespace ChommieHub.Api.Controllers
             _logger = logger;
         }
 
-        /// <summary>
-        /// Retrieves the authenticated manager's profile using
-        /// their verified Firebase UID.
-        /// </summary>
+        // Retrieves the authenticated manager's profile using
+        // their verified Firebase UID.
         private async Task<(ManagerResponse? Manager, ActionResult? Error)>
             GetAuthenticatedManagerAsync(
                 CancellationToken cancellationToken)
