@@ -223,6 +223,13 @@ builder.Services.AddHttpClient<
 
 builder.Services.AddScoped<FirebaseTokenVerificationService>();
 
+builder.Services.AddScoped<
+    IAdminAccessVerifier,
+    FirebaseAdminAccessVerifier>();
+
+builder.Services.AddScoped<
+    IFirebaseAccountAdmin,
+    FirebaseAccountAdminService>();
 
 builder.Services.AddScoped<
     IAuditRepository,
