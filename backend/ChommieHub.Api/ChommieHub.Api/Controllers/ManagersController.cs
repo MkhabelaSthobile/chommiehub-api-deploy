@@ -104,5 +104,58 @@ namespace ChommieHub.Api.Controllers
                 new { id = manager.Id },
                 manager);
         }
+
+        // Lets a signed-in user register as a residence manager. 
+        [HttpPost("register")]
+        public async Task<ActionResult<ManagerResponse>> Register(
+            [FromBody] RegisterManagerRequest request,
+            CancellationToken cancellationToken)
+        {
+            string authorization =
+                Request.Headers.Authorization.ToString();
+
+            if (string.IsNullOrWhiteSpace(authorization) ||
+                !authorization.StartsWith(
+                    "Bearer ",
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                return Unauthorized(new
+                {
+                    message = "A Firebase ID token is required."
+                });
+            }
+
+            string idToken = authorization["Bearer ".Length..].Trim();
+
+            string? firebaseUid =
+                await _tokenVerifier.VerifyUserIdAsync(idToken);
+
+            if (string.IsNullOrWhiteSpace(firebaseUid))
+            {
+                return Unauthorized(new
+                {
+                    message = "Invalid or revoked Firebase ID token."
+                });
+            }
+
+            try
+            {
+                ManagerResponse manager = await _managerAccountService.RegisterAsync(firebaseUid, request, cancellationToken);
+
+                _logger.LogInformation(
+                    "Manager profile {ManagerId} was registered.",
+                    manager.Id);
+
+                return CreatedAtAction(
+                    nameof(GetById),
+                    new { id = manager.Id },
+                    manager);
+            }
+            catch (InvalidOperationException exception)
+            {
+                return Conflict(new { message = exception.Message });
+            }
+        }
+
     }
 }
