@@ -8,10 +8,14 @@ namespace ChommieHub.Api.Services
     public sealed class ManagerAccountService : IManagerAccountService
     {
         private readonly IManagerRepository _managerRepository;
+        private readonly IStudentRepository _studentRepository;
 
-        public ManagerAccountService(IManagerRepository managerRepository)
+        public ManagerAccountService(
+            IManagerRepository managerRepository,
+            IStudentRepository studentRepository)
         {
             _managerRepository = managerRepository;
+            _studentRepository = studentRepository;
         }
 
         public async Task<ManagerResponse?> GetByIdAsync(string id, CancellationToken cancellationToken = default)
@@ -31,6 +35,43 @@ namespace ChommieHub.Api.Services
                 Email = request.Email,
                 PhoneNumber = request.PhoneNumber,
                 AccommodationId = request.AccommodationId
+            };
+
+            Manager created = await _managerRepository.CreateAsync(manager, cancellationToken);
+
+            return MapToResponse(created);
+        }
+
+        public async Task<ManagerResponse> RegisterAsync(
+            string firebaseUid,
+            RegisterManagerRequest request,
+            CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(firebaseUid))
+            {
+                throw new ArgumentException("A Firebase UID is required.", nameof(firebaseUid));
+            }
+
+            if (await _managerRepository.GetByIdAsync(firebaseUid, cancellationToken) is not null)
+            {
+                throw new InvalidOperationException(
+                    "A manager profile already exists for this account.");
+            }
+
+            if (await _studentRepository.GetByIdAsync(firebaseUid, cancellationToken) is not null)
+            {
+                throw new InvalidOperationException(
+                    "This account is already registered as a student.");
+            }
+
+            var manager = new Manager
+            {
+                FirebaseUid = firebaseUid,
+                Name = request.Name.Trim(),
+                Surname = request.Surname.Trim(),
+                Email = request.Email.Trim(),
+                PhoneNumber = request.PhoneNumber.Trim(),
+                AccommodationId = string.Empty
             };
 
             Manager created = await _managerRepository.CreateAsync(manager, cancellationToken);
