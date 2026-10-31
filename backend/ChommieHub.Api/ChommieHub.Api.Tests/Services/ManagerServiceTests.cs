@@ -6,6 +6,7 @@ using ChommieHub.Api.Models;
 using ChommieHub.Api.Repositories;
 using ChommieHub.Api.Services;
 using Moq;
+using Microsoft.Extensions.Logging.Abstractions;
 
 using AccommodationApplication = ChommieHub.Api.Models.Application;
 
@@ -30,7 +31,9 @@ public sealed class ManagerServiceTests
             _applicationRepository.Object,
             _residentRepository.Object,
             _roomRepository.Object,
-            _managerWorkflowRepository.Object);
+            _managerWorkflowRepository.Object,
+            null!,
+            NullLogger<ManagerService>.Instance);
     }
 
     [Fact]
