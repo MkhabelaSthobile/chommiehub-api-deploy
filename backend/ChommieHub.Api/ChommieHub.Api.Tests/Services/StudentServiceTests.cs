@@ -113,6 +113,36 @@ public sealed class StudentServiceTests
         _applicationRepository.Verify(repository => repository.CreateAsync(It.IsAny<ApplicationModel>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
+    [Theory]
+    [InlineData(ListingStatuses.Pending, false)]
+    [InlineData(ListingStatuses.Rejected, false)]
+    [InlineData(ListingStatuses.Draft, false)]
+    [InlineData(ListingStatuses.Approved, true)]
+    public async Task SubmitApplicationAsync_RejectsAccommodationHiddenFromStudents(string status, bool archived)
+    {
+        Student student = CreateStudent();
+        Accommodation accommodation = CreateAccommodation();
+        accommodation.ReviewStatus = status;
+        accommodation.IsArchived = archived;
+
+        _studentRepository.Setup(repository => repository.GetByIdAsync("student-1", It.IsAny<CancellationToken>())).ReturnsAsync(student);
+        _accommodationRepository.Setup(repository => repository.GetByIdAsync("accommodation-1", It.IsAny<CancellationToken>())).ReturnsAsync(accommodation);
+
+        SubmitApplicationRequest request = new()
+        {
+            AccommodationId = "accommodation-1",
+            RoomId = "room-1",
+            RentalPeriod = "January 2027 - November 2027",
+            SupportingInfo = "First-year student."
+        };
+
+        InvalidOperationException exception = await Assert.ThrowsAsync<InvalidOperationException>(() => CreateService().SubmitApplicationAsync("student-1", request));
+
+        Assert.Equal("The selected accommodation is not currently available.", exception.Message);
+
+        _applicationRepository.Verify(repository => repository.CreateAsync(It.IsAny<ApplicationModel>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+
     private static Student CreateStudent()
     {
         return new Student
