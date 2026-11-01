@@ -243,6 +243,10 @@ builder.Services.AddScoped<
     IUserNotifier,
     FcmUserNotifier>();
 
+builder.Services.AddScoped<
+    IAdminQueryService,
+    AdminQueryService>();
+
 // ---------------------------------------------------------
 // Build the ASP.NET Core application
 // ---------------------------------------------------------
