@@ -42,8 +42,8 @@ namespace ChommieHub.Api.Services
                 Accommodation? accommodation = await _accommodationRepository
                     .GetByIdAsync(accommodationId, cancellationToken);
 
-                // Skip accommodations that were removed after being shortlisted.
-                if (accommodation is not null)
+                // Skip accommodations that were removed, archived or are no longer approved.
+                if (accommodation is not null && accommodation.IsVisibleToStudents)
                 {
                     results.Add(MapToResponse(accommodation));
                 }

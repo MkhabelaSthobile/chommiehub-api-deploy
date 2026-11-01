@@ -102,6 +102,11 @@ namespace ChommieHub.Api.Services
                 throw new KeyNotFoundException("The selected accommodation was not found.");
             }
 
+            if (!accommodation.IsVisibleToStudents)
+            {
+                throw new InvalidOperationException("The selected accommodation is not currently available.");
+            }
+
             if (!accommodation.IsActive)
             {
                 throw new InvalidOperationException("The selected accommodation is not currently accepting applications.");

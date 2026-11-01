@@ -21,7 +21,9 @@ namespace ChommieHub.Api.Services
         {
             IReadOnlyList<Accommodation> accommodations = await _repository.GetAllAsync(cancellationToken);
 
+            // Students only see approved, non-archived listings.
             return accommodations
+                .Where(accommodation => accommodation.IsVisibleToStudents)
                 .Select(MapToResponse)
                 .ToList();
         }
