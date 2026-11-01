@@ -14,5 +14,7 @@ namespace ChommieHub.Api.Repositories
         Task<Accommodation> CreateAsync(Accommodation accommodation, CancellationToken cancellationToken = default);
 
         Task<bool> UpdateAsync(Accommodation accommodation, CancellationToken cancellationToken = default);
+
+        Task<bool> DeleteAsync(string id, CancellationToken cancellationToken = default);
     }
 }

@@ -104,5 +104,23 @@ namespace ChommieHub.Api.Repositories
 
             return true;
         }
+
+        public async Task<bool> DeleteAsync(string id, CancellationToken cancellationToken = default)
+        {
+            DocumentReference documentReference = _firestore
+                .Collection(CollectionName)
+                .Document(id);
+
+            DocumentSnapshot snapshot = await documentReference.GetSnapshotAsync(cancellationToken);
+
+            if (!snapshot.Exists)
+            {
+                return false;
+            }
+
+            await documentReference.DeleteAsync(cancellationToken: cancellationToken);
+
+            return true;
+        }
     }
 }

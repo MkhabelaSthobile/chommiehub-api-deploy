@@ -15,5 +15,7 @@ namespace ChommieHub.Api.Repositories
         Task<bool> UpdateAsync(Student student, CancellationToken cancellationToken = default);
 
         Task<IReadOnlyList<Student>> GetAllAsync(CancellationToken cancellationToken = default);
+
+        Task<bool> DeleteAsync(string id, CancellationToken cancellationToken = default);
     }
 }
