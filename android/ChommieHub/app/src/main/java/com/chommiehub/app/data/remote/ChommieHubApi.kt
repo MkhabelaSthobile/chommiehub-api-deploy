@@ -38,6 +38,18 @@ import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Header
+import com.chommiehub.app.data.model.admin.AdminActionResponse
+import com.chommiehub.app.data.model.admin.AdminDashboardResponse
+import com.chommiehub.app.data.model.admin.AdminListingDetailResponse
+import com.chommiehub.app.data.model.admin.AdminListingSummary
+import com.chommiehub.app.data.model.admin.AdminReasonRequest
+import com.chommiehub.app.data.model.admin.AdminUserDetailResponse
+import com.chommiehub.app.data.model.admin.AdminUserSummary
+import com.chommiehub.app.data.model.admin.AuditRecordResponse
+import com.chommiehub.app.data.model.manager.ManagerAccommodationResponse
+import com.chommiehub.app.data.model.manager.RegisterManagerRequest
+import com.chommiehub.app.data.model.manager.SaveAccommodationRequest
+import retrofit2.http.Query
 
 interface ChommieHubApi {
 
@@ -172,4 +184,84 @@ interface ChommieHubApi {
         @Header("Authorization") authorization: String,
         @Body request: FcmDeviceRequest
     ): retrofit2.Response<Unit>
+
+    // ---- Manager sign-up and accommodation review ----
+
+    @POST("api/managers/register")
+    suspend fun registerManager(@Body request: RegisterManagerRequest): ManagerResponse
+
+    // Throws HttpException with code 404 when the manager has not saved an accommodation yet.
+    @GET("api/manager/my-accommodation")
+    suspend fun getMyAccommodation(): ManagerAccommodationResponse
+
+    @PUT("api/manager/my-accommodation")
+    suspend fun saveMyAccommodation(@Body request: SaveAccommodationRequest): ManagerAccommodationResponse
+
+    @POST("api/manager/my-accommodation/submit")
+    suspend fun submitMyAccommodation(): ManagerAccommodationResponse
+
+    // ---- Administrator ----
+
+    @GET("api/admin/dashboard")
+    suspend fun getAdminDashboard(): AdminDashboardResponse
+
+    // role: Student, Resident or Manager (or null for all). search matches name or email.
+    @GET("api/admin/users")
+    suspend fun getAdminUsers(
+        @Query("role") role: String?,
+        @Query("search") search: String?
+    ): List<AdminUserSummary>
+
+    @GET("api/admin/users/{id}")
+    suspend fun getAdminUser(@Path("id") id: String): AdminUserDetailResponse
+
+    @POST("api/admin/users/{id}/disable")
+    suspend fun disableAdminUser(
+        @Path("id") id: String,
+        @Body request: AdminReasonRequest
+    ): AdminActionResponse
+
+    @POST("api/admin/users/{id}/enable")
+    suspend fun enableAdminUser(@Path("id") id: String): AdminActionResponse
+
+    @POST("api/admin/users/{id}/delete")
+    suspend fun deleteAdminUser(
+        @Path("id") id: String,
+        @Body request: AdminReasonRequest
+    ): AdminActionResponse
+
+    // status: Draft, Pending, Approved, Rejected or Archived (or null for all).
+    @GET("api/admin/listings")
+    suspend fun getAdminListings(@Query("status") status: String?): List<AdminListingSummary>
+
+    @GET("api/admin/listings/{id}")
+    suspend fun getAdminListing(@Path("id") id: String): AdminListingDetailResponse
+
+    @POST("api/admin/listings/{id}/approve")
+    suspend fun approveAdminListing(@Path("id") id: String): AdminActionResponse
+
+    @POST("api/admin/listings/{id}/reject")
+    suspend fun rejectAdminListing(
+        @Path("id") id: String,
+        @Body request: AdminReasonRequest
+    ): AdminActionResponse
+
+    @POST("api/admin/listings/{id}/archive")
+    suspend fun archiveAdminListing(
+        @Path("id") id: String,
+        @Body request: AdminReasonRequest
+    ): AdminActionResponse
+
+    @POST("api/admin/listings/{id}/unarchive")
+    suspend fun unarchiveAdminListing(@Path("id") id: String): AdminActionResponse
+
+    @POST("api/admin/listings/{id}/delete")
+    suspend fun deleteAdminListing(
+        @Path("id") id: String,
+        @Body request: AdminReasonRequest
+    ): AdminActionResponse
+
+    // limit: 1 to 200 (the server uses 50 if it is 0 or less).
+    @GET("api/admin/audit")
+    suspend fun getAdminAudit(@Query("limit") limit: Int): List<AuditRecordResponse>
 }
