@@ -37,5 +37,10 @@ namespace ChommieHub.Api.Repositories
             Application application,
             CancellationToken cancellationToken = default
         );
+
+        // Administrator retrieves every application (for dashboard counts).
+        Task<IReadOnlyList<Application>> GetAllAsync(
+            CancellationToken cancellationToken = default
+        );
     }
 }

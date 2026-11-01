@@ -152,5 +152,18 @@ namespace ChommieHub.Api.Repositories
 
             return true;
         }
+
+        // Retrieves every application. Used by the administrator dashboard.
+        public async Task<IReadOnlyList<Application>> GetAllAsync(
+            CancellationToken cancellationToken = default)
+        {
+            QuerySnapshot snapshot = await _firestore
+                .Collection(CollectionName)
+                .GetSnapshotAsync(cancellationToken);
+
+            return snapshot.Documents
+                .Select(document => document.ConvertTo<Application>())
+                .ToList();
+        }
     }
 }
