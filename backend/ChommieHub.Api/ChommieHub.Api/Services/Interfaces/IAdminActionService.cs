@@ -34,5 +34,22 @@ namespace ChommieHub.Api.Services
             string listingId,
             string? reason,
             CancellationToken cancellationToken = default);
+
+        Task<AdminActionResponse> DisableAccountAsync(
+            string adminId,
+            string accountId,
+            string? reason,
+            CancellationToken cancellationToken = default);
+
+        Task<AdminActionResponse> EnableAccountAsync(
+            string adminId,
+            string accountId,
+            CancellationToken cancellationToken = default);
+
+        Task<AdminActionResponse> DeleteAccountAsync(
+            string adminId,
+            string accountId,
+            string? reason,
+            CancellationToken cancellationToken = default);
     }
 }

@@ -225,6 +225,169 @@ namespace ChommieHub.Api.Services
                 AuditActions.ListingDeleted, "Accommodation", listing.Id, "Listing deleted.");
         }
 
+        public async Task<AdminActionResponse> DisableAccountAsync(
+    string adminId,
+    string accountId,
+    string? reason,
+    CancellationToken cancellationToken = default)
+        {
+            string cleanReason = RequireReason(reason);
+            RejectOwnAccount(adminId, accountId);
+
+            AccountInfo account = await FindAccountAsync(accountId, cancellationToken);
+
+            if (account.IsDisabled)
+            {
+                throw new InvalidOperationException("This account is already disabled.");
+            }
+
+            await _accountAdmin.SetDisabledAsync(accountId, true, cancellationToken);
+            await SaveDisabledFlagAsync(account, true, cancellationToken);
+
+            await WriteAuditAsync(
+                adminId, AuditActions.AccountDisabled, account.TargetType, accountId, account.Name,
+                cleanReason, cancellationToken);
+
+            return new AdminActionResponse(
+                AuditActions.AccountDisabled, account.TargetType, accountId, "Account disabled.");
+        }
+
+        public async Task<AdminActionResponse> EnableAccountAsync(
+            string adminId,
+            string accountId,
+            CancellationToken cancellationToken = default)
+        {
+            AccountInfo account = await FindAccountAsync(accountId, cancellationToken);
+
+            if (!account.IsDisabled)
+            {
+                throw new InvalidOperationException("This account is not disabled.");
+            }
+
+            await _accountAdmin.SetDisabledAsync(accountId, false, cancellationToken);
+            await SaveDisabledFlagAsync(account, false, cancellationToken);
+
+            await WriteAuditAsync(
+                adminId, AuditActions.AccountEnabled, account.TargetType, accountId, account.Name,
+                string.Empty, cancellationToken);
+
+            return new AdminActionResponse(
+                AuditActions.AccountEnabled, account.TargetType, accountId, "Account enabled.");
+        }
+
+        public async Task<AdminActionResponse> DeleteAccountAsync(
+            string adminId,
+            string accountId,
+            string? reason,
+            CancellationToken cancellationToken = default)
+        {
+            string cleanReason = RequireReason(reason);
+            RejectOwnAccount(adminId, accountId);
+
+            AccountInfo account = await FindAccountAsync(accountId, cancellationToken);
+
+            if (account.Student is not null)
+            {
+                Resident? residency =
+                    await _residentRepository.GetByStudentIdAsync(accountId, cancellationToken);
+
+                if (string.Equals(account.Student.UserType, "Resident", StringComparison.OrdinalIgnoreCase)
+                    || residency?.IsActive == true)
+                {
+                    throw new InvalidOperationException(
+                        "This student is a current resident. Disable the account instead.");
+                }
+
+                IReadOnlyList<Application> applications =
+                    await _applicationRepository.GetByStudentIdAsync(accountId, cancellationToken);
+
+                if (applications.Count > 0)
+                {
+                    throw new InvalidOperationException(
+                        "This student has applications. Disable the account instead.");
+                }
+
+                await _accountAdmin.DeleteAsync(accountId, cancellationToken);
+                await _studentRepository.DeleteAsync(accountId, cancellationToken);
+            }
+            else
+            {
+                Manager manager = account.Manager!;
+
+                if (!string.IsNullOrWhiteSpace(manager.AccommodationId))
+                {
+                    throw new InvalidOperationException(
+                        "This manager has an accommodation. Delete or archive it first, or disable the account instead.");
+                }
+
+                await _accountAdmin.DeleteAsync(accountId, cancellationToken);
+                await _managerRepository.DeleteAsync(accountId, cancellationToken);
+            }
+
+            await WriteAuditAsync(
+                adminId, AuditActions.AccountDeleted, account.TargetType, accountId, account.Name,
+                cleanReason, cancellationToken);
+
+            return new AdminActionResponse(
+                AuditActions.AccountDeleted, account.TargetType, accountId, "Account deleted.");
+        }
+
+        private static void RejectOwnAccount(string adminId, string accountId)
+        {
+            if (string.Equals(adminId, accountId, StringComparison.Ordinal))
+            {
+                throw new InvalidOperationException("You cannot change your own account.");
+            }
+        }
+
+        private async Task<AccountInfo> FindAccountAsync(
+            string accountId,
+            CancellationToken cancellationToken)
+        {
+            Student? student = await _studentRepository.GetByIdAsync(accountId, cancellationToken);
+
+            if (student is not null)
+            {
+                return new AccountInfo(student, null);
+            }
+
+            Manager? manager = await _managerRepository.GetByIdAsync(accountId, cancellationToken);
+
+            return manager is null
+                ? throw new KeyNotFoundException("The account was not found.")
+                : new AccountInfo(null, manager);
+        }
+
+        private async Task SaveDisabledFlagAsync(
+            AccountInfo account,
+            bool disabled,
+            CancellationToken cancellationToken)
+        {
+            if (account.Student is not null)
+            {
+                account.Student.IsDisabled = disabled;
+                account.Student.UpdatedAtUtc = DateTime.UtcNow;
+                await _studentRepository.UpdateAsync(account.Student, cancellationToken);
+            }
+            else
+            {
+                account.Manager!.IsDisabled = disabled;
+                account.Manager.UpdatedAtUtc = DateTime.UtcNow;
+                await _managerRepository.UpdateAsync(account.Manager, cancellationToken);
+            }
+        }
+
+        private sealed record AccountInfo(Student? Student, Manager? Manager)
+        {
+            public string TargetType => Student is not null ? AccountRoles.Student : AccountRoles.Manager;
+
+            public string Name => Student is not null
+                ? $"{Student.Name} {Student.Surname}".Trim()
+                : $"{Manager!.Name} {Manager.Surname}".Trim();
+
+            public bool IsDisabled => Student?.IsDisabled ?? Manager!.IsDisabled;
+        }
+
         private async Task<Accommodation> GetListingAsync(
             string listingId,
             CancellationToken cancellationToken)
