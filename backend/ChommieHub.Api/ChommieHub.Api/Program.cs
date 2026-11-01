@@ -209,6 +209,10 @@ builder.Services.AddScoped<
     ManagerAccountService>();
 
 builder.Services.AddScoped<
+    IManagerListingService,
+    ManagerListingService>();
+
+builder.Services.AddScoped<
     IInspectionService,
     InspectionService>();
 
