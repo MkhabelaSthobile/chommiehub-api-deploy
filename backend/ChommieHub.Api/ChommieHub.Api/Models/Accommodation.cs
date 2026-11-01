@@ -60,6 +60,8 @@ namespace ChommieHub.Api.Models
         [FirestoreProperty]
         public List<string> ImageUrls { get; set; } = [];
 
+        public bool IsVisibleToStudents => ReviewStatus == ListingStatuses.Approved && !IsArchived;
+
         [FirestoreProperty]
         public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
 
