@@ -18,6 +18,7 @@ import com.chommiehub.app.ui.manager.CurrentManager
 import com.chommiehub.app.ui.student.CurrentStudent
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
+import com.chommiehub.app.data.model.manager.RegisterManagerRequest
 
 class RegisterActivity : AppCompatActivity() {
 
@@ -67,13 +68,6 @@ class RegisterActivity : AppCompatActivity() {
             findViewById<RadioGroup>(R.id.rgRole)
                 .checkedRadioButtonId == R.id.rbManager
 
-        if (isManager) {
-            toast(
-                "Manager accounts must be created by an administrator."
-            )
-            return
-        }
-
         if (
             name.isBlank() ||
             surname.isBlank() ||
@@ -117,17 +111,30 @@ class RegisterActivity : AppCompatActivity() {
 
             lifecycleScope.launch {
                 try {
-                    val request = CreateStudentRequest(
-                        firebaseUid = firebaseUid,
-                        name = name,
-                        surname = surname,
-                        email = email,
-                        phoneNumber = phone,
-                        preferredLanguage = "English"
-                    )
+                    if (isManager) {
+                        // Managers register without an "accommodation".
+                        // They add and submit it after signing in.
+                        ApiClient.api.registerManager(
+                            RegisterManagerRequest(
+                                name = name,
+                                surname = surname,
+                                email = email,
+                                phoneNumber = phone
+                            )
+                        )
+                    } else {
+                        val request = CreateStudentRequest(
+                            firebaseUid = firebaseUid,
+                            name = name,
+                            surname = surname,
+                            email = email,
+                            phoneNumber = phone,
+                            preferredLanguage = "English"
+                        )
 
-                    // Create the student profile through the API.
-                    ApiClient.api.createStudent(request)
+                        // Create the student profile through the API.
+                        ApiClient.api.createStudent(request)
+                    }
 
                     toast(
                         "Registration successful. Please sign in."
