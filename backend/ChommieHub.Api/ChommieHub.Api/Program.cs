@@ -239,6 +239,10 @@ builder.Services.AddScoped<
     IAuditRepository,
     FirestoreAuditRepository>();
 
+builder.Services.AddScoped<
+    IUserNotifier,
+    FcmUserNotifier>();
+
 // ---------------------------------------------------------
 // Build the ASP.NET Core application
 // ---------------------------------------------------------
