@@ -247,6 +247,10 @@ builder.Services.AddScoped<
     IAdminQueryService,
     AdminQueryService>();
 
+builder.Services.AddScoped<
+    IAdminActionService,
+    AdminActionService>();
+
 // ---------------------------------------------------------
 // Build the ASP.NET Core application
 // ---------------------------------------------------------
