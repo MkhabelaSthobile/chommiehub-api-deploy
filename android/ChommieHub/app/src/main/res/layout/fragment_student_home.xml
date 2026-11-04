@@ -115,31 +115,31 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:checked="true"
-                    android:text="All" />
+                    android:text="@string/filter_all" />
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipNearCampus"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Near campus" />
+                    android:text="@string/filter_near_campus" />
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipWifi"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Wi-Fi" />
+                    android:text="@string/filter_wifi" />
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipLaundry"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Laundry" />
+                    android:text="@string/filter_laundry" />
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipVerified"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Verified" />
+                    android:text="@string/filter_verified" />
 
             </com.google.android.material.chip.ChipGroup>
 
@@ -151,7 +151,7 @@
             android:layout_height="52dp"
             android:layout_marginTop="12dp"
             android:backgroundTint="@color/chommie_gold"
-            android:text="View Residences on Map"
+            android:text="@string/view_residences_map"
             android:textColor="@color/chommie_navy"
             android:textStyle="bold" />
 
@@ -182,7 +182,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="No residences match your current search or filters."
+        android:text="@string/home_no_results"
         android:textColor="@color/chommie_text_secondary"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -205,7 +205,7 @@
         android:id="@+id/btnHomeRetry"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Retry"
+        android:text="@string/retry"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

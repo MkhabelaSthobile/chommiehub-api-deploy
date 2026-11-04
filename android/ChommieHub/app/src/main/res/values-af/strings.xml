@@ -91,4 +91,69 @@
     <string name="sync_status_synced">Gesinkroniseer</string>
     <string name="sync_status_failed">Sinkronisering het misluk</string>
     <string name="offline_banner">Jy is vanlyn. Sommige funksies benodig internet. Veranderinge aan jou kortlys word gestoor en sal sinkroniseer wanneer jy weer koppel.</string>
+
+    <!-- Additional Afrikaans translations -->
+    <string name="api_connected">%1$s gekoppel — %2$s</string>
+
+    <string name="view_residences_map">Bekyk verblyf op die kaart</string>
+
+    <!-- Manager Applications -->
+    <string name="manager_applications_title">Aansoeke</string>
+    <string name="no_applications">Jy het nog nie \'n aansoek ingedien nie.</string>
+    <string name="manager_application_student">Student: %1$s</string>
+    <string name="manager_application_status">Status: %1$s</string>
+    <string name="manager_application_room">Kamervoorkeur: %1$s</string>
+    <string name="manager_application_submitted">Ingedien: %1$s</string>
+    <string name="review_applications">Hersien aansoeke</string>
+
+    <!-- Manager Application Detail -->
+    <string name="detail_status">Status: %1$s</string>
+    <string name="detail_student">Student: %1$s</string>
+    <string name="detail_room_preference">Kamervoorkeur: %1$s</string>
+    <string name="detail_rental_period">Huurtydperk: %1$s</string>
+    <string name="detail_supporting_info">Bykomende inligting: %1$s</string>
+    <string name="detail_review_notes">Hersieningsnotas: %1$s</string>
+
+    <!-- Rooms and Residents -->
+    <string name="room_price">R %1$.2f per maand</string>
+    <string name="room_capacity">Kapasiteit: %1$d</string>
+    <string name="resident_student">Student: %1$s</string>
+    <string name="resident_room">Kamer-ID: %1$s</string>
+    <string name="resident_active">Status: Aktief</string>
+    <string name="resident_inactive">Status: Onaktief</string>
+
+    <!-- Biometric Authentication -->
+    <string name="biometric_title">Biometriese aanmelding</string>
+    <string name="biometric_subtitle">Gebruik jou vingerafdruk of toestelbiometrie om ChommieHub veilig te ontsluit.</string>
+    <string name="biometric_scan">Skandeer biometrie</string>
+    <string name="use_password">Gebruik eerder wagwoord</string>
+
+    <!-- Accommodation and Applications -->
+    <string name="residence_image_description">Plekhouer vir verblyffoto</string>
+    <string name="hint_rental_period">bv. Februarie – November 2027</string>
+    <string name="hint_supporting_info">Voeg enige inligting by wat die verblyfbestuurder moet weet</string>
+
+    <string name="stage_submitted">Aansoek\nIngedien</string>
+    <string name="stage_review">Bestuurder\nHersiening</string>
+    <string name="stage_decision">Bestuurder\nBesluit</string>
+    <string name="stage_room">Kamer\nToewysing</string>
+    <string name="manager_update">Bestuurderopdatering</string>
+
+    <!-- Student Home -->
+    <string name="role_student">Student</string>
+
+    <string name="filter_all">Alles</string>
+    <string name="filter_near_campus">Naby kampus</string>
+    <string name="filter_wifi">Wi-Fi</string>
+    <string name="filter_laundry">Wasgoedgeriewe</string>
+    <string name="filter_verified">Geverifieer</string>
+    <string name="home_no_results">Geen verblyf pas by jou huidige soektog of filters nie.</string>
+
+    <string name="sort_name_az">Naam A-Z</string>
+    <string name="sort_name_za">Naam Z-A</string>
+    <string name="sort_area_az">Gebied A-Z</string>
+    <string name="sort_most_amenities">Meeste geriewe</string>
+
+    <string name="logo_description">ChommieHub-logo</string>
+    <string name="all_areas">Alle gebiede</string>
 </resources>

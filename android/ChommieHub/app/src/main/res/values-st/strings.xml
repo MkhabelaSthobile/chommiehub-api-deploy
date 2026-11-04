@@ -93,4 +93,63 @@
         <string name="sync_status_failed">Ho amahanya ho hlolehile</string>
         <string name="offline_banner">Ha o a hokela inthaneteng. Ditshebeletso tse ding di hloka inthanete. Diphetoho lenaneng la hao di bolokilwe mme di tla amahanywa ha o hokela hape.</string>
 
+        <!-- Additional translations -->
+        <string name="api_connected">%1$s e hokahane — %2$s</string>
+
+        <string name="view_residences_map">Sheba dibaka tsa bodulo mmapeng</string>
+
+        <string name="manager_applications_title">Dikopo</string>
+        <string name="no_applications">Ha o so romele kopo.</string>
+        <string name="manager_application_student">Moithuti: %1$s</string>
+        <string name="manager_application_status">Boemo: %1$s</string>
+        <string name="manager_application_room">Kamore e kgethilweng: %1$s</string>
+        <string name="manager_application_submitted">E rometswe: %1$s</string>
+        <string name="review_applications">Hlahloba dikopo</string>
+
+        <string name="detail_status">Boemo: %1$s</string>
+        <string name="detail_student">Moithuti: %1$s</string>
+        <string name="detail_room_preference">Kamore e kgethilweng: %1$s</string>
+        <string name="detail_rental_period">Nako ya khiriso: %1$s</string>
+        <string name="detail_supporting_info">Tlhahisoleseding e eketsehileng: %1$s</string>
+        <string name="detail_review_notes">Dintlha tsa tlhahlobo: %1$s</string>
+
+        <string name="room_price">R %1$.2f ka kgwedi</string>
+        <string name="room_capacity">Bokgoni: %1$d</string>
+        <string name="resident_student">Moithuti: %1$s</string>
+        <string name="resident_room">ID ya kamore: %1$s</string>
+        <string name="resident_active">Boemo: E sebetsa</string>
+        <string name="resident_inactive">Boemo: Ha e sebetse</string>
+
+        <string name="biometric_title">Kena ka boitsebiso ba mmele</string>
+        <string name="biometric_subtitle">Sebedisa monwana kapa boitsebiso ba mmele ho bula ChommieHub ka polokeho.</string>
+        <string name="biometric_scan">Sekena boitsebiso ba mmele</string>
+        <string name="use_password">Sebedisa phasewete</string>
+
+        <string name="residence_image_description">Setshwantsho sa bodulo</string>
+        <string name="hint_rental_period">mohl. Hlakola – Pudungwana 2027</string>
+        <string name="hint_supporting_info">Kenya tlhahisoleseding eo motsamaisi a lokelang ho e tseba</string>
+
+        <string name="stage_submitted">Kopo\nE rometswe</string>
+        <string name="stage_review">Tlhahlobo\nya motsamaisi</string>
+        <string name="stage_decision">Qeto\nya motsamaisi</string>
+        <string name="stage_room">Kabelo\nya kamore</string>
+        <string name="manager_update">Tsebiso ya motsamaisi</string>
+
+        <string name="role_student">Moithuti</string>
+
+        <string name="filter_all">Tsohle</string>
+        <string name="filter_near_campus">Haufi le khamphase</string>
+        <string name="filter_wifi">Wi-Fi</string>
+        <string name="filter_laundry">Sebaka sa ho hlatswetsa</string>
+        <string name="filter_verified">E netefaditswe</string>
+        <string name="home_no_results">Ha ho bodulo bo tsamaellanang le patlo kapa difilthara tsa hao.</string>
+
+        <string name="sort_name_az">Lebitso A-Z</string>
+        <string name="sort_name_za">Lebitso Z-A</string>
+        <string name="sort_area_az">Sebaka A-Z</string>
+        <string name="sort_most_amenities">Ditshebeletso tse ngata</string>
+
+        <string name="all_areas">Dibaka tsohle</string>
+
+        <string name="logo_description">Letshwao la ChommieHub</string>
 </resources>

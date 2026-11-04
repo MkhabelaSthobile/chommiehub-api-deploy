@@ -84,7 +84,18 @@ class StudentHomeFragment : Fragment(R.layout.fragment_student_home) {
     }
 
     private fun setupSortSpinner() {
-        spSort.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, listOf("Name A-Z", "Name Z-A", "Area A-Z", "Most amenities"))
+        val sortOptions = listOf(
+            getString(R.string.sort_name_az),
+            getString(R.string.sort_name_za),
+            getString(R.string.sort_area_az),
+            getString(R.string.sort_most_amenities)
+        )
+
+        spSort.adapter = ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_spinner_dropdown_item,
+            sortOptions
+        )
     }
 
     private fun setupListeners() {
@@ -112,12 +123,21 @@ class StudentHomeFragment : Fragment(R.layout.fragment_student_home) {
 
     private fun observeViewModel() {
         viewModel.availableAreas.observe(viewLifecycleOwner) { areas ->
-            val previousArea = spArea.selectedItem?.toString() ?: "All areas"
+            val previousIndex = spArea.selectedItemPosition
 
-            spArea.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, areas)
+            val displayAreas = areas.map { area ->
+                if (area == "All areas") getString(R.string.all_areas) else area
+            }
 
-            val previousIndex = areas.indexOf(previousArea)
-            spArea.setSelection(if (previousIndex >= 0) previousIndex else 0)
+            spArea.adapter = ArrayAdapter(
+                requireContext(),
+                android.R.layout.simple_spinner_dropdown_item,
+                displayAreas
+            )
+
+            spArea.setSelection(
+                if (previousIndex in displayAreas.indices) previousIndex else 0
+            )
         }
 
         viewModel.uiState.observe(viewLifecycleOwner) { state ->
@@ -130,7 +150,11 @@ class StudentHomeFragment : Fragment(R.layout.fragment_student_home) {
     }
 
     private fun applyCurrentSearch() {
-        val selectedArea = spArea.selectedItem?.toString() ?: "All areas"
+        val selectedArea = if (spArea.selectedItemPosition <= 0) {
+            "All areas"
+        } else {
+            spArea.selectedItem?.toString() ?: "All areas"
+        }
 
         viewModel.applySearch(
             query = etSearch.text?.toString().orEmpty(),

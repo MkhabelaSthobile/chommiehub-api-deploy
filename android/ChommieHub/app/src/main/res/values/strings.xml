@@ -5,7 +5,7 @@
     </string>
 
     <!-- App -->
-    <string name="app_name">ChommieHub</string>
+    <string name="app_name" translatable="false">ChommieHub</string>
     <string name="api_checking">Checking ChommieHub API...</string>
     <string name="api_connected">%1$s connected — %2$s</string>
     <string name="api_connection_failed">Unable to connect to the ChommieHub API.</string>
@@ -42,7 +42,7 @@
     <string name="resident_inactive">Status: Inactive</string>
 
     <!-- Biometric Authentication -->
-    <string name="biometric_icon">◎</string>
+    <string name="biometric_icon" translatable="false">◎</string>
     <string name="biometric_title">Biometric sign-in</string>
     <string name="biometric_subtitle">Use your fingerprint or device biometrics to securely unlock ChommieHub.</string>
     <string name="biometric_scan">Scan biometric</string>
@@ -101,8 +101,8 @@
 
     <!-- Application Status -->
     <string name="status_title">Application status</string>
-    <string name="icon_done">✓</string>
-    <string name="icon_waiting">○</string>
+    <string name="icon_done" translatable="false">✓</string>
+    <string name="icon_waiting" translatable="false">○</string>
     <string name="stage_submitted">Application\nSubmitted</string>
     <string name="stage_review">Manager\nReview</string>
     <string name="stage_decision">Manager\nDecision</string>
@@ -141,7 +141,7 @@
     <string name="save_settings">Save settings</string>
 
     <!-- General Accommodation Actions -->
-    <string name="icon_favourite">♡</string>
+    <string name="icon_favourite" translatable="false">♡</string>
     <string name="view_residence">View residence →</string>
 
     <string name="tab_applications">Applications</string>
@@ -153,4 +153,20 @@
     <string name="remove_from_shortlist">Remove from shortlist</string>
     <string name="offline_banner">You are offline. Some features need internet. Shortlist changes are saved and will sync when you reconnect.</string>
 
+    <string name="view_residences_map">View Residences on Map</string>
+
+    <!-- Home filters and messages -->
+    <string name="filter_all">All</string>
+    <string name="filter_near_campus">Near campus</string>
+    <string name="filter_wifi">Wi-Fi</string>
+    <string name="filter_laundry">Laundry</string>
+    <string name="filter_verified">Verified</string>
+    <string name="home_no_results">No residences match your current search or filters.</string>
+
+    <string name="sort_name_az">Name A-Z</string>
+    <string name="sort_name_za">Name Z-A</string>
+    <string name="sort_area_az">Area A-Z</string>
+    <string name="sort_most_amenities">Most amenities</string>
+
+    <string name="all_areas">All areas</string>
 </resources>

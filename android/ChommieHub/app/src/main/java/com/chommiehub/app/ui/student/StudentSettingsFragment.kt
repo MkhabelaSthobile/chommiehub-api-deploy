@@ -12,6 +12,8 @@ import com.chommiehub.app.R
 import com.chommiehub.app.data.remote.ApiClient
 import com.chommiehub.app.data.repository.StudentRepository
 import com.google.android.material.switchmaterial.SwitchMaterial
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.LocaleListCompat
 
 /**
  * Lets the signed-in student change their preferred language and whether they receive
@@ -71,12 +73,30 @@ class StudentSettingsFragment : Fragment(R.layout.fragment_student_settings) {
             btnSaveSettings.isEnabled = !loading
         }
 
+
         viewModel.saved.observe(viewLifecycleOwner) { saved ->
             if (saved) {
-                toast("Settings saved successfully.")
+                val selectedLanguage = languageOptions.getOrNull(
+                    spLanguage.selectedItemPosition
+                ) ?: "English"
+
+                val languageCode = when (selectedLanguage) {
+                    "Afrikaans" -> "af"
+                    "isiZulu" -> "zu"
+                    "Sesotho" -> "st"
+                    else -> "en"
+                }
+
                 viewModel.consumeSaved()
+
+                AppCompatDelegate.setApplicationLocales(
+                    LocaleListCompat.forLanguageTags(languageCode)
+                )
+
+                toast("Settings saved successfully.")
             }
         }
+
 
         viewModel.error.observe(viewLifecycleOwner) { message ->
             if (!message.isNullOrBlank()) {

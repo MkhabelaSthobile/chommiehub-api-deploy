@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    
+
         <!-- General -->
         <string name="back">Emuva</string>
         <string name="retry">Zama futhi</string>
@@ -93,4 +93,67 @@
         <string name="sync_status_failed">Ukuvumelanisa kwehlulekile</string>
         <string name="offline_banner">Awuxhunyiwe ku-inthanethi. Ezinye izici zidinga i-inthanethi. Izinguquko ohlwini lwakho ziyalondolozwa futhi zizovumelaniswa lapho usuxhumekile.</string>
 
+        <!-- Additional isiZulu translations -->
+        <string name="api_connected">%1$s ixhunyiwe — %2$s</string>
+        <string name="view_residences_map">Buka izindawo zokuhlala ebalazweni</string>
+
+        <!-- Manager Applications -->
+        <string name="manager_applications_title">Izicelo</string>
+        <string name="no_applications">Awukakasifaki isicelo.</string>
+        <string name="manager_application_student">Umfundi: %1$s</string>
+        <string name="manager_application_status">Isimo: %1$s</string>
+        <string name="manager_application_room">Igumbi elikhethiwe: %1$s</string>
+        <string name="manager_application_submitted">Sithunyelwe: %1$s</string>
+        <string name="review_applications">Buyekeza izicelo</string>
+
+        <!-- Manager Application Detail -->
+        <string name="detail_status">Isimo: %1$s</string>
+        <string name="detail_student">Umfundi: %1$s</string>
+        <string name="detail_room_preference">Igumbi elikhethiwe: %1$s</string>
+        <string name="detail_rental_period">Isikhathi sokuqasha: %1$s</string>
+        <string name="detail_supporting_info">Ulwazi olwengeziwe: %1$s</string>
+        <string name="detail_review_notes">Amanothi okubuyekeza: %1$s</string>
+
+        <!-- Rooms and Residents -->
+        <string name="room_price">R %1$.2f ngenyanga</string>
+        <string name="room_capacity">Umthamo: %1$d</string>
+        <string name="resident_student">Umfundi: %1$s</string>
+        <string name="resident_room">I-ID yegumbi: %1$s</string>
+        <string name="resident_active">Isimo: Iyasebenza</string>
+        <string name="resident_inactive">Isimo: Ayisebenzi</string>
+
+        <!-- Biometric Authentication -->
+        <string name="biometric_title">Ukungena ngezimpawu zomzimba</string>
+        <string name="biometric_subtitle">Sebenzisa izigxivizo zeminwe noma izimpawu zomzimba zedivayisi ukuze uvule i-ChommieHub ngokuphepha.</string>
+        <string name="biometric_scan">Skena izimpawu zomzimba</string>
+        <string name="use_password">Sebenzisa iphasiwedi esikhundleni salokho</string>
+
+        <!-- Accommodation and Applications -->
+        <string name="residence_image_description">Indawo yesithombe sendawo yokuhlala</string>
+        <string name="hint_rental_period">isb. Februwari – Novemba 2027</string>
+        <string name="hint_supporting_info">Faka noma yiluphi ulwazi umphathi okufanele alwazi</string>
+
+        <string name="stage_submitted">Isicelo\nSithunyelwe</string>
+        <string name="stage_review">Ukubuyekeza\nKomphathi</string>
+        <string name="stage_decision">Isinqumo\nSomphathi</string>
+        <string name="stage_room">Ukwabiwa\nKwegumbi</string>
+        <string name="manager_update">Isibuyekezo somphathi</string>
+
+        <!-- Student Home -->
+        <string name="role_student">Umfundi</string>
+
+        <string name="filter_all">Konke</string>
+        <string name="filter_near_campus">Eduze nekhempasi</string>
+        <string name="filter_wifi">Wi-Fi</string>
+        <string name="filter_laundry">Indawo yokuwasha</string>
+        <string name="filter_verified">Kuqinisekisiwe</string>
+        <string name="home_no_results">Azikho izindawo zokuhlala ezihambisana nosesho noma izihlungi zakho.</string>
+
+        <string name="sort_name_az">Igama A-Z</string>
+        <string name="sort_name_za">Igama Z-A</string>
+        <string name="sort_area_az">Indawo A-Z</string>
+        <string name="sort_most_amenities">Izinsiza eziningi</string>
+
+        <string name="all_areas">Zonke izindawo</string>
+        <string name="logo_description">Ilogo ye-ChommieHub</string>
 </resources>
