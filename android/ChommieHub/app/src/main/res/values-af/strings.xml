@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- General -->
+    <string name="back">Terug</string>
+    <string name="retry">Probeer weer</string>
+    <string name="api_checking">Kontroleer ChommieHub API...</string>
+    <string name="api_connection_failed">Kan nie aan die ChommieHub API koppel nie.</string>
+
+    <!-- Login -->
+    <string name="login_title">Welkom terug</string>
+    <string name="login_subtitle">Meld aan om voort te gaan met jou soektog na studenteverblyf</string>
+    <string name="hint_email">E-posadres</string>
+    <string name="hint_password">Wagwoord</string>
+    <string name="sign_in">Meld aan</string>
+    <string name="continue_google">Gaan voort met Google</string>
+    <string name="use_biometric">Gebruik biometriese aanmelding</string>
+    <string name="create_account">Nuut by ChommieHub? Skep \'n rekening</string>
+
+    <!-- Registration -->
+    <string name="register_title">Skep \'n rekening</string>
+    <string name="register_subtitle">Voer jou besonderhede in om jou ChommieHub-reis te begin.</string>
+    <string name="hint_first_name">Voornaam</string>
+    <string name="hint_surname">Van</string>
+    <string name="hint_phone">Telefoonnommer</string>
+    <string name="hint_create_password">Skep wagwoord</string>
+    <string name="hint_confirm_password">Bevestig wagwoord</string>
+    <string name="password_helper">Gebruik minstens 6 karakters</string>
+    <string name="register_button">Skep rekening</string>
+    <string name="register_role_label">Ek registreer as \'n</string>
+    <string name="role_student1">Student</string>
+    <string name="role_manager">Verblyfbestuurder</string>
+    <string name="have_account">Het jy reeds \'n rekening? Meld aan</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Tuis</string>
+    <string name="nav_search">Soek</string>
+    <string name="nav_apply">Doen aansoek</string>
+    <string name="nav_applications">Aansoeke</string>
+    <string name="nav_profile">Profiel</string>
+    <string name="nav_settings">Instellings</string>
+
+    <!-- Student Home -->
+    <string name="home_hero_title">Vind \'n plek wat soos tuis voel</string>
+    <string name="home_hero_subtitle">Soek verblyf naby jou kampus</string>
+    <string name="hint_search">Stad, voorstad, universiteit of verblyf</string>
+    <string name="search_residences">Soek verblyf</string>
+    <string name="explore_title">Verken verblyf</string>
+    <string name="explore_subtitle">Blaai deur verblyf wat deur ChommieHub-bestuurders bygevoeg is</string>
+
+    <!-- Accommodation -->
+    <string name="about_residence">Oor hierdie verblyf</string>
+    <string name="amenities">Geriewe</string>
+    <string name="apply_residence">Doen aansoek vir hierdie verblyf</string>
+    <string name="view_residence">Bekyk verblyf →</string>
+
+    <!-- Applications -->
+    <string name="application_title">Verblyfaansoek</string>
+    <string name="application_subtitle">Kies jou verblyfvoorkeure. Jou aansoek sal aan die verblyfbestuurder gestuur word vir hersiening.</string>
+    <string name="label_residence">Verblyf</string>
+    <string name="label_room_preference">Kamervoorkeur</string>
+    <string name="label_rental_period">Huurtydperk</string>
+    <string name="label_supporting_info">Bykomende inligting</string>
+    <string name="submit_application">Dien aansoek in</string>
+    <string name="my_applications_title">My aansoeke</string>
+    <string name="my_applications_subtitle">Volg jou verblyfaansoeke en bestuurdersbesluite.</string>
+    <string name="view_application_status">Bekyk aansoekstatus →</string>
+    <string name="status_title">Aansoekstatus</string>
+
+    <!-- Profile -->
+    <string name="profile_title">My profiel</string>
+    <string name="hint_profile_name">Naam</string>
+    <string name="hint_profile_surname">Van</string>
+    <string name="hint_profile_email">E-pos</string>
+    <string name="hint_profile_phone">Telefoon</string>
+    <string name="hint_profile_language">Voorkeurtaal</string>
+    <string name="create_profile">Skep profiel</string>
+    <string name="save_profile">Stoor profiel</string>
+
+    <!-- Settings -->
+    <string name="settings">Instellings</string>
+    <string name="log_out">Meld af</string>
+    <string name="label_preferred_language">Voorkeurtaal</string>
+    <string name="notifications">Kennisgewings</string>
+    <string name="save_settings">Stoor instellings</string>
+
+    <!-- Other -->
+    <string name="tab_applications">Aansoeke</string>
+    <string name="tab_shortlist">Kortlys</string>
+    <string name="remove_from_shortlist">Verwyder van kortlys</string>
+    <string name="sync_status_pending">Wag om te sinkroniseer</string>
+    <string name="sync_status_synced">Gesinkroniseer</string>
+    <string name="sync_status_failed">Sinkronisering het misluk</string>
+    <string name="offline_banner">Jy is vanlyn. Sommige funksies benodig internet. Veranderinge aan jou kortlys word gestoor en sal sinkroniseer wanneer jy weer koppel.</string>
+</resources>

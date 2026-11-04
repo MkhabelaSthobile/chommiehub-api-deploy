@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+        <!-- General -->
+        <string name="back">Morao</string>
+        <string name="retry">Leka hape</string>
+        <string name="api_checking">Ho hlahlojwa ChommieHub API…</string>
+        <string name="api_connection_failed">Ha ho kgonehe ho hokela ho ChommieHub API.</string>
+
+        <!-- Login -->
+        <string name="login_title">Re o amohela hape</string>
+        <string name="login_subtitle">Kena ho tswela pele ho batla bodulo ba baithuti</string>
+        <string name="hint_email">Aterese ya imeile</string>
+        <string name="hint_password">Phasewete</string>
+        <string name="sign_in">Kena</string>
+        <string name="continue_google">Tswela pele ka Google</string>
+        <string name="use_biometric">Kena ka boitsebiso ba mmele</string>
+        <string name="create_account">O motjha ho ChommieHub? Theha akhaonto</string>
+
+        <!-- Registration -->
+        <string name="register_title">Theha akhaonto</string>
+        <string name="register_subtitle">Kenya dintlha tsa hao ho qala ho sebedisa ChommieHub.</string>
+        <string name="hint_first_name">Lebitso</string>
+        <string name="hint_surname">Fane</string>
+        <string name="hint_phone">Nomoro ya mohala</string>
+        <string name="hint_create_password">Theha phasewete</string>
+        <string name="hint_confirm_password">Netefatsa phasewete</string>
+        <string name="password_helper">Sebedisa bonyane ditlhaku tse 6</string>
+        <string name="register_button">Theha akhaonto</string>
+        <string name="register_role_label">Ke ingodisa ke le</string>
+        <string name="role_student1">Moithuti</string>
+        <string name="role_manager">Motsamaisi wa bodulo</string>
+        <string name="have_account">O se o na le akhaonto? Kena</string>
+
+        <!-- Navigation -->
+        <string name="nav_home">Lehae</string>
+        <string name="nav_search">Batla</string>
+        <string name="nav_apply">Etsa kopo</string>
+        <string name="nav_applications">Dikopo</string>
+        <string name="nav_profile">Profaele</string>
+        <string name="nav_settings">Ditlhophiso</string>
+
+        <!-- Student Home -->
+        <string name="home_hero_title">Fumana sebaka se kang lehae</string>
+        <string name="home_hero_subtitle">Batla bodulo haufi le khamphase ya hao</string>
+        <string name="hint_search">Toropo, sebaka, yunivesithi kapa bodulo</string>
+        <string name="search_residences">Batla bodulo</string>
+        <string name="explore_title">Sheba dibaka tsa bodulo</string>
+        <string name="explore_subtitle">Sheba bodulo bo kentsweng ke batsamaisi ba ChommieHub</string>
+
+        <!-- Accommodation -->
+        <string name="about_residence">Mabapi le bodulo bona</string>
+        <string name="amenities">Ditshebeletso</string>
+        <string name="apply_residence">Etsa kopo ya bodulo bona</string>
+        <string name="view_residence">Sheba bodulo →</string>
+
+        <!-- Applications -->
+        <string name="application_title">Kopo ya bodulo</string>
+        <string name="application_subtitle">Kgetha bodulo boo o bo ratang. Kopo ya hao e tla romelwa ho motsamaisi wa bodulo hore a e hlahlobe.</string>
+        <string name="label_residence">Bodulo</string>
+        <string name="label_room_preference">Kamore eo o e ratang</string>
+        <string name="label_rental_period">Nako ya khiriso</string>
+        <string name="label_supporting_info">Tlhahisoleseding e eketsehileng</string>
+        <string name="submit_application">Romela kopo</string>
+        <string name="my_applications_title">Dikopo tsa ka</string>
+        <string name="my_applications_subtitle">Latela dikopo tsa hao tsa bodulo le diqeto tsa batsamaisi.</string>
+        <string name="view_application_status">Sheba boemo ba kopo →</string>
+        <string name="status_title">Boemo ba kopo</string>
+
+        <!-- Profile -->
+        <string name="profile_title">Profaele ya ka</string>
+        <string name="hint_profile_name">Lebitso</string>
+        <string name="hint_profile_surname">Fane</string>
+        <string name="hint_profile_email">Imeile</string>
+        <string name="hint_profile_phone">Mohala</string>
+        <string name="hint_profile_language">Puo e ratwang</string>
+        <string name="create_profile">Theha profaele</string>
+        <string name="save_profile">Boloka profaele</string>
+
+        <!-- Settings -->
+        <string name="settings">Ditlhophiso</string>
+        <string name="log_out">Tswa</string>
+        <string name="label_preferred_language">Puo e ratwang</string>
+        <string name="notifications">Ditsebiso</string>
+        <string name="save_settings">Boloka ditlhophiso</string>
+
+        <!-- Other -->
+        <string name="tab_applications">Dikopo</string>
+        <string name="tab_shortlist">Lenane le kgethilweng</string>
+        <string name="remove_from_shortlist">Tlosa lenaneng le kgethilweng</string>
+        <string name="sync_status_pending">E emetse ho amahanywa</string>
+        <string name="sync_status_synced">E amahantswe</string>
+        <string name="sync_status_failed">Ho amahanya ho hlolehile</string>
+        <string name="offline_banner">Ha o a hokela inthaneteng. Ditshebeletso tse ding di hloka inthanete. Diphetoho lenaneng la hao di bolokilwe mme di tla amahanywa ha o hokela hape.</string>
+
+</resources>

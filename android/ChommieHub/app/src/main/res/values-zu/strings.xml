@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    
+        <!-- General -->
+        <string name="back">Emuva</string>
+        <string name="retry">Zama futhi</string>
+        <string name="api_checking">Kuhlolwa i-ChommieHub API…</string>
+        <string name="api_connection_failed">Ayikwazi ukuxhuma ku-ChommieHub API.</string>
+
+        <!-- Login -->
+        <string name="login_title">Siyakwamukela futhi</string>
+        <string name="login_subtitle">Ngena ukuze uqhubeke nokuthola indawo yokuhlala yabafundi</string>
+        <string name="hint_email">Ikheli le-imeyili</string>
+        <string name="hint_password">Iphasiwedi</string>
+        <string name="sign_in">Ngena</string>
+        <string name="continue_google">Qhubeka nge-Google</string>
+        <string name="use_biometric">Ngena usebenzisa izimpawu zomzimba</string>
+        <string name="create_account">Umusha ku-ChommieHub? Dala i-akhawunti</string>
+
+        <!-- Registration -->
+        <string name="register_title">Dala i-akhawunti</string>
+        <string name="register_subtitle">Faka imininingwane yakho ukuze uqale ukusebenzisa i-ChommieHub.</string>
+        <string name="hint_first_name">Igama</string>
+        <string name="hint_surname">Isibongo</string>
+        <string name="hint_phone">Inombolo yocingo</string>
+        <string name="hint_create_password">Dala iphasiwedi</string>
+        <string name="hint_confirm_password">Qinisekisa iphasiwedi</string>
+        <string name="password_helper">Sebenzisa okungenani izinhlamvu eziyisi-6</string>
+        <string name="register_button">Dala i-akhawunti</string>
+        <string name="register_role_label">Ngibhalisa njenge</string>
+        <string name="role_student1">Umfundi</string>
+        <string name="role_manager">Umphathi wendawo yokuhlala</string>
+        <string name="have_account">Usunayo i-akhawunti? Ngena</string>
+
+        <!-- Navigation -->
+        <string name="nav_home">Ikhaya</string>
+        <string name="nav_search">Sesha</string>
+        <string name="nav_apply">Faka isicelo</string>
+        <string name="nav_applications">Izicelo</string>
+        <string name="nav_profile">Iphrofayela</string>
+        <string name="nav_settings">Izilungiselelo</string>
+
+        <!-- Student Home -->
+        <string name="home_hero_title">Thola indawo ozoyizwa njengekhaya</string>
+        <string name="home_hero_subtitle">Sesha izindawo zokuhlala eduze nekhempasi yakho</string>
+        <string name="hint_search">Idolobha, indawo, inyuvesi noma indawo yokuhlala</string>
+        <string name="search_residences">Sesha izindawo zokuhlala</string>
+        <string name="explore_title">Hlola izindawo zokuhlala</string>
+        <string name="explore_subtitle">Buka izindawo zokuhlala ezifakwe abaphathi be-ChommieHub</string>
+
+        <!-- Accommodation -->
+        <string name="about_residence">Mayelana nale ndawo yokuhlala</string>
+        <string name="amenities">Izinsiza</string>
+        <string name="apply_residence">Faka isicelo sale ndawo yokuhlala</string>
+        <string name="view_residence">Buka indawo yokuhlala →</string>
+
+        <!-- Applications -->
+        <string name="application_title">Isicelo sendawo yokuhlala</string>
+        <string name="application_subtitle">Khetha indawo yokuhlala oyithandayo. Isicelo sakho sizothunyelwa kumphathi ukuze asibuyekeze.</string>
+        <string name="label_residence">Indawo yokuhlala</string>
+        <string name="label_room_preference">Igumbi olikhethayo</string>
+        <string name="label_rental_period">Isikhathi sokuqasha</string>
+        <string name="label_supporting_info">Ulwazi olwengeziwe</string>
+        <string name="submit_application">Thumela isicelo</string>
+        <string name="my_applications_title">Izicelo zami</string>
+        <string name="my_applications_subtitle">Landela izicelo zakho zendawo yokuhlala nezinqumo zabaphathi.</string>
+        <string name="view_application_status">Buka isimo sesicelo →</string>
+        <string name="status_title">Isimo sesicelo</string>
+
+        <!-- Profile -->
+        <string name="profile_title">Iphrofayela yami</string>
+        <string name="hint_profile_name">Igama</string>
+        <string name="hint_profile_surname">Isibongo</string>
+        <string name="hint_profile_email">I-imeyili</string>
+        <string name="hint_profile_phone">Ucingo</string>
+        <string name="hint_profile_language">Ulimi olukhethwayo</string>
+        <string name="create_profile">Dala iphrofayela</string>
+        <string name="save_profile">Londoloza iphrofayela</string>
+
+        <!-- Settings -->
+        <string name="settings">Izilungiselelo</string>
+        <string name="log_out">Phuma</string>
+        <string name="label_preferred_language">Ulimi olukhethwayo</string>
+        <string name="notifications">Izaziso</string>
+        <string name="save_settings">Londoloza izilungiselelo</string>
+
+        <!-- Other -->
+        <string name="tab_applications">Izicelo</string>
+        <string name="tab_shortlist">Uhlu olukhethiwe</string>
+        <string name="remove_from_shortlist">Susa ohlwini olukhethiwe</string>
+        <string name="sync_status_pending">Kulindwe ukuvumelanisa</string>
+        <string name="sync_status_synced">Kuvumelanisiwe</string>
+        <string name="sync_status_failed">Ukuvumelanisa kwehlulekile</string>
+        <string name="offline_banner">Awuxhunyiwe ku-inthanethi. Ezinye izici zidinga i-inthanethi. Izinguquko ohlwini lwakho ziyalondolozwa futhi zizovumelaniswa lapho usuxhumekile.</string>
+
+</resources>
