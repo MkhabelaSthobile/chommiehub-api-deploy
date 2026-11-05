@@ -36,10 +36,8 @@ class StudentHomeFragment : Fragment(R.layout.fragment_student_home) {
     private lateinit var spSort: Spinner
 
     private lateinit var chipAll: Chip
-    private lateinit var chipNearCampus: Chip
     private lateinit var chipWifi: Chip
     private lateinit var chipLaundry: Chip
-    private lateinit var chipVerified: Chip
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -54,10 +52,8 @@ class StudentHomeFragment : Fragment(R.layout.fragment_student_home) {
         spSort = view.findViewById(R.id.spSort)
 
         chipAll = view.findViewById(R.id.chipAll)
-        chipNearCampus = view.findViewById(R.id.chipNearCampus)
         chipWifi = view.findViewById(R.id.chipWifi)
         chipLaundry = view.findViewById(R.id.chipLaundry)
-        chipVerified = view.findViewById(R.id.chipVerified)
 
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
@@ -112,10 +108,8 @@ class StudentHomeFragment : Fragment(R.layout.fragment_student_home) {
         val filterListener = View.OnClickListener { applyCurrentSearch() }
 
         chipAll.setOnClickListener(filterListener)
-        chipNearCampus.setOnClickListener(filterListener)
         chipWifi.setOnClickListener(filterListener)
         chipLaundry.setOnClickListener(filterListener)
-        chipVerified.setOnClickListener(filterListener)
 
         spArea.onItemSelectedListener = SimpleItemSelectedListener { applyCurrentSearch() }
         spSort.onItemSelectedListener = SimpleItemSelectedListener { applyCurrentSearch() }
@@ -164,14 +158,10 @@ class StudentHomeFragment : Fragment(R.layout.fragment_student_home) {
         )
     }
 
-    private fun selectedFilter(): HomeFilter {
-        return when {
-            chipNearCampus.isChecked -> HomeFilter.NEAR_CAMPUS
-            chipWifi.isChecked -> HomeFilter.WIFI
-            chipLaundry.isChecked -> HomeFilter.LAUNDRY
-            chipVerified.isChecked -> HomeFilter.VERIFIED
-            else -> HomeFilter.ALL
-        }
+    private fun selectedFilter(): HomeFilter = when {
+        chipWifi.isChecked -> HomeFilter.WIFI
+        chipLaundry.isChecked -> HomeFilter.LAUNDRY
+        else -> HomeFilter.ALL
     }
 
     private fun selectedSort(): HomeSort {

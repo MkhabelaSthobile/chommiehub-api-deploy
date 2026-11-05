@@ -7,10 +7,8 @@ import com.chommiehub.app.data.model.manager.AccommodationResponse
  */
 enum class HomeFilter {
     ALL,
-    NEAR_CAMPUS,
     WIFI,
-    LAUNDRY,
-    VERIFIED
+    LAUNDRY
 }
 
 /**
@@ -74,13 +72,22 @@ object AccommodationSearchEngine {
         return accommodation.institutionArea.equals(selectedArea, ignoreCase = true)
     }
 
-    private fun matchesFilter(accommodation: AccommodationResponse, filter: HomeFilter, selectedArea: String): Boolean {
+    private fun matchesFilter(
+        accommodation: AccommodationResponse,
+        filter: HomeFilter,
+        selectedArea: String
+    ): Boolean {
         return when (filter) {
             HomeFilter.ALL -> true
-            HomeFilter.NEAR_CAMPUS -> if (selectedArea.isBlank() || selectedArea.equals("All areas", ignoreCase = true)) accommodation.institutionArea.isNotBlank() else accommodation.institutionArea.equals(selectedArea, ignoreCase = true)
-            HomeFilter.WIFI -> accommodation.amenities.any { amenity -> amenity.contains("wi-fi", ignoreCase = true) || amenity.contains("wifi", ignoreCase = true) }
-            HomeFilter.LAUNDRY -> accommodation.amenities.any { amenity -> amenity.contains("laundry", ignoreCase = true) }
-            HomeFilter.VERIFIED -> accommodation.isActive
+
+            HomeFilter.WIFI -> accommodation.amenities.any { amenity ->
+                amenity.contains("wi-fi", ignoreCase = true) ||
+                        amenity.contains("wifi", ignoreCase = true)
+            }
+
+            HomeFilter.LAUNDRY -> accommodation.amenities.any { amenity ->
+                amenity.contains("laundry", ignoreCase = true)
+            }
         }
     }
 }

@@ -117,11 +117,7 @@
                     android:checked="true"
                     android:text="@string/filter_all" />
 
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chipNearCampus"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/filter_near_campus" />
+
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipWifi"
@@ -135,11 +131,6 @@
                     android:layout_height="wrap_content"
                     android:text="@string/filter_laundry" />
 
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chipVerified"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/filter_verified" />
 
             </com.google.android.material.chip.ChipGroup>
 
