@@ -156,4 +156,6 @@
 
     <string name="logo_description">ChommieHub-logo</string>
     <string name="all_areas">Alle gebiede</string>
+    <string name="map_residence_count">%1$d koshuise beskikbaar</string>
+    <string name="map_marker_details">%1$s — Tik om besonderhede te sien</string>
 </resources>

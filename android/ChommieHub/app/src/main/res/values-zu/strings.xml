@@ -156,4 +156,6 @@
 
         <string name="all_areas">Zonke izindawo</string>
         <string name="logo_description">Ilogo ye-ChommieHub</string>
+        <string name="map_residence_count">%1$d izindawo zokuhlala ezitholakalayo</string>
+        <string name="map_marker_details">%1$s — Thepha ukuze ubone imininingwane</string>
 </resources>

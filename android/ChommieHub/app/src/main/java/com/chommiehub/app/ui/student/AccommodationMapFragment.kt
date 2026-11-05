@@ -15,6 +15,7 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
+import java.util.Locale
 
 /**
  * Displays active ChommieHub accommodations together on an interactive map.
@@ -71,28 +72,46 @@ class AccommodationMapFragment : Fragment(R.layout.fragment_accommodation_map) {
 
         mapView.overlays.clear()
 
-        if (accommodations.isEmpty()) {
-            tvCount.text = "0 residences"
+        val validAccommodations = accommodations.filter {
+            it.latitude.isFinite() &&
+                    it.longitude.isFinite() &&
+                    it.latitude in -90.0..90.0 &&
+                    it.longitude in -180.0..180.0 &&
+                    !(it.latitude == 0.0 && it.longitude == 0.0)
+        }
+
+        if (validAccommodations.isEmpty()) {
+            tvCount.text = getString(R.string.map_residence_count, 0)
             tvEmpty.visibility = View.VISIBLE
+            mapView.invalidate()
             return
         }
 
         tvEmpty.visibility = View.GONE
-        tvCount.text = "${accommodations.size} residence(s) available"
+        tvCount.text = getString(
+            R.string.map_residence_count,
+            validAccommodations.size
+        )
 
-        accommodations.forEach { accommodation ->
-            val point = GeoPoint(accommodation.latitude, accommodation.longitude)
-            val marker = Marker(mapView)
+        validAccommodations.forEach { accommodation ->
+            val marker = Marker(mapView).apply {
+                position = GeoPoint(
+                    accommodation.latitude,
+                    accommodation.longitude
+                )
+                title = accommodation.name
+                snippet = getString(
+                    R.string.map_marker_details,
+                    accommodation.address
+                )
+            }
 
-            marker.position = point
-            marker.title = accommodation.name
-            marker.snippet = "${accommodation.address}\nTap to view details"
-
-            marker.setOnMarkerClickListener { selectedMarker, _ ->
-                selectedMarker.showInfoWindow()
-
+            marker.setOnMarkerClickListener { _, _ ->
                 parentFragmentManager.beginTransaction()
-                    .replace(R.id.studentContainer, AccommodationDetailFragment.newInstance(accommodation.id))
+                    .replace(
+                        R.id.studentContainer,
+                        AccommodationDetailFragment.newInstance(accommodation.id)
+                    )
                     .addToBackStack(null)
                     .commit()
 
@@ -102,11 +121,17 @@ class AccommodationMapFragment : Fragment(R.layout.fragment_accommodation_map) {
             mapView.overlays.add(marker)
         }
 
-        val averageLatitude = accommodations.map { it.latitude }.average()
-        val averageLongitude = accommodations.map { it.longitude }.average()
+        val averageLatitude = validAccommodations.map { it.latitude }.average()
+        val averageLongitude = validAccommodations.map { it.longitude }.average()
 
-        mapView.controller.setCenter(GeoPoint(averageLatitude, averageLongitude))
-        mapView.controller.setZoom(if (accommodations.size == 1) 15.0 else 11.0)
+        mapView.controller.setCenter(
+            GeoPoint(averageLatitude, averageLongitude)
+        )
+
+        mapView.controller.setZoom(
+            if (validAccommodations.size == 1) 15.0 else 11.0
+        )
+
         mapView.invalidate()
     }
 

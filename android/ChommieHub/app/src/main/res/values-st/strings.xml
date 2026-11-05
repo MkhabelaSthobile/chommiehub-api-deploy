@@ -152,4 +152,6 @@
         <string name="all_areas">Dibaka tsohle</string>
 
         <string name="logo_description">Letshwao la ChommieHub</string>
+        <string name="map_residence_count">%1$d dibaka tsa bodulo tse fumanehang</string>
+        <string name="map_marker_details">%1$s — Tobetsa ho bona dintlha</string>
 </resources>

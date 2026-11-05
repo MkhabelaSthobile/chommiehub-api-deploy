@@ -169,4 +169,6 @@
     <string name="sort_most_amenities">Most amenities</string>
 
     <string name="all_areas">All areas</string>
+    <string name="map_residence_count">%1$d residences available</string>
+    <string name="map_marker_details">%1$s — Tap to view details</string>
 </resources>
