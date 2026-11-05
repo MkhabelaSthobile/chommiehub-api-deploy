@@ -68,7 +68,6 @@
         <string name="status_title">Boemo ba kopo</string>
 
         <!-- Profile -->
-        <string name="profile_title">Profaele ya ka</string>
         <string name="hint_profile_name">Lebitso</string>
         <string name="hint_profile_surname">Fane</string>
         <string name="hint_profile_email">Imeile</string>
@@ -154,4 +153,57 @@
         <string name="logo_description">Letshwao la ChommieHub</string>
         <string name="map_residence_count">%1$d dibaka tsa bodulo tse fumanehang</string>
         <string name="map_marker_details">%1$s — Tobetsa ho bona dintlha</string>
+        <string name="view_details">Sheba lintlha</string>
+
+        <string name="application_review_subtitle">Hlahloba tlhahisoleseding ya hao pele o romela kopo.</string>
+        <string name="application_room">Kamore</string>
+        <string name="application_submit_button">Romela kopo</string>
+
+        <string name="application_submitted_title">Kopo e rometswe</string>
+        <string name="application_submitted_message">Kopo ya hao e rometswe ho molaodi wa bodulo hore a e hlahlobe.</string>
+        <string name="application_view_my_applications">Sheba dikopo tsa ka</string>
+        <string name="application_return_home">Kgutlela leqepheng la lapeng</string>
+
+        <string name="profile_title">Profaele ya ka</string>
+        <string name="profile_subtitle">Laola tlhahisoleseding ya akhaonto ya hao ya moithuti</string>
+        <string name="profile_retry">Leka hape</string>
+        <string name="profile_first_name">Lebitso</string>
+        <string name="profile_first_name_hint">Kenya lebitso la hao</string>
+        <string name="profile_surname">Fane</string>
+        <string name="profile_surname_hint">Kenya fane ya hao</string>
+        <string name="profile_email">Aterese ya imeile</string>
+        <string name="profile_email_hint">Kenya aterese ya hao ya imeile</string>
+        <string name="profile_phone">Nomoro ya mohala</string>
+        <string name="profile_phone_hint">Kenya nomoro ya hao ya mohala</string>
+        <string name="profile_language">Puo eo o e ratang</string>
+        <string name="profile_language_hint">mohl. Sesotho</string>
+        <string name="profile_save">Boloka profaele</string>
+        <string name="profile_resident_services">Ditshebeletso tsa baahi</string>
+        <string name="profile_services_subtitle">Laola ditshebeletso tsa bodulo ba hao</string>
+        <string name="profile_maintenance_requests">Dikopo tsa tokiso</string>
+        <string name="profile_visitor_requests">Dikopo tsa baeti</string>
+        <string name="profile_sign_out">Tswa</string>
+
+        <string name="maintenance_title">Tokiso</string>
+        <string name="maintenance_subtitle">Tlaleha bothata bo ka kamoreng ya hao kapa bodulong ba hao.</string>
+        <string name="maintenance_category">Mofuta</string>
+        <string name="maintenance_description">Hlalosa bothata</string>
+        <string name="maintenance_submit">Romela kopo</string>
+        <string name="maintenance_my_requests">Dikopo tsa ka</string>
+        <string name="maintenance_empty">Ha ho na dikopo tsa tokiso hajoale.</string>
+
+        <string name="visitor_title">Dikopo tsa baeti</string>
+        <string name="visitor_subtitle">Kopa tumello ya hore moeti a kene bodulong ba hao.</string>
+        <string name="visitor_name_hint">Lebitso la moeti</string>
+        <string name="visitor_id_hint">Nomoro ya ID / phasepoto ya moeti</string>
+        <string name="visitor_arrival_hint">Letsatsi la ho fihla (mohl. 2026-09-22T10:00:00Z)</string>
+        <string name="visitor_departure_hint">Letsatsi la ho tloha (mohl. 2026-09-22T18:00:00Z)</string>
+        <string name="visitor_sleepover">Moeti ya tla robala teng</string>
+        <string name="visitor_my_requests">Dikopo tsa ka tsa baeti</string>
+        <string name="visitor_empty">Ha ho na dikopo tsa baeti hajoale.</string>
+
+        <string name="visitor_sign_in_required">O tlameha ho kena akhaontong hore o sebedise ditshebeletso tsa baeti.</string>
+        <string name="visitor_request_history_item">%1$s\nID: %2$s\nHo fihla: %3$s\nHo tloha: %4$s\nHo robala teng: %5$s\nBoemo: %6$s</string>
+        <string name="visitor_yes">Ee</string>
+        <string name="visitor_no">Tjhe</string>
 </resources>

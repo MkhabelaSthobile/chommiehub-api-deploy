@@ -23,8 +23,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="Application Submitted"
-            android:textColor="@color/chommie_navy"
+            android:text="@string/application_submitted_title"            android:textColor="@color/chommie_navy"
             android:textSize="28sp"
             android:textStyle="bold" />
 
@@ -33,8 +32,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:gravity="center"
-            android:text="Your application has been sent to the residence manager for review."
-            android:textColor="@color/chommie_text_secondary" />
+            android:text="@string/application_submitted_message"            android:textColor="@color/chommie_text_secondary" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -83,8 +81,7 @@
             android:layout_height="58dp"
             android:layout_marginTop="24dp"
             android:backgroundTint="@color/chommie_gold"
-            android:text="View My Applications"
-            android:textColor="@color/chommie_navy"
+            android:text="@string/application_view_my_applications"            android:textColor="@color/chommie_navy"
             android:textStyle="bold" />
 
         <Button
@@ -93,8 +90,7 @@
             android:layout_height="58dp"
             android:layout_marginTop="10dp"
             android:backgroundTint="@color/chommie_navy"
-            android:text="Return Home"
-            android:textColor="@color/white"
+            android:text="@string/application_return_home"            android:textColor="@color/white"
             android:textStyle="bold" />
 
     </LinearLayout>

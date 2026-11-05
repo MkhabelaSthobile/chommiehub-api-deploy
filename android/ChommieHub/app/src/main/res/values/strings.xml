@@ -124,7 +124,6 @@
     <string name="explore_subtitle">Browse accommodation added by ChommieHub managers</string>
 
     <!-- Student Profile -->
-    <string name="profile_title">My profile</string>
     <string name="hint_profile_name">Name</string>
     <string name="hint_profile_surname">Surname</string>
     <string name="hint_profile_email">Email</string>
@@ -171,4 +170,86 @@
     <string name="all_areas">All areas</string>
     <string name="map_residence_count">%1$d residences available</string>
     <string name="map_marker_details">%1$s — Tap to view details</string>
+    <string name="view_details">View details</string>
+
+    <string name="application_review_subtitle">Check your information before submitting.</string>
+    <string name="application_room">Room</string>
+    <string name="application_submit_button">Submit Application</string>
+
+    <string name="application_submitted_title">Application Submitted</string>
+    <string name="application_submitted_message">Your application has been sent to the residence manager for review.</string>
+    <string name="application_view_my_applications">View My Applications</string>
+    <string name="application_return_home">Return Home</string>
+
+    <string
+        name="profile_title">My Profile</string>
+    <string name="profile_subtitle">Manage your student account information</string>
+    <string name="profile_retry">Retry</string>
+    <string name="profile_first_name">First Name</string>
+    <string name="profile_first_name_hint">Enter your first name</string>
+    <string name="profile_surname">Surname</string>
+    <string name="profile_surname_hint">Enter your surname</string>
+    <string name="profile_email">Email Address</string>
+    <string name="profile_email_hint">Enter your email address</string>
+    <string name="profile_phone">Phone Number</string>
+    <string name="profile_phone_hint">Enter your phone number</string>
+    <string name="profile_language">Preferred Language</string>
+    <string name="profile_language_hint">e.g. English</string>
+    <string name="profile_save">Save Profile</string>
+    <string name="profile_resident_services">Resident Services</string>
+    <string name="profile_services_subtitle">Manage services for your residence</string>
+    <string name="profile_maintenance_requests">Maintenance Requests</string>
+    <string name="profile_visitor_requests">Visitor Requests</string>
+    <string name="profile_sign_out">Sign Out</string>
+
+    <string name="maintenance_title">Maintenance</string>
+    <string name="maintenance_subtitle">Report a problem in your room or residence.</string>
+    <string name="maintenance_category">Category</string>
+    <string name="maintenance_description">Describe the problem</string>
+    <string name="maintenance_submit">Submit request</string>
+    <string name="maintenance_my_requests">My requests</string>
+    <string name="maintenance_empty">No maintenance requests yet.</string>
+
+    <string name="visitor_title">Visitor Requests</string>
+    <string name="visitor_subtitle">Request permission for a visitor to access your residence.</string>
+    <string name="visitor_name_hint">Visitor name</string>
+    <string name="visitor_id_hint">Visitor ID / Passport number</string>
+    <string name="visitor_arrival_hint">Arrival date (e.g. 2026-09-22T10:00:00Z)</string>
+    <string name="visitor_departure_hint">Departure date (e.g. 2026-09-22T18:00:00Z)</string>
+    <string name="visitor_sleepover">Sleepover visitor</string>
+    <string name="visitor_my_requests">My visitor requests</string>
+    <string name="visitor_empty">No visitor requests yet.</string>
+
+    <string name="visitor_sign_in_required">You must be signed in to access visitor services.</string>
+    <string name="visitor_request_history_item">%1$s\nID: %2$s\nArrival: %3$s\nDeparture: %4$s\nSleepover: %5$s\nStatus: %6$s</string>
+    <string name="visitor_yes">Yes</string>
+    <string name="visitor_no">No</string>
+
+    <!-- Visitor Request ViewModel Messages -->
+    <string name="visitor_error_student_id">Student ID is unavailable.</string>
+    <string name="visitor_error_no_residence">No active residence was found for this student.</string>
+    <string name="visitor_error_load_residence_server">Unable to load residence information. Server returned %1$d.</string>
+    <string name="visitor_error_load_residence">Unable to load residence information.</string>
+    <string name="visitor_error_resident_id">Resident ID is unavailable.</string>
+    <string name="visitor_error_load_requests_server">Unable to load visitor requests. Server returned %1$d.</string>
+    <string name="visitor_error_load_requests">Unable to load visitor requests.</string>
+    <string name="visitor_error_resident_unavailable">Resident information is unavailable.</string>
+    <string name="visitor_error_name">Enter the visitor\'s name.</string>
+    <string name="visitor_error_identification">Enter the visitor\'s identification.</string>
+    <string name="visitor_error_arrival">Enter the arrival date.</string>
+    <string name="visitor_error_departure">Enter the departure date.</string>
+    <string name="visitor_success">Visitor request submitted successfully.</string>
+    <string name="visitor_error_submit_server">Unable to submit visitor request. Server returned %1$d.</string>
+    <string name="visitor_error_submit">Unable to submit visitor request.</string>
+
+    <!-- Application Form -->
+    <string name="application_form_title">Accommodation Application</string>
+    <string name="application_form_subtitle">Choose your residence preferences. Your application will be sent to the residence manager for review.</string>
+    <string name="application_residence">Residence</string>
+    <string name="application_available_room">Available room</string>
+    <string name="application_rental_period">Rental period</string>
+    <string name="application_rental_period_hint">e.g. February – November 2027</string>
+    <string name="application_supporting_info">Supporting information</string>
+    <string name="application_supporting_info_hint">Add any information the residence manager should know</string>
+    <string name="application_review_button">Review application</string>
 </resources>

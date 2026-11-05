@@ -15,8 +15,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Visitor Requests"
-            android:textColor="@color/chommie_navy"
+            android:text="@string/visitor_title"            android:textColor="@color/chommie_navy"
             android:textSize="26sp"
             android:textStyle="bold" />
 
@@ -25,16 +24,14 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:layout_marginBottom="20dp"
-            android:text="Request permission for a visitor to access your residence."
-            android:textColor="@color/chommie_text_secondary"
+            android:text="@string/visitor_subtitle"            android:textColor="@color/chommie_text_secondary"
             android:textSize="14sp" />
 
         <EditText
             android:id="@+id/etVisitorName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Visitor name"
-            android:inputType="textPersonName"
+            android:hint="@string/visitor_name_hint"            android:inputType="textPersonName"
             android:minHeight="52dp"
             android:padding="12dp"
             android:layout_marginBottom="12dp" />
@@ -43,8 +40,7 @@
             android:id="@+id/etVisitorIdentification"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Visitor ID / Passport number"
-            android:inputType="text"
+            android:hint="@string/visitor_id_hint"            android:inputType="text"
             android:minHeight="52dp"
             android:padding="12dp"
             android:layout_marginBottom="12dp" />
@@ -53,8 +49,7 @@
             android:id="@+id/etArrivalDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Arrival date (e.g. 2026-09-22T10:00:00Z)"
-            android:inputType="text"
+            android:hint="@string/visitor_arrival_hint"            android:inputType="text"
             android:minHeight="52dp"
             android:padding="12dp"
             android:layout_marginBottom="12dp" />
@@ -63,8 +58,7 @@
             android:id="@+id/etDepartureDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Departure date (e.g. 2026-09-22T18:00:00Z)"
-            android:inputType="text"
+            android:hint="@string/visitor_departure_hint"            android:inputType="text"
             android:minHeight="52dp"
             android:padding="12dp"
             android:layout_marginBottom="12dp" />
@@ -73,8 +67,7 @@
             android:id="@+id/checkSleepover"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Sleepover visitor"
-            android:layout_marginBottom="12dp" />
+            android:text="@string/visitor_sleepover"            android:layout_marginBottom="12dp" />
 
         <TextView
             android:id="@+id/tvVisitorError"
@@ -97,8 +90,7 @@
             android:id="@+id/btnSubmitVisitor"
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:text="Submit request"
-            android:textColor="@color/white"
+            android:text="@string/maintenance_submit"            android:textColor="@color/white"
             android:textStyle="bold"
             app:backgroundTint="@color/chommie_navy"
             app:cornerRadius="12dp" />
@@ -107,8 +99,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="28dp"
-            android:text="My visitor requests"
-            android:textColor="@color/chommie_navy"
+            android:text="@string/visitor_my_requests"            android:textColor="@color/chommie_navy"
             android:textSize="20sp"
             android:textStyle="bold" />
 
@@ -117,8 +108,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="No visitor requests yet."
-            android:textColor="@color/chommie_text_secondary" />
+            android:text="@string/visitor_empty"            android:textColor="@color/chommie_text_secondary" />
 
         <LinearLayout
             android:id="@+id/visitorRequestsContainer"

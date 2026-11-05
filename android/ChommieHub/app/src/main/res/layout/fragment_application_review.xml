@@ -13,8 +13,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Review Application"
-            android:textColor="@color/chommie_navy"
+            android:text="@string/application_review_button"            android:textColor="@color/chommie_navy"
             android:textSize="28sp"
             android:textStyle="bold" />
 
@@ -22,15 +21,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            android:text="Check your information before submitting."
-            android:textColor="@color/chommie_text_secondary" />
+            android:text="@string/application_review_subtitle"            android:textColor="@color/chommie_text_secondary" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="Residence"
-            android:textColor="@color/chommie_navy"
+            android:text="@string/application_residence"            android:textColor="@color/chommie_navy"
             android:textStyle="bold" />
 
         <TextView
@@ -46,8 +43,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Room"
-            android:textColor="@color/chommie_navy"
+            android:text="@string/application_room"            android:textColor="@color/chommie_navy"
             android:textStyle="bold" />
 
         <TextView
@@ -63,8 +59,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Rental Period"
-            android:textColor="@color/chommie_navy"
+            android:text="@string/application_rental_period"            android:textColor="@color/chommie_navy"
             android:textStyle="bold" />
 
         <TextView
@@ -80,8 +75,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Supporting Information"
-            android:textColor="@color/chommie_navy"
+            android:text="@string/application_supporting_info"            android:textColor="@color/chommie_navy"
             android:textStyle="bold" />
 
         <TextView
@@ -107,8 +101,7 @@
             android:layout_height="58dp"
             android:layout_marginTop="20dp"
             android:backgroundTint="@color/chommie_gold"
-            android:text="Submit Application"
-            android:textColor="@color/chommie_navy"
+            android:text="@string/application_submit_button"            android:textColor="@color/chommie_navy"
             android:textStyle="bold" />
 
     </LinearLayout>

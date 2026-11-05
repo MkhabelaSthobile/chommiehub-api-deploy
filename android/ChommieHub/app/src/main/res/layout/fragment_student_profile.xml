@@ -16,8 +16,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="My Profile"
-            android:textColor="#0B1F3A"
+            android:text="@string/profile_title"            android:textColor="#0B1F3A"
             android:textSize="26sp"
             android:textStyle="bold"
             android:layout_marginBottom="6dp" />
@@ -25,8 +24,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Manage your student account information"
-            android:textColor="#666666"
+            android:text="@string/profile_subtitle"            android:textColor="#666666"
             android:textSize="14sp"
             android:layout_marginBottom="24dp" />
 
@@ -52,8 +50,7 @@
             android:id="@+id/btnProfileRetry"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Retry"
-            android:visibility="gone"
+            android:text="@string/profile_retry"            android:visibility="gone"
             android:layout_marginBottom="16dp"
             app:backgroundTint="#D9A441" />
 
@@ -66,8 +63,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="First Name"
-                android:textColor="#0B1F3A"
+                android:text="@string/profile_first_name"                android:textColor="#0B1F3A"
                 android:textStyle="bold"
                 android:layout_marginBottom="6dp" />
 
@@ -75,8 +71,7 @@
                 android:id="@+id/etProfileName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Enter your first name"
-                android:inputType="textPersonName"
+                android:hint="@string/profile_first_name_hint"                android:inputType="textPersonName"
                 android:minHeight="48dp"
                 android:padding="12dp"
                 android:backgroundTint="#D9A441"
@@ -85,8 +80,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Surname"
-                android:textColor="#0B1F3A"
+                android:text="@string/profile_surname"                android:textColor="#0B1F3A"
                 android:textStyle="bold"
                 android:layout_marginBottom="6dp" />
 
@@ -94,8 +88,7 @@
                 android:id="@+id/etProfileSurname"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Enter your surname"
-                android:inputType="textPersonName"
+                android:hint="@string/profile_surname_hint"                android:inputType="textPersonName"
                 android:minHeight="48dp"
                 android:padding="12dp"
                 android:backgroundTint="#D9A441"
@@ -104,8 +97,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Email Address"
-                android:textColor="#0B1F3A"
+                android:text="@string/profile_email"                android:textColor="#0B1F3A"
                 android:textStyle="bold"
                 android:layout_marginBottom="6dp" />
 
@@ -113,8 +105,7 @@
                 android:id="@+id/etProfileEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Enter your email address"
-                android:inputType="textEmailAddress"
+                android:hint="@string/profile_email_hint"                android:inputType="textEmailAddress"
                 android:minHeight="48dp"
                 android:padding="12dp"
                 android:backgroundTint="#D9A441"
@@ -123,8 +114,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Phone Number"
-                android:textColor="#0B1F3A"
+                android:text="@string/profile_phone"                android:textColor="#0B1F3A"
                 android:textStyle="bold"
                 android:layout_marginBottom="6dp" />
 
@@ -132,8 +122,7 @@
                 android:id="@+id/etProfilePhone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Enter your phone number"
-                android:inputType="phone"
+                android:hint="@string/profile_phone_hint"                android:inputType="phone"
                 android:minHeight="48dp"
                 android:padding="12dp"
                 android:backgroundTint="#D9A441"
@@ -142,8 +131,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Preferred Language"
-                android:textColor="#0B1F3A"
+                android:text="@string/profile_language"                android:textColor="#0B1F3A"
                 android:textStyle="bold"
                 android:layout_marginBottom="6dp" />
 
@@ -151,8 +139,7 @@
                 android:id="@+id/etProfileLanguage"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="e.g. English"
-                android:inputType="textCapWords"
+                android:hint="@string/profile_language_hint"                android:inputType="textCapWords"
                 android:minHeight="48dp"
                 android:padding="12dp"
                 android:backgroundTint="#D9A441"
@@ -171,8 +158,7 @@
                 android:id="@+id/btnSaveProfile"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:text="Save Profile"
-                android:textStyle="bold"
+                android:text="@string/profile_save"                android:textStyle="bold"
                 android:textColor="#FFFFFF"
                 app:backgroundTint="#0B1F3A"
                 app:cornerRadius="12dp" />
@@ -182,8 +168,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="28dp"
                 android:layout_marginBottom="6dp"
-                android:text="Resident Services"
-                android:textColor="#0B1F3A"
+                android:text="@string/profile_resident_services"                android:textColor="#0B1F3A"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
@@ -191,16 +176,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="14dp"
-                android:text="Manage services for your residence"
-                android:textColor="#666666"
+                android:text="@string/profile_services_subtitle"                android:textColor="#666666"
                 android:textSize="14sp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnMaintenance"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:text="Maintenance Requests"
-                android:textColor="#FFFFFF"
+                android:text="@string/profile_maintenance_requests"                android:textColor="#FFFFFF"
                 android:textStyle="bold"
                 app:backgroundTint="#0B1F3A"
                 app:cornerRadius="12dp" />
@@ -210,8 +193,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:layout_marginTop="12dp"
-                android:text="Visitor Requests"
-                android:textColor="#FFFFFF"
+                android:text="@string/profile_visitor_requests"                android:textColor="#FFFFFF"
                 android:textStyle="bold"
                 app:backgroundTint="#0B1F3A"
                 app:cornerRadius="12dp" />
@@ -221,8 +203,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:layout_marginTop="28dp"
-                android:text="Sign Out"
-                android:textStyle="bold"
+                android:text="@string/profile_sign_out"                android:textStyle="bold"
                 android:textColor="#FFFFFF"
                 app:backgroundTint="@color/chommie_danger"
                 app:cornerRadius="12dp" />

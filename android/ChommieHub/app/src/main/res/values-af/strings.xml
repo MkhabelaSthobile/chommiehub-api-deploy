@@ -67,7 +67,6 @@
     <string name="status_title">Aansoekstatus</string>
 
     <!-- Profile -->
-    <string name="profile_title">My profiel</string>
     <string name="hint_profile_name">Naam</string>
     <string name="hint_profile_surname">Van</string>
     <string name="hint_profile_email">E-pos</string>
@@ -158,4 +157,72 @@
     <string name="all_areas">Alle gebiede</string>
     <string name="map_residence_count">%1$d koshuise beskikbaar</string>
     <string name="map_marker_details">%1$s — Tik om besonderhede te sien</string>
+    <string name="view_details">Bekyk besonderhede</string>
+
+    <string name="application_review_subtitle">Gaan jou inligting na voordat jy dit indien.</string>
+    <string name="application_room">Kamer</string>
+    <string name="application_submit_button">Dien aansoek in</string>
+
+    <string name="application_submitted_title">Aansoek ingedien</string>
+    <string name="application_submitted_message">Jou aansoek is aan die verblyfbestuurder gestuur vir hersiening.</string>
+    <string name="application_view_my_applications">Bekyk my aansoeke</string>
+    <string name="application_return_home">Terug na tuisblad</string>
+
+    <string name="profile_title">My profiel</string>
+    <string name="profile_subtitle">Bestuur jou studenterekening se inligting</string>
+    <string name="profile_retry">Probeer weer</string>
+    <string name="profile_first_name">Voornaam</string>
+    <string name="profile_first_name_hint">Voer jou voornaam in</string>
+    <string name="profile_surname">Van</string>
+    <string name="profile_surname_hint">Voer jou van in</string>
+    <string name="profile_email">E-posadres</string>
+    <string name="profile_email_hint">Voer jou e-posadres in</string>
+    <string name="profile_phone">Telefoonnommer</string>
+    <string name="profile_phone_hint">Voer jou telefoonnommer in</string>
+    <string name="profile_language">Voorkeurtaal</string>
+    <string name="profile_language_hint">bv. Afrikaans</string>
+    <string name="profile_save">Stoor profiel</string>
+    <string name="profile_resident_services">Inwonersdienste</string>
+    <string name="profile_services_subtitle">Bestuur dienste vir jou verblyfplek</string>
+    <string name="profile_maintenance_requests">Onderhoudsversoeke</string>
+    <string name="profile_visitor_requests">Besoekersversoeke</string>
+    <string name="profile_sign_out">Meld af</string>
+
+    <string name="maintenance_title">Onderhoud</string>
+    <string name="maintenance_subtitle">Rapporteer \'n probleem in jou kamer of verblyfplek.</string>    <string name="maintenance_category">Kategorie</string>
+    <string name="maintenance_description">Beskryf die probleem</string>
+    <string name="maintenance_submit">Dien versoek in</string>
+    <string name="maintenance_my_requests">My versoeke</string>
+    <string name="maintenance_empty">Nog geen onderhoudsversoeke nie.</string>
+
+    <string name="visitor_title">Besoekersversoeke</string>
+    <string name="visitor_subtitle">Vra toestemming vir \'n besoeker om toegang tot jou verblyfplek te kry.</string>
+    <string name="visitor_name_hint">Besoeker se naam</string>
+    <string name="visitor_id_hint">Besoeker se ID- / paspoortnommer</string>
+    <string name="visitor_arrival_hint">Aankomsdatum (bv. 2026-09-22T10:00:00Z)</string>
+    <string name="visitor_departure_hint">Vertrekdatum (bv. 2026-09-22T18:00:00Z)</string>
+    <string name="visitor_sleepover">Besoeker wat oornag</string>
+    <string name="visitor_my_requests">My besoekersversoeke</string>
+    <string name="visitor_empty">Nog geen besoekersversoeke nie.</string>
+
+    <string name="visitor_sign_in_required">Jy moet aangemeld wees om besoekersdienste te gebruik.</string>
+    <string name="visitor_request_history_item">%1$s\nID: %2$s\nAankoms: %3$s\nVertrek: %4$s\nOornag: %5$s\nStatus: %6$s</string>
+    <string name="visitor_yes">Ja</string>
+    <string name="visitor_no">Nee</string>
+
+    <string name="visitor_error_student_id">Student-ID is nie beskikbaar nie.</string>
+    <string name="visitor_error_no_residence">Geen aktiewe verblyfplek is vir hierdie student gevind nie.</string>
+    <string name="visitor_error_load_residence_server">Kon nie verblyfinligting laai nie. Die bediener het %1$d teruggestuur.</string>
+    <string name="visitor_error_load_residence">Kon nie verblyfinligting laai nie.</string>
+    <string name="visitor_error_resident_id">Inwoner-ID is nie beskikbaar nie.</string>
+    <string name="visitor_error_load_requests_server">Kon nie besoekersversoeke laai nie. Die bediener het %1$d teruggestuur.</string>
+    <string name="visitor_error_load_requests">Kon nie besoekersversoeke laai nie.</string>
+    <string name="visitor_error_resident_unavailable">Inwonerinligting is nie beskikbaar nie.</string>
+    <string name="visitor_error_name">Voer die besoeker se naam in.</string>
+    <string name="visitor_error_identification">Voer die besoeker se identifikasie in.</string>
+    <string name="visitor_error_arrival">Voer die aankomsdatum in.</string>
+    <string name="visitor_error_departure">Voer die vertrekdatum in.</string>
+    <string name="visitor_success">Besoekersversoek suksesvol ingedien.</string>
+    <string name="visitor_error_submit_server">Kon nie die besoekersversoek indien nie. Die bediener het %1$d teruggestuur.</string>
+    <string name="visitor_error_submit">Kon nie die besoekersversoek indien nie.</string>
 </resources>

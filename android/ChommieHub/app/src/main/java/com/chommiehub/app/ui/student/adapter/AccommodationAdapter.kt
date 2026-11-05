@@ -45,6 +45,10 @@ class AccommodationAdapter(
         val item = items[position]
         holder.name.text = item.name
         holder.location.text = "${item.address} \u2022 ${item.institutionArea}"
+        holder.viewDetailsButton.text =
+            holder.itemView.context.getString(R.string.view_details)
+        holder.viewDetailsButton.text =
+            holder.itemView.context.getString(R.string.view_details)
         holder.viewDetailsButton.setOnClickListener { onViewDetails(item) }
         holder.shortlistButton.setOnClickListener { onToggleShortlist(item) }
 

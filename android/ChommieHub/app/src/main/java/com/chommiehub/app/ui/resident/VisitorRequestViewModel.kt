@@ -1,11 +1,14 @@
+
 package com.chommiehub.app.ui.resident
 
+import android.app.Application
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.chommiehub.app.R
 import com.chommiehub.app.data.model.manager.ResidentResponse
 import com.chommiehub.app.data.model.resident.CreateVisitorRequest
 import com.chommiehub.app.data.model.resident.VisitorRequestResponse
@@ -16,12 +19,19 @@ import retrofit2.HttpException
 import java.io.IOException
 
 class VisitorRequestViewModel(
-    private val repository: ResidentServicesRepository
+    private val repository: ResidentServicesRepository,
+    private val application: Application
 ) : ViewModel() {
 
     companion object {
         private const val TAG = "VisitorRequestVM"
     }
+
+    private fun localized(id: Int): String =
+        application.getString(id)
+
+    private fun localized(id: Int, vararg args: Any): String =
+        application.getString(id, *args)
 
     private val _resident =
         MutableLiveData<ResidentResponse?>()
@@ -55,7 +65,7 @@ class VisitorRequestViewModel(
 
     fun loadResident(studentId: String) {
         if (studentId.isBlank()) {
-            _error.value = "Student ID is unavailable."
+            _error.value = localized(R.string.visitor_error_student_id)
             return
         }
 
@@ -78,22 +88,38 @@ class VisitorRequestViewModel(
                 throw exception
 
             } catch (exception: IOException) {
-                Log.e(TAG, "Network error while loading resident information.", exception)
-                _error.value = "Unable to connect to the ChommieHub API."
+                Log.e(
+                    TAG,
+                    "Network error while loading resident information.",
+                    exception
+                )
+                _error.value = localized(R.string.api_connection_failed)
 
             } catch (exception: HttpException) {
-                Log.e(TAG, "HTTP error while loading resident information.", exception)
+                Log.e(
+                    TAG,
+                    "HTTP error while loading resident information.",
+                    exception
+                )
 
                 _error.value =
                     if (exception.code() == 404) {
-                        "No active residence was found for this student."
+                        localized(R.string.visitor_error_no_residence)
                     } else {
-                        "Unable to load residence information. Server returned ${exception.code()}."
+                        localized(
+                            R.string.visitor_error_load_residence_server,
+                            exception.code()
+                        )
                     }
 
             } catch (exception: Exception) {
-                Log.e(TAG, "Unable to load resident information.", exception)
-                _error.value = exception.message ?: "Unable to load residence information."
+                Log.e(
+                    TAG,
+                    "Unable to load resident information.",
+                    exception
+                )
+                _error.value =
+                    localized(R.string.visitor_error_load_residence)
 
             } finally {
                 _isLoading.value = false
@@ -103,7 +129,7 @@ class VisitorRequestViewModel(
 
     fun loadRequests(residentId: String) {
         if (residentId.isBlank()) {
-            _error.value = "Resident ID is unavailable."
+            _error.value = localized(R.string.visitor_error_resident_id)
             return
         }
 
@@ -122,16 +148,32 @@ class VisitorRequestViewModel(
                 throw exception
 
             } catch (exception: IOException) {
-                Log.e(TAG, "Network error while loading visitor requests.", exception)
-                _error.value = "Unable to connect to the ChommieHub API."
+                Log.e(
+                    TAG,
+                    "Network error while loading visitor requests.",
+                    exception
+                )
+                _error.value = localized(R.string.api_connection_failed)
 
             } catch (exception: HttpException) {
-                Log.e(TAG, "HTTP error while loading visitor requests.", exception)
-                _error.value = "Unable to load visitor requests. Server returned ${exception.code()}."
+                Log.e(
+                    TAG,
+                    "HTTP error while loading visitor requests.",
+                    exception
+                )
+                _error.value = localized(
+                    R.string.visitor_error_load_requests_server,
+                    exception.code()
+                )
 
             } catch (exception: Exception) {
-                Log.e(TAG, "Unable to load visitor requests.", exception)
-                _error.value = exception.message ?: "Unable to load visitor requests."
+                Log.e(
+                    TAG,
+                    "Unable to load visitor requests.",
+                    exception
+                )
+                _error.value =
+                    localized(R.string.visitor_error_load_requests)
 
             } finally {
                 _isLoading.value = false
@@ -149,27 +191,29 @@ class VisitorRequestViewModel(
         val resident = _resident.value
 
         if (resident == null) {
-            _error.value = "Resident information is unavailable."
+            _error.value =
+                localized(R.string.visitor_error_resident_unavailable)
             return
         }
 
         if (visitorName.isBlank()) {
-            _error.value = "Enter the visitor's name."
+            _error.value = localized(R.string.visitor_error_name)
             return
         }
 
         if (visitorIdentification.isBlank()) {
-            _error.value = "Enter the visitor's identification."
+            _error.value =
+                localized(R.string.visitor_error_identification)
             return
         }
 
         if (arrivalDateUtc.isBlank()) {
-            _error.value = "Enter the arrival date."
+            _error.value = localized(R.string.visitor_error_arrival)
             return
         }
 
         if (departureDateUtc.isBlank()) {
-            _error.value = "Enter the departure date."
+            _error.value = localized(R.string.visitor_error_departure)
             return
         }
 
@@ -193,7 +237,7 @@ class VisitorRequestViewModel(
 
                 Log.i(TAG, "Visitor request submitted successfully.")
 
-                _message.value = "Visitor request submitted successfully."
+                _message.value = localized(R.string.visitor_success)
 
                 loadRequests(resident.id)
 
@@ -201,16 +245,32 @@ class VisitorRequestViewModel(
                 throw exception
 
             } catch (exception: IOException) {
-                Log.e(TAG, "Network error while submitting visitor request.", exception)
-                _error.value = "Unable to connect to the ChommieHub API."
+                Log.e(
+                    TAG,
+                    "Network error while submitting visitor request.",
+                    exception
+                )
+                _error.value = localized(R.string.api_connection_failed)
 
             } catch (exception: HttpException) {
-                Log.e(TAG, "HTTP error while submitting visitor request.", exception)
-                _error.value = "Unable to submit visitor request. Server returned ${exception.code()}."
+                Log.e(
+                    TAG,
+                    "HTTP error while submitting visitor request.",
+                    exception
+                )
+                _error.value = localized(
+                    R.string.visitor_error_submit_server,
+                    exception.code()
+                )
 
             } catch (exception: Exception) {
-                Log.e(TAG, "Unable to submit visitor request.", exception)
-                _error.value = exception.message ?: "Unable to submit visitor request."
+                Log.e(
+                    TAG,
+                    "Unable to submit visitor request.",
+                    exception
+                )
+                _error.value =
+                    localized(R.string.visitor_error_submit)
 
             } finally {
                 _isLoading.value = false
@@ -227,13 +287,17 @@ class VisitorRequestViewModel(
     }
 
     class Factory(
-        private val repository: ResidentServicesRepository
+        private val repository: ResidentServicesRepository,
+        private val application: Application
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(VisitorRequestViewModel::class.java)) {
-                return VisitorRequestViewModel(repository) as T
+                return VisitorRequestViewModel(
+                    repository,
+                    application
+                ) as T
             }
 
             throw IllegalArgumentException(

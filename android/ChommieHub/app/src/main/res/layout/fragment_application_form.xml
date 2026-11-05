@@ -22,7 +22,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Accommodation Application"
+            android:text="@string/application_form_title"
             android:textColor="@color/chommie_navy"
             android:textSize="27sp"
             android:textStyle="bold" />
@@ -32,13 +32,13 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
             android:layout_marginBottom="20dp"
-            android:text="Select the residence and room you want to apply for."
+            android:text="@string/application_form_subtitle"
             android:textColor="@color/chommie_text_secondary" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Residence"
+            android:text="@string/application_residence"
             android:textColor="@color/chommie_navy"
             android:textStyle="bold" />
 
@@ -54,7 +54,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Available Room"
+            android:text="@string/application_available_room"
             android:textColor="@color/chommie_navy"
             android:textStyle="bold" />
 
@@ -70,7 +70,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Rental Period"
+            android:text="@string/application_rental_period"
             android:textColor="@color/chommie_navy"
             android:textStyle="bold" />
 
@@ -80,7 +80,7 @@
             android:layout_height="58dp"
             android:layout_marginTop="6dp"
             android:background="@drawable/bg_input"
-            android:hint="e.g. January 2027 - November 2027"
+            android:hint="@string/application_rental_period_hint"
             android:paddingHorizontal="18dp"
             android:textColor="@color/chommie_text_primary"
             android:textColorHint="@color/chommie_text_secondary" />
@@ -89,7 +89,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Supporting Information"
+            android:text="@string/application_supporting_info"
             android:textColor="@color/chommie_navy"
             android:textStyle="bold" />
 
@@ -100,7 +100,7 @@
             android:layout_marginTop="6dp"
             android:background="@drawable/bg_input"
             android:gravity="top|start"
-            android:hint="Add any information that may support your application"
+            android:hint="@string/application_supporting_info_hint"
             android:inputType="textMultiLine|textCapSentences"
             android:padding="18dp"
             android:textColor="@color/chommie_text_primary"
@@ -112,7 +112,7 @@
             android:layout_height="58dp"
             android:layout_marginTop="24dp"
             android:backgroundTint="@color/chommie_gold"
-            android:text="Review Application"
+            android:text="@string/application_review_button"
             android:textColor="@color/chommie_navy"
             android:textStyle="bold" />
 

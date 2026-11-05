@@ -77,7 +77,10 @@ class VisitorRequestFragment : Fragment() {
             ResidentServicesRepository(ApiClient.api)
 
         val factory =
-            VisitorRequestViewModel.Factory(repository)
+            VisitorRequestViewModel.Factory(
+                repository,
+                requireActivity().application
+            )
 
         viewModel =
             ViewModelProvider(
@@ -97,7 +100,7 @@ class VisitorRequestFragment : Fragment() {
 
         if (studentId.isBlank()) {
             tvError.text =
-                "You must be signed in to access visitor services."
+                getString(R.string.visitor_sign_in_required)
 
             tvError.visibility = View.VISIBLE
             return
@@ -170,13 +173,18 @@ class VisitorRequestFragment : Fragment() {
         requests.forEach { request ->
             val requestView =
                 TextView(requireContext()).apply {
-                    text =
-                        "${request.visitorName}\n" +
-                                "ID: ${request.visitorIdentification}\n" +
-                                "Arrival: ${request.arrivalDateUtc}\n" +
-                                "Departure: ${request.departureDateUtc}\n" +
-                                "Sleepover: ${if (request.isSleepover) "Yes" else "No"}\n" +
-                                "Status: ${request.status}"
+                    text = getString(
+                        R.string.visitor_request_history_item,
+                        request.visitorName,
+                        request.visitorIdentification,
+                        request.arrivalDateUtc,
+                        request.departureDateUtc,
+                        getString(
+                            if (request.isSleepover) R.string.visitor_yes
+                            else R.string.visitor_no
+                        ),
+                        request.status
+                    )
 
                     textSize = 15f
                     setPadding(24, 24, 24, 24)

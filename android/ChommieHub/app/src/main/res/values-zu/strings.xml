@@ -68,7 +68,6 @@
         <string name="status_title">Isimo sesicelo</string>
 
         <!-- Profile -->
-        <string name="profile_title">Iphrofayela yami</string>
         <string name="hint_profile_name">Igama</string>
         <string name="hint_profile_surname">Isibongo</string>
         <string name="hint_profile_email">I-imeyili</string>
@@ -158,4 +157,74 @@
         <string name="logo_description">Ilogo ye-ChommieHub</string>
         <string name="map_residence_count">%1$d izindawo zokuhlala ezitholakalayo</string>
         <string name="map_marker_details">%1$s — Thepha ukuze ubone imininingwane</string>
+        <string name="view_details">Buka imininingwane</string>
+
+        <string name="application_review_subtitle">Hlola imininingwane yakho ngaphambi kokuthumela.</string>
+        <string name="application_room">Igumbi</string>
+        <string name="application_submit_button">Thumela isicelo</string>
+
+        <string name="application_submitted_title">Isicelo sithunyelwe</string>
+        <string name="application_submitted_message">Isicelo sakho sithunyelwe kumphathi wendawo yokuhlala ukuze asibuyekeze.</string>
+        <string name="application_view_my_applications">Buka izicelo zami</string>
+        <string name="application_return_home">Buyela ekhasini lasekhaya</string>
+
+        <string name="profile_title">Iphrofayela yami</string>
+        <string name="profile_subtitle">Phatha imininingwane ye-akhawunti yakho yomfundi</string>
+        <string name="profile_retry">Zama futhi</string>
+        <string name="profile_first_name">Igama</string>
+        <string name="profile_first_name_hint">Faka igama lakho</string>
+        <string name="profile_surname">Isibongo</string>
+        <string name="profile_surname_hint">Faka isibongo sakho</string>
+        <string name="profile_email">Ikheli le-imeyili</string>
+        <string name="profile_email_hint">Faka ikheli lakho le-imeyili</string>
+        <string name="profile_phone">Inombolo yocingo</string>
+        <string name="profile_phone_hint">Faka inombolo yakho yocingo</string>
+        <string name="profile_language">Ulimi oluncamelayo</string>
+        <string name="profile_language_hint">isb. isiZulu</string>
+        <string name="profile_save">Londoloza iphrofayela</string>
+        <string name="profile_resident_services">Izinsiza zabahlali</string>
+        <string name="profile_services_subtitle">Phatha izinsiza zendawo ohlala kuyo</string>
+        <string name="profile_maintenance_requests">Izicelo zokulungisa</string>
+        <string name="profile_visitor_requests">Izicelo zezivakashi</string>
+        <string name="profile_sign_out">Phuma</string>
+
+        <string name="maintenance_title">Ukulungisa</string>
+        <string name="maintenance_subtitle">Bika inkinga egumbini lakho noma endaweni ohlala kuyo.</string>
+        <string name="maintenance_category">Isigaba</string>
+        <string name="maintenance_description">Chaza inkinga</string>
+        <string name="maintenance_submit">Thumela isicelo</string>
+        <string name="maintenance_my_requests">Izicelo zami</string>
+        <string name="maintenance_empty">Azikho izicelo zokulungisa okwamanje.</string>
+
+        <string name="visitor_title">Izicelo zezivakashi</string>
+        <string name="visitor_subtitle">Cela imvume yokuthi isivakashi singene endaweni ohlala kuyo.</string>
+        <string name="visitor_name_hint">Igama lesivakashi</string>
+        <string name="visitor_id_hint">Inombolo kamazisi / yepasipoti yesivakashi</string>
+        <string name="visitor_arrival_hint">Usuku lokufika (isb. 2026-09-22T10:00:00Z)</string>
+        <string name="visitor_departure_hint">Usuku lokuhamba (isb. 2026-09-22T18:00:00Z)</string>
+        <string name="visitor_sleepover">Isivakashi esizolala khona</string>
+        <string name="visitor_my_requests">Izicelo zami zezivakashi</string>
+        <string name="visitor_empty">Azikho izicelo zezivakashi okwamanje.</string>
+
+        <string name="visitor_sign_in_required">Kufanele ungene ngemvume ukuze usebenzise izinsiza zezivakashi.</string>
+        <string name="visitor_request_history_item">%1$s\nUmazisi: %2$s\nUkufika: %3$s\nUkuhamba: %4$s\nUkulala khona: %5$s\nIsimo: %6$s</string>
+        <string name="visitor_yes">Yebo</string>
+        <string name="visitor_no">Cha</string>
+
+        <string name="visitor_error_student_id">I-ID yomfundi ayitholakali.</string>
+        <string name="visitor_error_no_residence">Ayikho indawo yokuhlala esebenzayo etholakele yalo mfundi.</string>
+        <string name="visitor_error_load_residence_server">Ayikwazanga ukulayisha imininingwane yendawo yokuhlala. Iseva ibuyise %1$d.</string>
+        <string name="visitor_error_load_residence">Ayikwazanga ukulayisha imininingwane yendawo yokuhlala.</string>
+        <string name="visitor_error_resident_id">I-ID yomhlali ayitholakali.</string>
+        <string name="visitor_error_load_requests_server">Ayikwazanga ukulayisha izicelo zezivakashi. Iseva ibuyise %1$d.</string>
+        <string name="visitor_error_load_requests">Ayikwazanga ukulayisha izicelo zezivakashi.</string>
+        <string name="visitor_error_resident_unavailable">Imininingwane yomhlali ayitholakali.</string>
+        <string name="visitor_error_name">Faka igama lesivakashi.</string>
+        <string name="visitor_error_identification">Faka umazisi wesivakashi.</string>
+        <string name="visitor_error_arrival">Faka usuku lokufika.</string>
+        <string name="visitor_error_departure">Faka usuku lokuhamba.</string>
+        <string name="visitor_success">Isicelo sesivakashi sithunyelwe ngempumelelo.</string>
+        <string name="visitor_error_submit_server">Ayikwazanga ukuthumela isicelo sesivakashi. Iseva ibuyise %1$d.</string>
+        <string name="visitor_error_submit">Ayikwazanga ukuthumela isicelo sesivakashi.</string>
+
 </resources>

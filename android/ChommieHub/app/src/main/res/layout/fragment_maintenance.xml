@@ -15,8 +15,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Maintenance"
-            android:textColor="#102A43"
+            android:text="@string/maintenance_title"            android:textColor="#102A43"
             android:textSize="26sp"
             android:textStyle="bold" />
 
@@ -24,15 +23,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            android:text="Report a problem in your room or residence."
-            android:textColor="#627D98"
+            android:text="@string/maintenance_subtitle"            android:textColor="#627D98"
             android:textSize="14sp" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:hint="Category">
+            android:hint="@string/maintenance_category">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etMaintenanceCategory"
@@ -47,7 +45,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:hint="Describe the problem">
+            android:hint="@string/maintenance_description">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etMaintenanceDescription"
@@ -80,16 +78,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="18dp"
-            android:text="Submit request"
-            android:textAllCaps="false"
+            android:text="@string/maintenance_submit"            android:textAllCaps="false"
             app:cornerRadius="12dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
-            android:text="My requests"
-            android:textColor="#102A43"
+            android:text="@string/maintenance_my_requests"            android:textColor="#102A43"
             android:textSize="20sp"
             android:textStyle="bold" />
 
@@ -98,8 +94,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="No maintenance requests yet."
-            android:textColor="#627D98"
+            android:text="@string/maintenance_empty"            android:textColor="#627D98"
             android:visibility="gone" />
 
         <LinearLayout
