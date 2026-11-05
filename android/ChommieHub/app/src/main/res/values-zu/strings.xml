@@ -220,11 +220,27 @@
         <string name="visitor_error_load_requests">Ayikwazanga ukulayisha izicelo zezivakashi.</string>
         <string name="visitor_error_resident_unavailable">Imininingwane yomhlali ayitholakali.</string>
         <string name="visitor_error_name">Faka igama lesivakashi.</string>
-        <string name="visitor_error_identification">Faka umazisi wesivakashi.</string>
+        <string name="visitor_error_identification">Faka imininingwane kamazisi wesivakashi.</string>
         <string name="visitor_error_arrival">Faka usuku lokufika.</string>
         <string name="visitor_error_departure">Faka usuku lokuhamba.</string>
         <string name="visitor_success">Isicelo sesivakashi sithunyelwe ngempumelelo.</string>
         <string name="visitor_error_submit_server">Ayikwazanga ukuthumela isicelo sesivakashi. Iseva ibuyise %1$d.</string>
         <string name="visitor_error_submit">Ayikwazanga ukuthumela isicelo sesivakashi.</string>
+
+        <string name="price_filter_label">Inani eliphezulu legumbi</string>
+        <string name="price_any">Noma yiliphi inani</string>
+        <string name="price_up_to">Kufika ku-R%1$s</string>
+        <string name="price_unavailable">Amanani amagumbi awakwazanga ukulayishwa. Sicela uzame futhi.</string>
+
+        <string name="application_form_title">Isicelo Sendawo Yokuhlala</string>
+        <string name="application_form_subtitle">Khetha indawo yokuhlala oyithandayo. Isicelo sakho sizothunyelwa kumphathi wendawo ukuze asibuyekeze.</string>
+        <string name="application_residence">Indawo yokuhlala</string>
+        <string name="application_available_room">Igumbi elitholakalayo</string>
+        <string name="application_rental_period">Isikhathi sokuqasha</string>
+        <string name="application_rental_period_hint">isb. uFebhuwari – uNovemba 2027</string>
+        <string name="application_supporting_info">Ulwazi olwengeziwe</string>
+        <string name="application_supporting_info_hint">Faka noma yiluphi ulwazi umphathi wendawo okufanele alwazi</string>
+        <string name="application_review_button">Buyekeza isicelo</string>
+        <string name="shortlist_empty_message">Azikho izindawo zokuhlala osekuzifakile ohlwini lwakho okwamanje.</string>
 
 </resources>

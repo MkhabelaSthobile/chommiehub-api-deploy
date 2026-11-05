@@ -1,3 +1,4 @@
+
 package com.chommiehub.app.ui.student
 
 import android.os.Bundle
@@ -34,12 +35,26 @@ class StudentHomeFragment : Fragment(R.layout.fragment_student_home) {
     private lateinit var etSearch: EditText
     private lateinit var spArea: Spinner
     private lateinit var spSort: Spinner
+    private lateinit var spPrice: Spinner
 
     private lateinit var chipAll: Chip
     private lateinit var chipWifi: Chip
     private lateinit var chipLaundry: Chip
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    private val priceLimits: List<Double?> = listOf(
+        null,
+        2000.0,
+        3000.0,
+        4000.0,
+        5000.0,
+        7500.0,
+        10000.0
+    )
+
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?
+    ) {
         super.onViewCreated(view, savedInstanceState)
 
         recyclerView = view.findViewById(R.id.recyclerAccommodations)
@@ -50,25 +65,39 @@ class StudentHomeFragment : Fragment(R.layout.fragment_student_home) {
         etSearch = view.findViewById(R.id.etSearch)
         spArea = view.findViewById(R.id.spArea)
         spSort = view.findViewById(R.id.spSort)
+        spPrice = view.findViewById(R.id.spPrice)
 
         chipAll = view.findViewById(R.id.chipAll)
         chipWifi = view.findViewById(R.id.chipWifi)
         chipLaundry = view.findViewById(R.id.chipLaundry)
 
-        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        recyclerView.layoutManager =
+            LinearLayoutManager(requireContext())
 
         val repository = AccommodationRepository(ApiClient.api)
-        viewModel = ViewModelProvider(this, StudentHomeViewModel.Factory(repository))[StudentHomeViewModel::class.java]
+
+        viewModel = ViewModelProvider(
+            this,
+            StudentHomeViewModel.Factory(repository)
+        )[StudentHomeViewModel::class.java]
 
         setupSortSpinner()
+        setupPriceSpinner()
         setupListeners()
         observeViewModel()
 
-        btnRetry.setOnClickListener { viewModel.loadAccommodations() }
+        btnRetry.setOnClickListener {
+            viewModel.loadAccommodations()
+        }
 
-        view.findViewById<Button>(R.id.btnAccommodationMap).setOnClickListener {
+        view.findViewById<Button>(
+            R.id.btnAccommodationMap
+        ).setOnClickListener {
             parentFragmentManager.beginTransaction()
-                .replace(R.id.studentContainer, AccommodationMapFragment())
+                .replace(
+                    R.id.studentContainer,
+                    AccommodationMapFragment()
+                )
                 .addToBackStack(null)
                 .commit()
         }
@@ -94,33 +123,84 @@ class StudentHomeFragment : Fragment(R.layout.fragment_student_home) {
         )
     }
 
+    private fun setupPriceSpinner() {
+        val priceOptions = listOf(
+            getString(R.string.price_any),
+            getString(R.string.price_up_to, "2,000"),
+            getString(R.string.price_up_to, "3,000"),
+            getString(R.string.price_up_to, "4,000"),
+            getString(R.string.price_up_to, "5,000"),
+            getString(R.string.price_up_to, "7,500"),
+            getString(R.string.price_up_to, "10,000")
+        )
+
+        spPrice.adapter = ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_spinner_dropdown_item,
+            priceOptions
+        )
+    }
+
     private fun setupListeners() {
-        etSearch.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(text: CharSequence?, start: Int, count: Int, after: Int) = Unit
+        etSearch.addTextChangedListener(
+            object : TextWatcher {
+                override fun beforeTextChanged(
+                    text: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) = Unit
 
-            override fun onTextChanged(text: CharSequence?, start: Int, before: Int, count: Int) {
-                applyCurrentSearch()
+                override fun onTextChanged(
+                    text: CharSequence?,
+                    start: Int,
+                    before: Int,
+                    count: Int
+                ) {
+                    applyCurrentSearch()
+                }
+
+                override fun afterTextChanged(
+                    editable: Editable?
+                ) = Unit
             }
+        )
 
-            override fun afterTextChanged(editable: Editable?) = Unit
-        })
-
-        val filterListener = View.OnClickListener { applyCurrentSearch() }
+        val filterListener =
+            View.OnClickListener { applyCurrentSearch() }
 
         chipAll.setOnClickListener(filterListener)
         chipWifi.setOnClickListener(filterListener)
         chipLaundry.setOnClickListener(filterListener)
 
-        spArea.onItemSelectedListener = SimpleItemSelectedListener { applyCurrentSearch() }
-        spSort.onItemSelectedListener = SimpleItemSelectedListener { applyCurrentSearch() }
+        spArea.onItemSelectedListener =
+            SimpleItemSelectedListener {
+                applyCurrentSearch()
+            }
+
+        spSort.onItemSelectedListener =
+            SimpleItemSelectedListener {
+                applyCurrentSearch()
+            }
+
+        spPrice.onItemSelectedListener =
+            SimpleItemSelectedListener {
+                applyCurrentSearch()
+            }
     }
 
     private fun observeViewModel() {
-        viewModel.availableAreas.observe(viewLifecycleOwner) { areas ->
+        viewModel.availableAreas.observe(
+            viewLifecycleOwner
+        ) { areas ->
             val previousIndex = spArea.selectedItemPosition
 
             val displayAreas = areas.map { area ->
-                if (area == "All areas") getString(R.string.all_areas) else area
+                if (area == "All areas") {
+                    getString(R.string.all_areas)
+                } else {
+                    area
+                }
             }
 
             spArea.adapter = ArrayAdapter(
@@ -130,31 +210,51 @@ class StudentHomeFragment : Fragment(R.layout.fragment_student_home) {
             )
 
             spArea.setSelection(
-                if (previousIndex in displayAreas.indices) previousIndex else 0
+                if (previousIndex in displayAreas.indices) {
+                    previousIndex
+                } else {
+                    0
+                }
             )
         }
 
-        viewModel.uiState.observe(viewLifecycleOwner) { state ->
+        viewModel.uiState.observe(
+            viewLifecycleOwner
+        ) { state ->
             when (state) {
                 StudentHomeUiState.Loading -> showLoading()
-                is StudentHomeUiState.Success -> showResults(state)
-                is StudentHomeUiState.Error -> showError(state.message)
+
+                is StudentHomeUiState.Success ->
+                    showResults(state)
+
+                is StudentHomeUiState.Error ->
+                    showError(state.message)
+
+                StudentHomeUiState.PriceUnavailable ->
+                    showError(
+                        getString(R.string.price_unavailable)
+                    )
             }
         }
     }
 
     private fun applyCurrentSearch() {
-        val selectedArea = if (spArea.selectedItemPosition <= 0) {
-            "All areas"
-        } else {
-            spArea.selectedItem?.toString() ?: "All areas"
-        }
+        val selectedArea =
+            if (spArea.selectedItemPosition <= 0) {
+                "All areas"
+            } else {
+                spArea.selectedItem?.toString() ?: "All areas"
+            }
+
+        val maxPrice =
+            priceLimits.getOrNull(spPrice.selectedItemPosition)
 
         viewModel.applySearch(
             query = etSearch.text?.toString().orEmpty(),
             area = selectedArea,
             filter = selectedFilter(),
-            sort = selectedSort()
+            sort = selectedSort(),
+            maxPrice = maxPrice
         )
     }
 
@@ -199,7 +299,12 @@ class StudentHomeFragment : Fragment(R.layout.fragment_student_home) {
             items = state.accommodations,
             onViewDetails = { accommodation ->
                 parentFragmentManager.beginTransaction()
-                    .replace(R.id.studentContainer, AccommodationDetailFragment.newInstance(accommodation.id))
+                    .replace(
+                        R.id.studentContainer,
+                        AccommodationDetailFragment.newInstance(
+                            accommodation.id
+                        )
+                    )
                     .addToBackStack(null)
                     .commit()
             },
@@ -208,7 +313,7 @@ class StudentHomeFragment : Fragment(R.layout.fragment_student_home) {
                     try {
                         viewModel.toggleShortlist(accommodation.id)
                     } catch (_: Exception) {
-                        // Existing shortlist behaviour is preserved while rubric-critical work is completed.
+                        // Existing shortlist behaviour preserved.
                     }
                 }
             }

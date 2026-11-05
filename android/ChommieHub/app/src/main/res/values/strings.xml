@@ -252,4 +252,10 @@
     <string name="application_supporting_info">Supporting information</string>
     <string name="application_supporting_info_hint">Add any information the residence manager should know</string>
     <string name="application_review_button">Review application</string>
+
+    <string name="price_filter_label">Maximum room price</string>
+    <string name="price_any">Any price</string>
+    <string name="price_up_to">Up to R%1$s</string>
+    <string name="price_unavailable">Room prices could not be loaded. Please try again.</string>
+    <string name="shortlist_empty_message">No shortlisted accommodations yet.</string>
 </resources>

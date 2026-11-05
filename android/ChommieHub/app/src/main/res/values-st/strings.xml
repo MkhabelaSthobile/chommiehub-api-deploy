@@ -206,4 +206,36 @@
         <string name="visitor_request_history_item">%1$s\nID: %2$s\nHo fihla: %3$s\nHo tloha: %4$s\nHo robala teng: %5$s\nBoemo: %6$s</string>
         <string name="visitor_yes">Ee</string>
         <string name="visitor_no">Tjhe</string>
+
+        <string name="price_filter_label">Theko e phahameng ya kamore</string>
+        <string name="price_any">Theko efe kapa efe</string>
+        <string name="price_up_to">Ho fihla ho R%1$s</string>
+        <string name="price_unavailable">Ditheko tsa dikamore ha di a kgona ho kenngwa. Ka kopo leka hape.</string>
+
+        <string name="application_form_title">Kopo ya Bodulo</string>
+        <string name="application_form_subtitle">Kgetha bodulo boo o bo ratang. Kopo ya hao e tla romelwa ho molaodi wa bodulo hore a e hlahlobe.</string>
+        <string name="application_residence">Bodulo</string>
+        <string name="application_available_room">Kamore e fumanehang</string>
+        <string name="application_rental_period">Nako ya rente</string>
+        <string name="application_rental_period_hint">mohl. Hlakola – Pudungwana 2027</string>
+        <string name="application_supporting_info">Tlhahisoleseding e eketsehileng</string>
+        <string name="application_supporting_info_hint">Kenya tlhahisoleseding efe kapa efe eo molaodi wa bodulo a lokelang ho e tseba</string>
+        <string name="application_review_button">Hlahloba kopo</string>
+
+        <string name="visitor_error_student_id">ID ya moithuti ha e fumanehe.</string>
+        <string name="visitor_error_no_residence">Ha ho bodulo bo sebetsang bo fumanweng bakeng sa moithuti enwa.</string>
+        <string name="visitor_error_load_residence_server">Ha ho a kgoneha ho kenya tlhahisoleseding ya bodulo. Seva e kgutlisitse %1$d.</string>
+        <string name="visitor_error_load_residence">Ha ho a kgoneha ho kenya tlhahisoleseding ya bodulo.</string>
+        <string name="visitor_error_resident_id">ID ya moahi ha e fumanehe.</string>
+        <string name="visitor_error_load_requests_server">Ha ho a kgoneha ho kenya dikopo tsa baeti. Seva e kgutlisitse %1$d.</string>
+        <string name="visitor_error_load_requests">Ha ho a kgoneha ho kenya dikopo tsa baeti.</string>
+        <string name="visitor_error_resident_unavailable">Tlhahisoleseding ya moahi ha e fumanehe.</string>
+        <string name="visitor_error_name">Kenya lebitso la moeti.</string>
+        <string name="visitor_error_identification">Kenya dintlha tsa boitsebiso tsa moeti.</string>
+        <string name="visitor_error_arrival">Kenya letsatsi la ho fihla.</string>
+        <string name="visitor_error_departure">Kenya letsatsi la ho tloha.</string>
+        <string name="visitor_success">Kopo ya moeti e rometswe ka katleho.</string>
+        <string name="visitor_error_submit_server">Ha ho a kgoneha ho romela kopo ya moeti. Seva e kgutlisitse %1$d.</string>
+        <string name="visitor_error_submit">Ha ho a kgoneha ho romela kopo ya moeti.</string>
+        <string name="shortlist_empty_message">Ha ho bodulo bo leng lenaneng la hao le lekgutshwane hajoale.</string>
 </resources>

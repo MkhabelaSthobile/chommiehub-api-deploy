@@ -210,19 +210,35 @@
     <string name="visitor_yes">Ja</string>
     <string name="visitor_no">Nee</string>
 
+    <string name="price_filter_label">Maksimum kamerprys</string>
+    <string name="price_any">Enige prys</string>
+    <string name="price_up_to">Tot R%1$s</string>
+    <string name="price_unavailable">Kamerpryse kon nie gelaai word nie. Probeer asseblief weer.</string>
+
+    <string name="application_form_title">Verblyfaansoek</string>
+    <string name="application_form_subtitle">Kies jou voorkeurverblyf. Jou aansoek sal aan die koshuisbestuurder gestuur word vir hersiening.</string>
+    <string name="application_residence">Verblyf</string>
+    <string name="application_available_room">Beskikbare kamer</string>
+    <string name="application_rental_period">Huurtydperk</string>
+    <string name="application_rental_period_hint">bv. Februarie – November 2027</string>
+    <string name="application_supporting_info">Bykomende inligting</string>
+    <string name="application_supporting_info_hint">Voeg enige inligting by wat die verblyfbestuurder moet weet</string>
+    <string name="application_review_button">Hersien aansoek</string>
+
     <string name="visitor_error_student_id">Student-ID is nie beskikbaar nie.</string>
-    <string name="visitor_error_no_residence">Geen aktiewe verblyfplek is vir hierdie student gevind nie.</string>
-    <string name="visitor_error_load_residence_server">Kon nie verblyfinligting laai nie. Die bediener het %1$d teruggestuur.</string>
+    <string name="visitor_error_no_residence">Geen aktiewe verblyf is vir hierdie student gevind nie.</string>
+    <string name="visitor_error_load_residence_server">Kon nie verblyfinligting laai nie. Bediener het %1$d teruggestuur.</string>
     <string name="visitor_error_load_residence">Kon nie verblyfinligting laai nie.</string>
     <string name="visitor_error_resident_id">Inwoner-ID is nie beskikbaar nie.</string>
-    <string name="visitor_error_load_requests_server">Kon nie besoekersversoeke laai nie. Die bediener het %1$d teruggestuur.</string>
+    <string name="visitor_error_load_requests_server">Kon nie besoekersversoeke laai nie. Bediener het %1$d teruggestuur.</string>
     <string name="visitor_error_load_requests">Kon nie besoekersversoeke laai nie.</string>
     <string name="visitor_error_resident_unavailable">Inwonerinligting is nie beskikbaar nie.</string>
     <string name="visitor_error_name">Voer die besoeker se naam in.</string>
-    <string name="visitor_error_identification">Voer die besoeker se identifikasie in.</string>
+    <string name="visitor_error_identification">Voer die besoeker se identifikasiebesonderhede in.</string>
     <string name="visitor_error_arrival">Voer die aankomsdatum in.</string>
     <string name="visitor_error_departure">Voer die vertrekdatum in.</string>
     <string name="visitor_success">Besoekersversoek suksesvol ingedien.</string>
-    <string name="visitor_error_submit_server">Kon nie die besoekersversoek indien nie. Die bediener het %1$d teruggestuur.</string>
-    <string name="visitor_error_submit">Kon nie die besoekersversoek indien nie.</string>
+    <string name="visitor_error_submit_server">Kon nie besoekersversoek indien nie. Bediener het %1$d teruggestuur.</string>
+    <string name="visitor_error_submit">Kon nie besoekersversoek indien nie.</string>
+    <string name="shortlist_empty_message">Nog geen verblyf op jou kortlys nie.</string>
 </resources>
