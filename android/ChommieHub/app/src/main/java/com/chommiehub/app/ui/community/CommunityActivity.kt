@@ -65,7 +65,7 @@ class CommunityActivity : AppCompatActivity() {
             setPadding(pad, pad, pad, pad)
         }
         val scroll = ScrollView(this).apply {
-            fillViewport = true
+            isFillViewport = true
             addView(panel)
         }
         setContentView(scroll)

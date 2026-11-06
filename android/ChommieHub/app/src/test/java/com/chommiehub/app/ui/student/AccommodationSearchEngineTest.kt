@@ -57,11 +57,21 @@ class AccommodationSearchEngineTest {
     }
 
     @Test
-    fun apply_VerifiedFilterReturnsOnlyActiveResidences() {
-        val result = AccommodationSearchEngine.apply(residences, "", "All areas", HomeFilter.VERIFIED, HomeSort.NAME_ASCENDING)
+    fun apply_LaundryFilterReturnsOnlyResidencesWithLaundry() {
+        val result = AccommodationSearchEngine.apply(
+            residences,
+            "",
+            "All areas",
+            HomeFilter.LAUNDRY,
+            HomeSort.NAME_ASCENDING
+        )
 
         assertEquals(2, result.size)
-        assertTrue(result.all { it.isActive })
+        assertTrue(result.all { accommodation ->
+            accommodation.amenities.any {
+                it.contains("laundry", ignoreCase = true)
+            }
+        })
     }
 
     @Test

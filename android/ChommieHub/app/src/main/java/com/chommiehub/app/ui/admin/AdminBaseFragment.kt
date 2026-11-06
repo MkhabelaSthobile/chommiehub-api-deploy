@@ -32,7 +32,7 @@ abstract class AdminBaseFragment : Fragment() {
             setPadding(dp(18), dp(12), dp(18), dp(24))
         }
         return ScrollView(requireContext()).apply {
-            fillViewport = true
+            isFillViewport = true
             addView(content)
         }
     }

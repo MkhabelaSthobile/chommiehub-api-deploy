@@ -244,25 +244,39 @@
         <string name="shortlist_empty_message">Azikho izindawo zokuhlala osekuzifakile ohlwini lwakho okwamanje.</string>
 
 
-    <!-- Part 1 community features, with resource-based labels for language switching. -->
-    <string name="community_incidents">Izigameko zasendaweni yokuhlala</string>
-    <string name="community_incident_intro">Bika isigameko futhi ulandelele ukuxazululwa kwaso.</string>
-    <string name="community_report_incident">Bika isigameko</string>
-    <string name="community_incident_none">Azikho izigameko okwamanje.</string>
-    <string name="community_announcements">Izaziso</string>
-    <string name="community_announcements_intro">Izindaba zendlu yokuhlala nezaziso zesistimu</string>
-    <string name="community_notice_none">Azikho izaziso ezitholakalayo.</string>
-    <string name="community_create_announcement">Dala isaziso</string>
-    <string name="community_reports">Imibiko yokusebenza</string>
-    <string name="community_reports_intro">Izibalo zakamuva zendima yakho</string>
-    <string name="community_copy_summary">Kopisha isifinyezo</string>
-    <string name="community_refresh">Vuselela</string>
-    <string name="community_choose_photo">Namathisela isithombe uma uthanda</string>
-    <string name="community_manager_incidents">Phatha izigameko</string>
-    <string name="community_manager_announcements">Phatha izaziso</string>
-    <string name="community_manager_reports">Imibiko yendawo yokuhlala</string>
-    <string name="community_admin_incidents">Ukuqapha izigameko</string>
-    <string name="community_admin_announcements">Izaziso zesistimu</string>
-    <string name="community_admin_reports">Imibiko yesistimu</string>
-    <string name="community_resident_incidents">Bika / landelela izigameko</string>
+        <!-- Part 1 community features, with resource-based labels for language switching. -->
+        <string name="community_incidents">Izigameko zasendaweni yokuhlala</string>
+        <string name="community_incident_intro">Bika isigameko futhi ulandelele ukuxazululwa kwaso.</string>
+        <string name="community_report_incident">Bika isigameko</string>
+        <string name="community_incident_none">Azikho izigameko okwamanje.</string>
+        <string name="community_announcements">Izaziso</string>
+        <string name="community_announcements_intro">Izindaba zendlu yokuhlala nezaziso zesistimu</string>
+        <string name="community_notice_none">Azikho izaziso ezitholakalayo.</string>
+        <string name="community_create_announcement">Dala isaziso</string>
+        <string name="community_reports">Imibiko yokusebenza</string>
+        <string name="community_reports_intro">Izibalo zakamuva zendima yakho</string>
+        <string name="community_copy_summary">Kopisha isifinyezo</string>
+        <string name="community_refresh">Vuselela</string>
+        <string name="community_choose_photo">Namathisela isithombe uma uthanda</string>
+        <string name="community_manager_incidents">Phatha izigameko</string>
+        <string name="community_manager_announcements">Phatha izaziso</string>
+        <string name="community_manager_reports">Imibiko yendawo yokuhlala</string>
+        <string name="community_admin_incidents">Ukuqapha izigameko</string>
+        <string name="community_admin_announcements">Izaziso zesistimu</string>
+        <string name="community_admin_reports">Imibiko yesistimu</string>
+        <string name="community_resident_incidents">Bika / landelela izigameko</string>
+        <!-- Administrator interface: translated labels matching the English source resources. -->
+        <string name="admin_console">ChommieHub · Ukuphatha</string>
+        <string name="admin_dashboard">Ibhodi lokubuka</string>
+        <string name="admin_listings">Izindawo zokuhlala</string>
+        <string name="admin_accounts">Ama-akhawunti</string>
+        <string name="admin_audit">Ukuhlolwa</string>
+        <string name="admin_review_pending">Kulindele ukubuyekezwa</string>
+        <string name="admin_no_results">Awekho amarekhodi atholakele.</string>
+        <string name="admin_refresh">Vuselela</string>
+        <string name="admin_appoint_manager">Qoka umphathi</string>
+        <string name="admin_action_reason">Isizathu (siyadingeka)</string>
+        <string name="admin_sign_out">Phuma</string>
+        <string name="admin_role_denied">Kudingeka imvume yomlawuli.</string>
+        <string name="admin_settings_language">Ulimi lohlelo lokusebenza</string>
 </resources>

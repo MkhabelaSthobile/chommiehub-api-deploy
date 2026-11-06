@@ -239,25 +239,39 @@
         <string name="visitor_error_submit">Ha ho a kgoneha ho romela kopo ya moeti.</string>
         <string name="shortlist_empty_message">Ha ho bodulo bo leng lenaneng la hao le lekgutshwane hajoale.</string>
 
-    <!-- Part 1 community features, with resource-based labels for language switching. -->
-    <string name="community_incidents">Diketsahalo tsa bolulo</string>
-    <string name="community_incident_intro">Tlaleha ketsahalo mme o latele tharollo ya yona.</string>
-    <string name="community_report_incident">Tlaleha ketsahalo</string>
-    <string name="community_incident_none">Ha ho diketsahalo hona jwale.</string>
-    <string name="community_announcements">Ditsebiso</string>
-    <string name="community_announcements_intro">Ditaba tsa bolulo le ditsebiso tsa sistimi</string>
-    <string name="community_notice_none">Ha ho ditsebiso tse fumanehang.</string>
-    <string name="community_create_announcement">Etsa tsebiso</string>
-    <string name="community_reports">Ditlaleho tsa tshebetso</string>
-    <string name="community_reports_intro">Dipalo tsa moraorao bakeng sa karolo ya hao</string>
-    <string name="community_copy_summary">Kopitsa kakaretso</string>
-    <string name="community_refresh">Ntjhafatsa</string>
-    <string name="community_choose_photo">Kenya setshwantsho haeba o batla</string>
-    <string name="community_manager_incidents">Laola diketsahalo</string>
-    <string name="community_manager_announcements">Laola ditsebiso</string>
-    <string name="community_manager_reports">Ditlaleho tsa bolulo</string>
-    <string name="community_admin_incidents">Tlhokomelo ya diketsahalo</string>
-    <string name="community_admin_announcements">Ditsebiso tsa sistimi</string>
-    <string name="community_admin_reports">Ditlaleho tsa sistimi</string>
-    <string name="community_resident_incidents">Tlaleha / latela diketsahalo</string>
+        <!-- Part 1 community features, with resource-based labels for language switching. -->
+        <string name="community_incidents">Diketsahalo tsa bolulo</string>
+        <string name="community_incident_intro">Tlaleha ketsahalo mme o latele tharollo ya yona.</string>
+        <string name="community_report_incident">Tlaleha ketsahalo</string>
+        <string name="community_incident_none">Ha ho diketsahalo hona jwale.</string>
+        <string name="community_announcements">Ditsebiso</string>
+        <string name="community_announcements_intro">Ditaba tsa bolulo le ditsebiso tsa sistimi</string>
+        <string name="community_notice_none">Ha ho ditsebiso tse fumanehang.</string>
+        <string name="community_create_announcement">Etsa tsebiso</string>
+        <string name="community_reports">Ditlaleho tsa tshebetso</string>
+        <string name="community_reports_intro">Dipalo tsa moraorao bakeng sa karolo ya hao</string>
+        <string name="community_copy_summary">Kopitsa kakaretso</string>
+        <string name="community_refresh">Ntjhafatsa</string>
+        <string name="community_choose_photo">Kenya setshwantsho haeba o batla</string>
+        <string name="community_manager_incidents">Laola diketsahalo</string>
+        <string name="community_manager_announcements">Laola ditsebiso</string>
+        <string name="community_manager_reports">Ditlaleho tsa bolulo</string>
+        <string name="community_admin_incidents">Tlhokomelo ya diketsahalo</string>
+        <string name="community_admin_announcements">Ditsebiso tsa sistimi</string>
+        <string name="community_admin_reports">Ditlaleho tsa sistimi</string>
+        <string name="community_resident_incidents">Tlaleha / latela diketsahalo</string>
+        <!-- Administrator interface: translated labels matching the English source resources. -->
+        <string name="admin_console">ChommieHub · Tsamaiso</string>
+        <string name="admin_dashboard">Kakaretso</string>
+        <string name="admin_listings">Manane a bolulo</string>
+        <string name="admin_accounts">Diakhaonto</string>
+        <string name="admin_audit">Tlhahlobo</string>
+        <string name="admin_review_pending">E emetse tlhahlobo</string>
+        <string name="admin_no_results">Ha ho direkoto tse fumanweng.</string>
+        <string name="admin_refresh">Ntjhafatsa</string>
+        <string name="admin_appoint_manager">Kgetha molaodi</string>
+        <string name="admin_action_reason">Lebaka (lea hlokahala)</string>
+        <string name="admin_sign_out">Tswa</string>
+        <string name="admin_role_denied">Tumello ya motsamaisi e a hlokahala.</string>
+        <string name="admin_settings_language">Puo ya sesebelisoa</string>
 </resources>

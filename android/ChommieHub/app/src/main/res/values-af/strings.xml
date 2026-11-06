@@ -263,4 +263,18 @@
     <string name="community_admin_announcements">Platformaankondigings</string>
     <string name="community_admin_reports">Platformverslae</string>
     <string name="community_resident_incidents">Meld / volg voorvalle</string>
+    <!-- Administrator interface: translated labels matching the English source resources. -->
+    <string name="admin_console">ChommieHub · Administrasie</string>
+    <string name="admin_dashboard">Oorsig</string>
+    <string name="admin_listings">Eiendomslyste</string>
+    <string name="admin_accounts">Rekeninge</string>
+    <string name="admin_audit">Ouditlog</string>
+    <string name="admin_review_pending">Wag op hersiening</string>
+    <string name="admin_no_results">Geen rekords gevind nie.</string>
+    <string name="admin_refresh">Verfris</string>
+    <string name="admin_appoint_manager">Stel bestuurder aan</string>
+    <string name="admin_action_reason">Rede (verpligtend)</string>
+    <string name="admin_sign_out">Meld af</string>
+    <string name="admin_role_denied">Administrateurmagtiging word vereis.</string>
+    <string name="admin_settings_language">Toepassingstaal</string>
 </resources>

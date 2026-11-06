@@ -71,6 +71,6 @@ class WelcomeActivity : AppCompatActivity() {
             isAllCaps = false
             setOnClickListener { startActivity(Intent(this@WelcomeActivity, RegisterActivity::class.java)) }
         }, LinearLayout.LayoutParams(-1, -2))
-        setContentView(ScrollView(this).apply { fillViewport = true; addView(layout) })
+        setContentView(ScrollView(this).apply { isFillViewport = true; addView(layout) })
     }
 }
