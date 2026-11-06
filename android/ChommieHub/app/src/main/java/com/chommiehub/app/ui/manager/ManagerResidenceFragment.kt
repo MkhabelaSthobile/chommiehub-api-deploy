@@ -1,6 +1,16 @@
 package com.chommiehub.app.ui.manager
 
 import android.os.Bundle
+import android.net.Uri
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.ByteArrayOutputStream
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -38,6 +48,53 @@ class ManagerResidenceFragment : Fragment() {
     private lateinit var etLongitude: EditText
 
     private lateinit var btnSave: Button
+
+    // Android document picker requires no storage permission. Server validates the
+    // manager ownership, byte signature, size and approved image formats again.
+    private val photoPicker = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        if (uri != null) uploadPhoto(uri)
+    }
+
+    private fun uploadPhoto(uri: Uri) {
+        val accommodationId = CurrentManager.ACCOMMODATION_ID
+        if (accommodationId.isBlank()) {
+            Toast.makeText(requireContext(), "Create and save your accommodation before uploading a photo.", Toast.LENGTH_LONG).show()
+            return
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                val part = withContext(Dispatchers.IO) {
+                    val resolver = requireContext().contentResolver
+                    val mime = resolver.getType(uri)?.takeIf {
+                        it == "image/jpeg" || it == "image/png" || it == "image/webp"
+                    } ?: throw IllegalArgumentException("Choose a JPEG, PNG or WebP image.")
+                    val input = resolver.openInputStream(uri)
+                        ?: throw IllegalArgumentException("Unable to open the selected image.")
+                    val bytes = input.use { stream ->
+                        val output = ByteArrayOutputStream()
+                        val buffer = ByteArray(16 * 1024)
+                        while (true) {
+                            val count = stream.read(buffer)
+                            if (count < 0) break
+                            if (output.size() + count > 5 * 1024 * 1024) {
+                                throw IllegalArgumentException("The image must be smaller than 5 MB.")
+                            }
+                            output.write(buffer, 0, count)
+                        }
+                        output.toByteArray()
+                    }
+                    MultipartBody.Part.createFormData(
+                        "image", "residence-photo.${if (mime == "image/png") "png" else if (mime == "image/webp") "webp" else "jpg"}",
+                        bytes.toRequestBody(mime.toMediaType())
+                    )
+                }
+                val result = ApiClient.api.uploadAccommodationImage(accommodationId, part)
+                if (isAdded) Toast.makeText(requireContext(), "Residence photo uploaded (${result.count} total).", Toast.LENGTH_LONG).show()
+            } catch (exception: Exception) {
+                if (isAdded) Toast.makeText(requireContext(), exception.message ?: "Unable to upload residence photo.", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -135,6 +192,10 @@ class ManagerResidenceFragment : Fragment() {
 
         btnSave.setOnClickListener {
             saveResidence()
+        }
+
+        view.findViewById<Button>(R.id.btnUploadResidencePhoto).setOnClickListener {
+            photoPicker.launch("image/*")
         }
 
         view.findViewById<Button>(

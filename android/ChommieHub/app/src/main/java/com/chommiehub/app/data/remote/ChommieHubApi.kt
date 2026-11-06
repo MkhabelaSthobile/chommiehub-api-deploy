@@ -47,7 +47,7 @@ import com.chommiehub.app.data.model.admin.AdminUserDetailResponse
 import com.chommiehub.app.data.model.admin.AdminUserSummary
 import com.chommiehub.app.data.model.admin.AuditRecordResponse
 import com.chommiehub.app.data.model.manager.ManagerAccommodationResponse
-import com.chommiehub.app.data.model.manager.RegisterManagerRequest
+import com.chommiehub.app.data.model.manager.AccommodationImageUploadResponse
 import com.chommiehub.app.data.model.manager.SaveAccommodationRequest
 import retrofit2.http.Query
 
@@ -185,10 +185,7 @@ interface ChommieHubApi {
         @Body request: FcmDeviceRequest
     ): retrofit2.Response<Unit>
 
-    // ---- Manager sign-up and accommodation review ----
-
-    @POST("api/managers/register")
-    suspend fun registerManager(@Body request: RegisterManagerRequest): ManagerResponse
+    // ---- Manager accommodation review (administrator appointment only) ----
 
     // Throws HttpException with code 404 when the manager has not saved an accommodation yet.
     @GET("api/manager/my-accommodation")
@@ -201,6 +198,19 @@ interface ChommieHubApi {
     suspend fun submitMyAccommodation(): ManagerAccommodationResponse
 
     // ---- Administrator ----
+
+    // Administrator-only manager appointment. Firebase account must already exist.
+    @POST("api/managers")
+    suspend fun appointManager(@Body request: CreateManagerRequest): ManagerResponse
+
+    // Manager-owned photo upload, stored in a private Azure Blob container.
+    @retrofit2.http.Multipart
+    @POST("api/images/accommodations/{accommodationId}")
+    suspend fun uploadAccommodationImage(
+        @Path("accommodationId") accommodationId: String,
+        @retrofit2.http.Part image: okhttp3.MultipartBody.Part
+    ): AccommodationImageUploadResponse
+
 
     @GET("api/admin/dashboard")
     suspend fun getAdminDashboard(): AdminDashboardResponse
@@ -264,4 +274,37 @@ interface ChommieHubApi {
     // limit: 1 to 200 (the server uses 50 if it is 0 or less).
     @GET("api/admin/audit")
     suspend fun getAdminAudit(@Query("limit") limit: Int): List<AuditRecordResponse>
+
+    // ---- Community services: server-side role and accommodation validation ----
+    @POST("api/incidents")
+    suspend fun createIncident(@Body request: com.chommiehub.app.data.model.community.CreateIncidentRequest): com.chommiehub.app.data.model.community.IncidentReport
+
+    @retrofit2.http.Multipart
+    @POST("api/incidents/{id}/photo")
+    suspend fun uploadIncidentPhoto(
+        @Path("id") id: String,
+        @retrofit2.http.Part image: okhttp3.MultipartBody.Part
+    ): retrofit2.Response<Unit>
+
+    @GET("api/incidents/{id}/photo")
+    suspend fun getIncidentPhoto(@Path("id") id: String): okhttp3.ResponseBody
+
+    @GET("api/incidents/mine")
+    suspend fun getMyIncidents(): List<com.chommiehub.app.data.model.community.IncidentReport>
+
+    @GET("api/incidents/managed")
+    suspend fun getManagedIncidents(): List<com.chommiehub.app.data.model.community.IncidentReport>
+
+    @PATCH("api/incidents/{id}/review")
+    suspend fun reviewIncident(@Path("id") id: String, @Body request: com.chommiehub.app.data.model.community.ReviewIncidentRequest): com.chommiehub.app.data.model.community.IncidentReport
+
+    @GET("api/announcements")
+    suspend fun getAnnouncements(): List<com.chommiehub.app.data.model.community.Announcement>
+
+    @POST("api/announcements")
+    suspend fun createAnnouncement(@Body request: com.chommiehub.app.data.model.community.CreateAnnouncementRequest): com.chommiehub.app.data.model.community.Announcement
+
+    @GET("api/reports/summary")
+    suspend fun getOperationalReport(): com.chommiehub.app.data.model.community.OperationalReport
+
 }

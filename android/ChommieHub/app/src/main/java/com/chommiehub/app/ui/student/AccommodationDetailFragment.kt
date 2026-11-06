@@ -1,6 +1,15 @@
 package com.chommiehub.app.ui.student
 
 import android.os.Bundle
+import android.graphics.BitmapFactory
+import android.widget.ImageView
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import com.chommiehub.app.BuildConfig
+import java.net.HttpURLConnection
+import java.net.URL
 import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
@@ -50,6 +59,7 @@ class AccommodationDetailFragment : Fragment(R.layout.fragment_accommodation_det
         val tvError = view.findViewById<TextView>(R.id.tvDetailError)
         val scrollDetail = view.findViewById<View>(R.id.scrollDetail)
         val textName = view.findViewById<TextView>(R.id.tvDetailName)
+        val photoView = view.findViewById<ImageView>(R.id.ivAccommodationPhoto)
         val textAddress = view.findViewById<TextView>(R.id.tvDetailLocation)
         val textDescription = view.findViewById<TextView>(R.id.tvDetailDescription)
         val textAmenities = view.findViewById<TextView>(R.id.tvDetailAmenities)
@@ -92,6 +102,13 @@ class AccommodationDetailFragment : Fragment(R.layout.fragment_accommodation_det
                     btnApplyNow.isEnabled = true
 
                     textName.text = state.accommodation.name
+                    // The API serves private blobs only for approved residences.
+                    val firstPhoto = state.accommodation.imageUrls.firstOrNull()
+                    if (!firstPhoto.isNullOrBlank()) {
+                        loadResidencePhoto(firstPhoto, photoView)
+                    } else {
+                        photoView.setImageResource(R.drawable.chommiehub_logo)
+                    }
                     textAddress.text = state.accommodation.address
                     textDescription.text = state.accommodation.description
                     textAmenities.text = state.accommodation.amenities.joinToString("\n")
@@ -135,6 +152,33 @@ class AccommodationDetailFragment : Fragment(R.layout.fragment_accommodation_det
         }
 
         viewModel.loadDetail(accommodationId)
+    }
+
+    private fun loadResidencePhoto(path: String, imageView: ImageView) {
+        // Reject arbitrary hosts; all accommodation images use our configured API.
+        if (!path.startsWith("/api/images/accommodations/")) return
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                val bitmap = withContext(Dispatchers.IO) {
+                    val endpoint = URL(BuildConfig.API_BASE_URL.trimEnd('/') + path)
+                    val connection = endpoint.openConnection() as HttpURLConnection
+                    connection.connectTimeout = 10_000
+                    connection.readTimeout = 10_000
+                    try {
+                        if (connection.responseCode != 200) return@withContext null
+                        connection.inputStream.use { BitmapFactory.decodeStream(it) }
+                    } finally {
+                        connection.disconnect()
+                    }
+                }
+                if (bitmap != null && isAdded) {
+                    imageView.setImageBitmap(bitmap)
+                    imageView.scaleType = ImageView.ScaleType.CENTER_CROP
+                }
+            } catch (_: Exception) {
+                // Fall back to the project's existing residence placeholder image.
+            }
+        }
     }
 
     override fun onResume() {

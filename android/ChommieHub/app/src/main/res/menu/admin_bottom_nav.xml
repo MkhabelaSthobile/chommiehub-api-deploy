@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/nav_admin_dashboard" android:icon="@drawable/ic_home" android:title="@string/admin_dashboard" />
+    <item android:id="@+id/nav_admin_listings" android:icon="@drawable/ic_applications" android:title="@string/admin_listings" />
+    <item android:id="@+id/nav_admin_accounts" android:icon="@drawable/ic_residents" android:title="@string/admin_accounts" />
+    <item android:id="@+id/nav_admin_audit" android:icon="@drawable/ic_operations" android:title="@string/admin_audit" />
+    <item android:id="@+id/nav_admin_settings" android:icon="@drawable/ic_settings" android:title="@string/nav_settings" />
+</menu>

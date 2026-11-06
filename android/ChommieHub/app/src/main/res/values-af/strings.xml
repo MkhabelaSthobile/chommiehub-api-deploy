@@ -241,4 +241,26 @@
     <string name="visitor_error_submit_server">Kon nie besoekersversoek indien nie. Bediener het %1$d teruggestuur.</string>
     <string name="visitor_error_submit">Kon nie besoekersversoek indien nie.</string>
     <string name="shortlist_empty_message">Nog geen verblyf op jou kortlys nie.</string>
+
+    <!-- Part 1 community features, with resource-based labels for language switching. -->
+    <string name="community_incidents">Koshuisvoorvalle</string>
+    <string name="community_incident_intro">Meld \u2019n voorval aan en volg die oplossing.</string>
+    <string name="community_report_incident">Meld \u2019n voorval aan</string>
+    <string name="community_incident_none">Nog geen voorvalle nie.</string>
+    <string name="community_announcements">Aankondigings</string>
+    <string name="community_announcements_intro">Koshuisnuus en platformkennisgewings</string>
+    <string name="community_notice_none">Geen aankondigings beskikbaar nie.</string>
+    <string name="community_create_announcement">Skep aankondiging</string>
+    <string name="community_reports">Bedryfsverslae</string>
+    <string name="community_reports_intro">Lewende opsommings vir jou rol</string>
+    <string name="community_copy_summary">Kopieer opsomming</string>
+    <string name="community_refresh">Verfris</string>
+    <string name="community_choose_photo">Heg \u2019n opsionele foto aan</string>
+    <string name="community_manager_incidents">Bestuur voorvalle</string>
+    <string name="community_manager_announcements">Bestuur aankondigings</string>
+    <string name="community_manager_reports">Koshuisopsommings</string>
+    <string name="community_admin_incidents">Voorvaltoesig</string>
+    <string name="community_admin_announcements">Platformaankondigings</string>
+    <string name="community_admin_reports">Platformverslae</string>
+    <string name="community_resident_incidents">Meld / volg voorvalle</string>
 </resources>

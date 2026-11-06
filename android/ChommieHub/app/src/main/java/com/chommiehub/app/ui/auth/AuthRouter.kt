@@ -9,6 +9,7 @@ import androidx.lifecycle.lifecycleScope
 import com.chommiehub.app.data.model.student.CreateStudentRequest
 import com.chommiehub.app.data.remote.ApiClient
 import com.chommiehub.app.firebase.FcmTokenManager
+import com.chommiehub.app.ui.admin.AdminActivity
 import com.chommiehub.app.ui.manager.CurrentManager
 import com.chommiehub.app.ui.manager.ManagerActivity
 import com.chommiehub.app.ui.student.CurrentStudent
@@ -129,10 +130,8 @@ object AuthRouter {
         val role = tokenResult.claims["role"] as? String
 
         if (role == "admin") {
-            throw IllegalStateException(
-                "Administrator account recognised. " +
-                        "Administrator dashboard is not available yet."
-            )
+            // The backend independently verifies the admin claim on every request.
+            return AdminActivity::class.java
         }
 
         // Check the student profile first.

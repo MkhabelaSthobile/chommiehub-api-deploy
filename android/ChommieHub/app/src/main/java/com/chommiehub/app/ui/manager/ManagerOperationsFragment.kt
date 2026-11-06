@@ -24,6 +24,23 @@ class ManagerOperationsFragment : Fragment(R.layout.fragment_manager_operations)
             openFragment(ManagerVisitorRequestsFragment())
         }
 
+        // Part 1: managers review residence incidents, publish notices and view reports.
+        val operationsPanel = (view as androidx.core.widget.NestedScrollView).getChildAt(0) as android.widget.LinearLayout
+        listOf(
+            getString(R.string.community_manager_incidents) to com.chommiehub.app.ui.community.CommunityActivity.INCIDENTS,
+            getString(R.string.community_manager_announcements) to com.chommiehub.app.ui.community.CommunityActivity.ANNOUNCEMENTS,
+            getString(R.string.community_manager_reports) to com.chommiehub.app.ui.community.CommunityActivity.REPORTS
+        ).forEach { (label, mode) ->
+            operationsPanel.addView(android.widget.Button(requireContext()).apply {
+                text = label; isAllCaps = false
+                setOnClickListener {
+                    startActivity(android.content.Intent(requireContext(),
+                        com.chommiehub.app.ui.community.CommunityActivity::class.java)
+                        .putExtra(com.chommiehub.app.ui.community.CommunityActivity.MODE, mode))
+                }
+            })
+        }
+
         view.findViewById<View>(R.id.cardManagerInspections).setOnClickListener {
             openFragment(ManagerInspectionsFragment())
         }

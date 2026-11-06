@@ -26,6 +26,7 @@
                 android:background="@color/chommie_gold_soft">
 
                 <ImageView
+                    android:id="@+id/ivAccommodationPhoto"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:contentDescription="@string/residence_image_description"

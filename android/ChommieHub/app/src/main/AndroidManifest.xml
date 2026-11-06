@@ -30,10 +30,6 @@
         <activity
             android:name=".ui.auth.LoginActivity"
             android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 
         <!-- Registration -->
@@ -47,6 +43,17 @@
             android:name=".ui.auth.BiometricActivity"
             android:exported="false" />
 
+        <!-- Admin is never exported, and validates its Firebase claim and backend token. -->
+        <activity android:name=".ui.admin.AdminActivity" android:exported="false" />
+
+        <!-- Welcome is the public launcher for signed-out users. -->
+        <activity android:name=".ui.auth.WelcomeActivity" android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
         <!-- Student application -->
         <activity
             android:name=".ui.student.StudentActivity"
@@ -58,6 +65,9 @@
             android:name=".ui.manager.ManagerActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
+
+        <!-- Community screens validate Firebase identity and backend role authorization. -->
+        <activity android:name=".ui.community.CommunityActivity" android:exported="false" />
 
         <!-- Main development activity -->
         <activity

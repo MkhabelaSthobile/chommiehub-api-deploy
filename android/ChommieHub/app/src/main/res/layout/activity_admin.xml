@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical" android:background="@color/chommie_background">
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:padding="18dp" android:background="@color/chommie_navy"
+        android:text="@string/admin_console" android:textSize="20sp" android:textStyle="bold"
+        android:textColor="@color/white" />
+    <FrameLayout android:id="@+id/adminContainer" android:layout_width="match_parent"
+        android:layout_height="0dp" android:layout_weight="1" />
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/adminBottomNav"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:background="@color/chommie_surface" app:labelVisibilityMode="labeled"
+        app:menu="@menu/admin_bottom_nav" />
+</LinearLayout>

@@ -86,6 +86,18 @@ class StudentHomeFragment : Fragment(R.layout.fragment_student_home) {
         setupListeners()
         observeViewModel()
 
+        // Students can read platform-wide notices; residents also see their residence notices.
+        view.findViewById<android.widget.LinearLayout>(R.id.heroSection).addView(
+            android.widget.Button(requireContext()).apply {
+                text = getString(R.string.community_announcements); isAllCaps = false
+                setOnClickListener {
+                    startActivity(android.content.Intent(requireContext(),
+                        com.chommiehub.app.ui.community.CommunityActivity::class.java)
+                        .putExtra(com.chommiehub.app.ui.community.CommunityActivity.MODE,
+                            com.chommiehub.app.ui.community.CommunityActivity.ANNOUNCEMENTS))
+                }
+            })
+
         btnRetry.setOnClickListener {
             viewModel.loadAccommodations()
         }

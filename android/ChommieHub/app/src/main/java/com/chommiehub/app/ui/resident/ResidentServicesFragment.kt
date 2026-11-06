@@ -21,6 +21,22 @@ class ResidentServicesFragment : Fragment(R.layout.fragment_resident_services) {
             openFragment(VisitorRequestFragment())
         }
 
+        // Part 1 resident operations: incident reporting and residence notices.
+        val servicesPanel = (view as android.widget.ScrollView).getChildAt(0) as android.widget.LinearLayout
+        listOf(
+            getString(R.string.community_resident_incidents) to com.chommiehub.app.ui.community.CommunityActivity.INCIDENTS,
+            getString(R.string.community_announcements) to com.chommiehub.app.ui.community.CommunityActivity.ANNOUNCEMENTS
+        ).forEach { (label, mode) ->
+            servicesPanel.addView(android.widget.Button(requireContext()).apply {
+                text = label; isAllCaps = false
+                setOnClickListener {
+                    startActivity(android.content.Intent(requireContext(),
+                        com.chommiehub.app.ui.community.CommunityActivity::class.java)
+                        .putExtra(com.chommiehub.app.ui.community.CommunityActivity.MODE, mode))
+                }
+            })
+        }
+
         view.findViewById<View>(R.id.cardResidentInspections).setOnClickListener {
             openFragment(InspectionFragment())
         }

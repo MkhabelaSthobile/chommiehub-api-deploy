@@ -144,7 +144,8 @@ data class AccommodationResponse(
     val phoneNumber: String,
     val amenities: List<String>,
     val institutionArea: String,
-    val isActive: Boolean
+    val isActive: Boolean,
+    val imageUrls: List<String> = emptyList()
 )
 
 /**
@@ -161,3 +162,5 @@ data class UpdateAccommodationRequest(
     val institutionArea: String,
     val isActive: Boolean
 )
+/** Path served by the API; the Azure container itself is private. */
+data class AccommodationImageUploadResponse(val path: String, val count: Int)

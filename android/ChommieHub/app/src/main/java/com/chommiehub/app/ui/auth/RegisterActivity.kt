@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.util.Patterns
 import android.widget.Button
 import android.widget.EditText
-import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -18,7 +17,6 @@ import com.chommiehub.app.ui.manager.CurrentManager
 import com.chommiehub.app.ui.student.CurrentStudent
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
-import com.chommiehub.app.data.model.manager.RegisterManagerRequest
 
 class RegisterActivity : AppCompatActivity() {
 
@@ -64,10 +62,6 @@ class RegisterActivity : AppCompatActivity() {
         val password = getValue(R.id.etPassword)
         val confirmPassword = getValue(R.id.etConfirmPassword)
 
-        val isManager =
-            findViewById<RadioGroup>(R.id.rgRole)
-                .checkedRadioButtonId == R.id.rbManager
-
         if (
             name.isBlank() ||
             surname.isBlank() ||
@@ -111,30 +105,18 @@ class RegisterActivity : AppCompatActivity() {
 
             lifecycleScope.launch {
                 try {
-                    if (isManager) {
-                        // Managers register without an "accommodation".
-                        // They add and submit it after signing in.
-                        ApiClient.api.registerManager(
-                            RegisterManagerRequest(
-                                name = name,
-                                surname = surname,
-                                email = email,
-                                phoneNumber = phone
-                            )
-                        )
-                    } else {
-                        val request = CreateStudentRequest(
-                            firebaseUid = firebaseUid,
-                            name = name,
-                            surname = surname,
-                            email = email,
-                            phoneNumber = phone,
-                            preferredLanguage = "English"
-                        )
+                    val request = CreateStudentRequest(
+                        firebaseUid = firebaseUid,
+                        name = name,
+                        surname = surname,
+                        email = email,
+                        phoneNumber = phone,
+                        preferredLanguage = "English"
+                    )
 
-                        // Create the student profile through the API.
-                        ApiClient.api.createStudent(request)
-                    }
+                    // Public registration is student-only. The administrator
+                    // appoints managers using a separate, protected API operation.
+                    ApiClient.api.createStudent(request)
 
                     toast(
                         "Registration successful. Please sign in."

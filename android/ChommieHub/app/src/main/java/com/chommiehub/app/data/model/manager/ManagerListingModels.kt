@@ -1,16 +1,6 @@
 package com.chommiehub.app.data.model.manager
 
 /**
- * Details a new residence manager enters when signing up.
- */
-data class RegisterManagerRequest(
-    val name: String,
-    val surname: String,
-    val email: String,
-    val phoneNumber: String
-)
-
-/**
  * The manager's own accommodation, including its review status.
  * reviewStatus is one of Draft, Pending, Approved or Rejected.
  */

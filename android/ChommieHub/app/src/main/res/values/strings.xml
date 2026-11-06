@@ -258,4 +258,40 @@
     <string name="price_up_to">Up to R%1$s</string>
     <string name="price_unavailable">Room prices could not be loaded. Please try again.</string>
     <string name="shortlist_empty_message">No shortlisted accommodations yet.</string>
+    <!-- Administrator area: the API enforces the role separately from navigation. -->
+    <string name="admin_console">ChommieHub · Administration</string>
+    <string name="admin_dashboard">Dashboard</string>
+    <string name="admin_listings">Listings</string>
+    <string name="admin_accounts">Accounts</string>
+    <string name="admin_audit">Audit</string>
+    <string name="admin_review_pending">Pending review</string>
+    <string name="admin_no_results">No records found.</string>
+    <string name="admin_refresh">Refresh</string>
+    <string name="admin_appoint_manager">Appoint manager</string>
+    <string name="admin_action_reason">Reason (required)</string>
+    <string name="admin_sign_out">Sign out</string>
+    <string name="admin_role_denied">Administrator authorization is required.</string>
+    <string name="admin_settings_language">App language</string>
+
+    <!-- Part 1 community features, with resource-based labels for language switching. -->
+    <string name="community_incidents">Residence incidents</string>
+    <string name="community_incident_intro">Report an incident and track its resolution.</string>
+    <string name="community_report_incident">Report an incident</string>
+    <string name="community_incident_none">No incidents yet.</string>
+    <string name="community_announcements">Announcements</string>
+    <string name="community_announcements_intro">Residence updates and platform notifications</string>
+    <string name="community_notice_none">No announcements are available.</string>
+    <string name="community_create_announcement">Create announcement</string>
+    <string name="community_reports">Operational reporting</string>
+    <string name="community_reports_intro">Live aggregate metrics for your role</string>
+    <string name="community_copy_summary">Copy summary</string>
+    <string name="community_refresh">Refresh</string>
+    <string name="community_choose_photo">Attach an optional photo</string>
+    <string name="community_manager_incidents">Manage incidents</string>
+    <string name="community_manager_announcements">Manage announcements</string>
+    <string name="community_manager_reports">Residence summary reports</string>
+    <string name="community_admin_incidents">Incident oversight</string>
+    <string name="community_admin_announcements">Platform announcements</string>
+    <string name="community_admin_reports">Platform reports</string>
+    <string name="community_resident_incidents">Report / track incidents</string>
 </resources>
