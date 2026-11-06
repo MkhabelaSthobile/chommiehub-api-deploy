@@ -32,16 +32,21 @@ public sealed class IncidentsController : ControllerBase
         if (identity is null) return Unauthorized();
         if (identity.Resident is null || identity.IsAdmin || identity.ManagerAccommodationId is not null)
             return StatusCode(403, new { message = "Only active residents may report incidents." });
-        if (!Categories.Contains(request.Category?.Trim() ?? string.Empty))
+        string? category = request.Category?.Trim();
+        if (string.IsNullOrWhiteSpace(category) || !Categories.Contains(category))
             return BadRequest(new { message = "Use Safety, Security, Damage, Noise or Other." });
         var reference = _db.Collection("incidentReports").Document();
         var incident = new IncidentReport
         {
-            Id = reference.Id, StudentId = identity.Uid,
+            Id = reference.Id,
+            StudentId = identity.Uid,
             ResidentId = identity.Resident.Id,
             AccommodationId = identity.Resident.AccommodationId,
-            Category = request.Category.Trim(), Description = request.Description.Trim(),
-            Location = request.Location.Trim(), Status = "Submitted", CreatedAtUtc = DateTime.UtcNow
+            Category = category,
+            Description = request.Description?.Trim() ?? string.Empty,
+            Location = request.Location?.Trim() ?? string.Empty,
+            Status = "Submitted",
+            CreatedAtUtc = DateTime.UtcNow
         };
         await reference.SetAsync(incident, cancellationToken: ct);
         return StatusCode(StatusCodes.Status201Created, incident);
@@ -78,9 +83,10 @@ public sealed class IncidentsController : ControllerBase
         var identity = await Identity(ct);
         if (identity is null) return Unauthorized();
         if (!identity.IsAdmin && identity.ManagerAccommodationId is null) return StatusCode(403);
-        if (!Statuses.Contains(request.Status?.Trim() ?? string.Empty))
+        string? status = request.Status?.Trim();
+        if (string.IsNullOrWhiteSpace(status) || !Statuses.Contains(status))
             return BadRequest(new { message = "Invalid incident status." });
-        if (request.Status.Equals("Completed", StringComparison.OrdinalIgnoreCase)
+        if (status.Equals("Completed", StringComparison.OrdinalIgnoreCase)
             && string.IsNullOrWhiteSpace(request.ResolutionNote))
             return BadRequest(new { message = "A resolution note is required to complete an incident." });
         var reference = _db.Collection("incidentReports").Document(id);
@@ -89,7 +95,7 @@ public sealed class IncidentsController : ControllerBase
         var existing = snapshot.ConvertTo<IncidentReport>();
         if (!identity.IsAdmin && !identity.IsManagerFor(existing.AccommodationId)) return StatusCode(403);
         // The manager cannot change who created the incident or its accommodation.
-        existing.Status = request.Status.Trim();
+        existing.Status = status;
         existing.ResolutionNote = request.ResolutionNote?.Trim() ?? string.Empty;
         existing.UpdatedAtUtc = DateTime.UtcNow;
         existing.ResolvedAtUtc = existing.Status.Equals("Completed", StringComparison.OrdinalIgnoreCase)

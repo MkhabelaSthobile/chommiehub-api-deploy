@@ -28,8 +28,10 @@ public sealed class AnnouncementsController : ControllerBase
     public AnnouncementsController(FirestoreDb db, CommunityAccess access,
         IAccommodationRepository accommodations, IResidentRepository residents,
         IStudentRepository students, IUserNotifier notifier)
-    { _db = db; _access = access; _accommodations = accommodations;
-      _residents = residents; _students = students; _notifier = notifier; }
+    {
+        _db = db; _access = access; _accommodations = accommodations;
+        _residents = residents; _students = students; _notifier = notifier;
+    }
 
     private Task<CommunityIdentity?> Identity(CancellationToken ct) =>
         _access.ResolveAsync(Request.Headers.Authorization.ToString(), ct);
@@ -42,39 +44,46 @@ public sealed class AnnouncementsController : ControllerBase
         string accommodationId = request.AccommodationId?.Trim() ?? string.Empty;
         if (!identity.IsAdmin && (identity.ManagerAccommodationId is null ||
             !identity.IsManagerFor(accommodationId))) return StatusCode(403);
-        if (!Types.Contains(request.Type?.Trim() ?? string.Empty))
+        // Validate the value once so it cannot be dereferenced when null.
+        string? noticeType = request.Type?.Trim();
+        if (string.IsNullOrWhiteSpace(noticeType) || !Types.Contains(noticeType))
             return BadRequest(new { message = "Invalid notice type." });
         if (accommodationId.Length > 0 && await _accommodations.GetByIdAsync(accommodationId, ct) is null)
             return NotFound(new { message = "Accommodation not found." });
         var reference = _db.Collection("announcements").Document();
-        var record = new Announcement {
-            Id = reference.Id, AccommodationId = accommodationId, PostedBy = identity.Uid,
-            Type = request.Type.Trim(), Title = request.Title.Trim(),
-            Description = request.Description.Trim(), CreatedAtUtc = DateTime.UtcNow
+        var record = new Announcement
+        {
+            Id = reference.Id,
+            AccommodationId = accommodationId,
+            PostedBy = identity.Uid,
+            Type = noticeType,
+            Title = request.Title?.Trim() ?? string.Empty,
+            Description = request.Description?.Trim() ?? string.Empty,
+            CreatedAtUtc = DateTime.UtcNow
         };
         await reference.SetAsync(record, cancellationToken: ct);
         // FCM delivery is best effort and never reverses a successfully published notice.
         // Notify only residents of the accommodation or users who enabled platform alerts.
         try
         {
-        IReadOnlyList<Student> subscribers;
-        if (accommodationId.Length > 0)
-        {
-            var residentRecords = await _residents.GetByAccommodationIdAsync(accommodationId, ct);
-            var residentUids = residentRecords.Where(r => r.IsActive)
-                .Select(r => r.StudentId).ToHashSet(StringComparer.Ordinal);
-            subscribers = (await _students.GetAllAsync(ct)).Where(s =>
-                residentUids.Contains(s.FirebaseUid) && s.NotificationsEnabled && !s.IsDisabled).ToArray();
-        }
-        else
-        {
-            subscribers = (await _students.GetAllAsync(ct)).Where(s =>
-                s.NotificationsEnabled && !s.IsDisabled).ToArray();
-        }
-        foreach (Student recipient in subscribers)
-        {
-            await _notifier.NotifyAsync(recipient.FirebaseUid, record.Title, record.Description[..Math.Min(120, record.Description.Length)]);
-        }
+            IReadOnlyList<Student> subscribers;
+            if (accommodationId.Length > 0)
+            {
+                var residentRecords = await _residents.GetByAccommodationIdAsync(accommodationId, ct);
+                var residentUids = residentRecords.Where(r => r.IsActive)
+                    .Select(r => r.StudentId).ToHashSet(StringComparer.Ordinal);
+                subscribers = (await _students.GetAllAsync(ct)).Where(s =>
+                    residentUids.Contains(s.FirebaseUid) && s.NotificationsEnabled && !s.IsDisabled).ToArray();
+            }
+            else
+            {
+                subscribers = (await _students.GetAllAsync(ct)).Where(s =>
+                    s.NotificationsEnabled && !s.IsDisabled).ToArray();
+            }
+            foreach (Student recipient in subscribers)
+            {
+                await _notifier.NotifyAsync(recipient.FirebaseUid, record.Title, record.Description[..Math.Min(120, record.Description.Length)]);
+            }
         }
         catch (Exception)
         {

@@ -38,11 +38,20 @@ public sealed class IncidentPhotosController : ControllerBase
         if (!string.IsNullOrWhiteSpace(incident.PhotoUrl))
             return Conflict(new { message = "An image has already been uploaded for this incident." });
         if (!_storage.IsConfigured) return StatusCode(503, new { message = "Azure image storage is not configured." });
-        if (image is null || image.Length < 4 || image.Length > MaxBytes)
-            return BadRequest(new { message = "An image under 5 MB is required." });
+        // All supported image signatures require at least 12 bytes to inspect safely.
+        if (image is null || image.Length < 12 || image.Length > MaxBytes)
+            return BadRequest(new { message = "A valid image under 5 MB is required." });
         byte[] signature = new byte[12];
-        await using (var stream = image.OpenReadStream())
-            await stream.ReadAsync(signature, ct);
+        try
+        {
+            await using var signatureStream = image.OpenReadStream();
+            // ReadExactlyAsync handles short reads instead of silently using incomplete data.
+            await signatureStream.ReadExactlyAsync(signature.AsMemory(), ct);
+        }
+        catch (EndOfStreamException)
+        {
+            return BadRequest(new { message = "The image is incomplete." });
+        }
         string? extension = GetExtension(signature);
         if (extension is null) return BadRequest(new { message = "Only JPEG, PNG or WebP is supported." });
         string key = $"incidents/{incidentId}/{Guid.NewGuid():N}.{extension}";

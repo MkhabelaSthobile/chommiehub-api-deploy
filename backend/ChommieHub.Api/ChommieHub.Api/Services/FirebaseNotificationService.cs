@@ -1,5 +1,4 @@
-﻿
-using ChommieHub.Api.Repositories;
+﻿using ChommieHub.Api.Repositories;
 using FirebaseAdmin;
 using FirebaseAdmin.Messaging;
 
@@ -89,7 +88,12 @@ public sealed class FirebaseNotificationService
             {
                 var message = new Message
                 {
+                    // Compatibility: the Android app currently registers FCM registration
+                    // tokens, not Firebase Installation IDs. Migrating to Fid requires
+                    // coordinated Android, API and stored-registration changes.
+#pragma warning disable CS0618 // Intentional use of the token API until the FID migration.
                     Token = device.FcmToken,
+#pragma warning restore CS0618
 
                     Notification = new Notification
                     {
