@@ -1,4 +1,4 @@
-﻿
+
 using ChommieHub.Api.DTOs;
 using ChommieHub.Api.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -13,17 +13,20 @@ namespace ChommieHub.Api.Controllers
     public sealed class RoomsController : ControllerBase
     {
         private readonly IRoomService _roomService;
+        private readonly IAccommodationService _accommodationService;
         private readonly FirebaseTokenVerificationService _tokenVerifier;
         private readonly IManagerAccountService _managerAccountService;
         private readonly ILogger<RoomsController> _logger;
 
         public RoomsController(
             IRoomService roomService,
+            IAccommodationService accommodationService,
             FirebaseTokenVerificationService tokenVerifier,
             IManagerAccountService managerAccountService,
             ILogger<RoomsController> logger)
         {
             _roomService = roomService;
+            _accommodationService = accommodationService;
             _tokenVerifier = tokenVerifier;
             _managerAccountService = managerAccountService;
             _logger = logger;
@@ -87,6 +90,7 @@ namespace ChommieHub.Api.Controllers
                     cancellationToken);
 
             if (manager is null ||
+                manager.IsDisabled ||
                 !string.Equals(
                     manager.FirebaseUid,
                     firebaseUid,
@@ -119,12 +123,12 @@ namespace ChommieHub.Api.Controllers
                     id,
                     cancellationToken);
 
-            if (room is null)
+            if (room is null ||
+                await _accommodationService.GetByIdAsync(
+                    room.AccommodationId, cancellationToken) is null)
             {
-                return NotFound(new
-                {
-                    message = "Room was not found."
-                });
+                // A guessed room ID must not reveal a pending/archived residence.
+                return NotFound(new { message = "Room was not found." });
             }
 
             return Ok(room);

@@ -1,4 +1,4 @@
-﻿using ChommieHub.Api.Models;
+using ChommieHub.Api.Models;
 using ChommieHub.Api.Repositories;
 using ChommieHub.Api.Services;
 using Moq;
@@ -44,7 +44,7 @@ public sealed class AccommodationServiceTests
     }
 
     [Fact]
-    public async Task GetByIdAsync_StillReturnsAPendingListing()
+    public async Task GetByIdAsync_HidesPendingListingFromPublicDetails()
     {
         _repository
             .Setup(repository => repository.GetByIdAsync("pending", It.IsAny<CancellationToken>()))
@@ -52,6 +52,6 @@ public sealed class AccommodationServiceTests
 
         var result = await new AccommodationService(_repository.Object).GetByIdAsync("pending");
 
-        Assert.NotNull(result);
+        Assert.Null(result);
     }
 }

@@ -1,43 +1,36 @@
-﻿using ChommieHub.Api.DTOs;
+using ChommieHub.Api.DTOs;
 using ChommieHub.Api.Models;
 using ChommieHub.Api.Repositories;
 using ChommieHub.Api.Services;
-using Google.Cloud.Firestore.V1;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Text;
 
 namespace ChommieHub.Api.Tests.Services
 {
-    // Verifies manager self - registration rules without a live Firestore connection.
+    // Manager profiles may be created only through the protected administrator API.
     public sealed class ManagerAccountServiceTests
     {
         private readonly Mock<IManagerRepository> _managerRepository = new();
         private readonly Mock<IStudentRepository> _studentRepository = new();
 
-        private ManagerAccountService CreateService()
-        {
-            return new ManagerAccountService(_managerRepository.Object, _studentRepository.Object);
-        }
+        private ManagerAccountService CreateService() =>
+            new(_managerRepository.Object, _studentRepository.Object);
 
-        private static RegisterManagerRequest CreateRequest()
+        private static CreateManagerRequest CreateRequest() => new()
         {
-            return new RegisterManagerRequest
-            {
-                Name = " Thando ",
-                Surname = "Mokoena",
-                Email = "thando@example.com",
-                PhoneNumber = "0821234567"
-            };
-        }
+            FirebaseUid = "uid-1",
+            Name = " Thando ",
+            Surname = "Mokoena",
+            Email = "thando@example.com",
+            PhoneNumber = "0821234567"
+        };
 
         [Fact]
-        public async Task RegisterAsync_CreatesManagerWithoutAccommodation()
+        public async Task CreateAsync_AppointmentStartsWithoutAccommodation()
         {
-            _managerRepository.Setup(repository => repository.GetByIdAsync("uid-1", It.IsAny<CancellationToken>())).ReturnsAsync((Manager?)null);
-            _studentRepository.Setup(repository => repository.GetByIdAsync("uid-1", It.IsAny<CancellationToken>())).ReturnsAsync((Student?)null);
+            _managerRepository.Setup(repository => repository.GetByIdAsync("uid-1", It.IsAny<CancellationToken>()))
+                .ReturnsAsync((Manager?)null);
+            _studentRepository.Setup(repository => repository.GetByIdAsync("uid-1", It.IsAny<CancellationToken>()))
+                .ReturnsAsync((Student?)null);
             _managerRepository.Setup(repository => repository.CreateAsync(It.IsAny<Manager>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync((Manager manager, CancellationToken _) =>
                 {
@@ -45,7 +38,7 @@ namespace ChommieHub.Api.Tests.Services
                     return manager;
                 });
 
-            ManagerResponse result = await CreateService().RegisterAsync("uid-1", CreateRequest());
+            ManagerResponse result = await CreateService().CreateAsync(CreateRequest());
 
             Assert.Equal("uid-1", result.Id);
             Assert.Equal("Thando", result.Name);
@@ -53,24 +46,41 @@ namespace ChommieHub.Api.Tests.Services
         }
 
         [Fact]
-        public async Task RegisterAsync_RejectsAnExistingManager()
+        public async Task CreateAsync_RejectsExistingManager()
         {
-            _managerRepository.Setup(repository => repository.GetByIdAsync("uid-1", It.IsAny<CancellationToken>())).ReturnsAsync(new Manager { Id = "uid-1", FirebaseUid = "uid-1" });
+            _managerRepository.Setup(repository => repository.GetByIdAsync("uid-1", It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new Manager { Id = "uid-1", FirebaseUid = "uid-1" });
 
-            await Assert.ThrowsAsync<InvalidOperationException>(() => CreateService().RegisterAsync("uid-1", CreateRequest()));
+            await Assert.ThrowsAsync<InvalidOperationException>(
+                () => CreateService().CreateAsync(CreateRequest()));
 
-            _managerRepository.Verify(repository => repository.CreateAsync(It.IsAny<Manager>(), It.IsAny<CancellationToken>()), Times.Never);
+            _managerRepository.Verify(repository =>
+                repository.CreateAsync(It.IsAny<Manager>(), It.IsAny<CancellationToken>()), Times.Never);
         }
 
         [Fact]
-        public async Task RegisterAsync_RejectsAnExistingStudentAccount()
+        public async Task CreateAsync_RejectsExistingStudentAccount()
         {
-            _managerRepository.Setup(repository => repository.GetByIdAsync("uid-1", It.IsAny<CancellationToken>())).ReturnsAsync((Manager?)null);
-            _studentRepository.Setup(repository => repository.GetByIdAsync("uid-1", It.IsAny<CancellationToken>())).ReturnsAsync(new Student { Id = "uid-1" });
+            _managerRepository.Setup(repository => repository.GetByIdAsync("uid-1", It.IsAny<CancellationToken>()))
+                .ReturnsAsync((Manager?)null);
+            _studentRepository.Setup(repository => repository.GetByIdAsync("uid-1", It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new Student { Id = "uid-1" });
 
-            await Assert.ThrowsAsync<InvalidOperationException>(() => CreateService().RegisterAsync("uid-1", CreateRequest()));
+            await Assert.ThrowsAsync<InvalidOperationException>(
+                () => CreateService().CreateAsync(CreateRequest()));
 
-            _managerRepository.Verify(repository => repository.CreateAsync(It.IsAny<Manager>(), It.IsAny<CancellationToken>()), Times.Never);
+            _managerRepository.Verify(repository =>
+                repository.CreateAsync(It.IsAny<Manager>(), It.IsAny<CancellationToken>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task CreateAsync_RejectsMissingFirebaseUid()
+        {
+            var request = CreateRequest();
+            request.FirebaseUid = " ";
+
+            await Assert.ThrowsAsync<ArgumentException>(
+                () => CreateService().CreateAsync(request));
         }
     }
 }

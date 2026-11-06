@@ -1,4 +1,4 @@
-﻿
+
 using ChommieHub.Api.DTOs;
 using ChommieHub.Api.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -155,6 +155,7 @@ namespace ChommieHub.Api.Controllers
                     cancellationToken);
 
             if (manager is null ||
+                manager.IsDisabled ||
                 !string.Equals(
                     manager.FirebaseUid,
                     userId,

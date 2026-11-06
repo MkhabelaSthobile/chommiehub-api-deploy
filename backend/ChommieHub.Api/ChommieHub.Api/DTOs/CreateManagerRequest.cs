@@ -28,7 +28,7 @@ namespace ChommieHub.Api.DTOs
         [StringLength(30)]
         public string PhoneNumber { get; set; } = string.Empty;
 
-        [Required]
+        // Optional: a newly appointed manager starts without an accommodation.
         public string AccommodationId { get; set; } = string.Empty;
     }
 }

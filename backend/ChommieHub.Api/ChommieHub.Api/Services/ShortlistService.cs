@@ -1,4 +1,4 @@
-﻿using ChommieHub.Api.DTOs;
+using ChommieHub.Api.DTOs;
 using ChommieHub.Api.Models;
 using ChommieHub.Api.Repositories;
 using ChommieHub.Api.Repositories.Interfaces;
@@ -20,9 +20,18 @@ namespace ChommieHub.Api.Services
             _accommodationRepository = accommodationRepository;
         }
 
-        public Task AddAsync(string studentId, string accommodationId, CancellationToken cancellationToken = default)
+        public async Task AddAsync(string studentId, string accommodationId, CancellationToken cancellationToken = default)
         {
-            return _shortlistRepository.AddAsync(studentId, accommodationId, cancellationToken);
+            Accommodation? accommodation = await _accommodationRepository.GetByIdAsync(
+                accommodationId, cancellationToken);
+
+            if (accommodation is null || !accommodation.IsVisibleToStudents)
+            {
+                throw new InvalidOperationException(
+                    "Only approved, non-archived accommodations can be shortlisted.");
+            }
+
+            await _shortlistRepository.AddAsync(studentId, accommodationId, cancellationToken);
         }
 
         public Task RemoveAsync(string studentId, string accommodationId, CancellationToken cancellationToken = default)

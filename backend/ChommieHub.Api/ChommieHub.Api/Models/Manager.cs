@@ -30,10 +30,8 @@ namespace ChommieHub.Api.Models
         public string PhoneNumber { get; set; } = string.Empty;
 
         /// <summary>
-        /// The accommodation this manager administers. Until the administrator
-        /// role is built, this is set from the accommodation ID the manager
-        /// registers against (see CreateManagerRequest); an admin workflow can
-        /// take over assigning/reassigning it later.
+        /// The accommodation assigned to this administrator-appointed manager.
+        /// Blank initially; the manager can save a draft listing for review.
         /// </summary>
         [FirestoreProperty]
         public string AccommodationId { get; set; } = string.Empty;

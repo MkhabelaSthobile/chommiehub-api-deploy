@@ -1,4 +1,4 @@
-﻿using ChommieHub.Api.Models;
+using ChommieHub.Api.Models;
 using ChommieHub.Api.Repositories;
 using ChommieHub.Api.Repositories.Interfaces;
 using ChommieHub.Api.Services;
@@ -33,6 +33,31 @@ public sealed class ShortlistServiceTests
         var result = await service.GetShortlistAsync("s1");
 
         Assert.Equal("approved", Assert.Single(result).Id);
+    }
+
+    [Fact]
+    public async Task AddAsync_RejectsPendingAccommodation()
+    {
+        GivenListing("pending", ListingStatuses.Pending, archived: false);
+        var service = new ShortlistService(_shortlistRepository.Object, _accommodationRepository.Object);
+
+        await Assert.ThrowsAsync<InvalidOperationException>(
+            () => service.AddAsync("s1", "pending"));
+
+        _shortlistRepository.Verify(repository => repository.AddAsync(
+            It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task AddAsync_AllowsApprovedAccommodation()
+    {
+        GivenListing("approved", ListingStatuses.Approved, archived: false);
+        var service = new ShortlistService(_shortlistRepository.Object, _accommodationRepository.Object);
+
+        await service.AddAsync("s1", "approved");
+
+        _shortlistRepository.Verify(repository => repository.AddAsync(
+            "s1", "approved", It.IsAny<CancellationToken>()), Times.Once);
     }
 
     private void GivenListing(string id, string status, bool archived)

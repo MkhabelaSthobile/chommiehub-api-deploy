@@ -1,25 +1,33 @@
-
 using ChommieHub.Api.DTOs;
 using ChommieHub.Api.Services;
+using FirebaseAdmin;
+using FirebaseAdmin.Auth;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ChommieHub.Api.Controllers
 {
+    /// <summary>
+    /// Manager profiles are provisioned by administrators, not by public registration.
+    /// A manager may read only their own profile; administrators may read any profile.
+    /// </summary>
     [ApiController]
     [Route("api/managers")]
     public sealed class ManagersController : ControllerBase
     {
         private readonly IManagerAccountService _managerAccountService;
         private readonly FirebaseTokenVerificationService _tokenVerifier;
+        private readonly FirebaseApp _firebaseApp;
         private readonly ILogger<ManagersController> _logger;
 
         public ManagersController(
             IManagerAccountService managerAccountService,
             FirebaseTokenVerificationService tokenVerifier,
+            FirebaseApp firebaseApp,
             ILogger<ManagersController> logger)
         {
             _managerAccountService = managerAccountService;
             _tokenVerifier = tokenVerifier;
+            _firebaseApp = firebaseApp;
             _logger = logger;
         }
 
@@ -28,20 +36,30 @@ namespace ChommieHub.Api.Controllers
             string id,
             CancellationToken cancellationToken)
         {
-            ManagerResponse? manager =
-                await _managerAccountService.GetByIdAsync(
-                    id,
-                    cancellationToken);
+            var (userId, token, error) = await GetAuthenticatedUserAsync();
 
-            if (manager is null)
+            if (error is not null)
             {
-                return NotFound(new
+                return error;
+            }
+
+            // Never expose another manager's personal information to a student
+            // or to a manager with a different Firebase UID.
+            if (!string.Equals(userId, id, StringComparison.Ordinal)
+                && !await _tokenVerifier.VerifyAdminAsync(token))
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new
                 {
-                    message = "Manager profile was not found."
+                    message = "You may only read your own manager profile."
                 });
             }
 
-            return Ok(manager);
+            ManagerResponse? manager = await _managerAccountService.GetByIdAsync(
+                id, cancellationToken);
+
+            return manager is null
+                ? NotFound(new { message = "Manager profile was not found." })
+                : Ok(manager);
         }
 
         [HttpGet("by-firebase-uid/{firebaseUid}")]
@@ -50,106 +68,68 @@ namespace ChommieHub.Api.Controllers
             CancellationToken cancellationToken)
             => GetById(firebaseUid, cancellationToken);
 
+        /// <summary>
+        /// An administrator appoints a manager who already has a Firebase account.
+        /// The UID is supplied by the administrator, never by a public sign-up flow.
+        /// </summary>
         [HttpPost]
         public async Task<ActionResult<ManagerResponse>> Create(
             [FromBody] CreateManagerRequest request,
             CancellationToken cancellationToken)
         {
-            string? authorization =
-                Request.Headers.Authorization.ToString();
+            var (_, token, error) = await GetAuthenticatedUserAsync();
 
-            if (string.IsNullOrWhiteSpace(authorization) ||
-                !authorization.StartsWith(
-                    "Bearer ",
-                    StringComparison.OrdinalIgnoreCase))
+            if (error is not null)
             {
-                return Unauthorized(new
-                {
-                    message = "A Firebase administrator ID token is required."
-                });
+                return error;
             }
 
-            string idToken = authorization["Bearer ".Length..].Trim();
-
-            if (string.IsNullOrWhiteSpace(idToken))
+            if (!await _tokenVerifier.VerifyAdminAsync(token))
             {
-                return Unauthorized(new
-                {
-                    message = "A Firebase administrator ID token is required."
-                });
-            }
-
-            bool isAdmin =
-                await _tokenVerifier.VerifyAdminAsync(idToken);
-
-            if (!isAdmin)
-            {
-                return StatusCode(403, new
+                return StatusCode(StatusCodes.Status403Forbidden, new
                 {
                     message = "Administrator authorization is required."
                 });
             }
 
-            ManagerResponse manager =
-                await _managerAccountService.CreateAsync(
-                    request,
-                    cancellationToken);
-
-            _logger.LogInformation(
-                "Manager profile {ManagerId} was created.",
-                manager.Id);
-
-            return CreatedAtAction(
-                nameof(GetById),
-                new { id = manager.Id },
-                manager);
-        }
-
-        // Lets a signed-in user register as a residence manager. 
-        [HttpPost("register")]
-        public async Task<ActionResult<ManagerResponse>> Register(
-            [FromBody] RegisterManagerRequest request,
-            CancellationToken cancellationToken)
-        {
-            string authorization =
-                Request.Headers.Authorization.ToString();
-
-            if (string.IsNullOrWhiteSpace(authorization) ||
-                !authorization.StartsWith(
-                    "Bearer ",
-                    StringComparison.OrdinalIgnoreCase))
-            {
-                return Unauthorized(new
-                {
-                    message = "A Firebase ID token is required."
-                });
-            }
-
-            string idToken = authorization["Bearer ".Length..].Trim();
-
-            string? firebaseUid =
-                await _tokenVerifier.VerifyUserIdAsync(idToken);
-
-            if (string.IsNullOrWhiteSpace(firebaseUid))
-            {
-                return Unauthorized(new
-                {
-                    message = "Invalid or revoked Firebase ID token."
-                });
-            }
-
             try
             {
-                ManagerResponse manager = await _managerAccountService.RegisterAsync(firebaseUid, request, cancellationToken);
+                // An administrator must appoint an EXISTING Firebase user.
+                // This prevents orphaned Firestore manager profiles.
+                UserRecord account = await FirebaseAuth.GetAuth(_firebaseApp).GetUserAsync(
+                    request.FirebaseUid.Trim(), cancellationToken);
 
-                _logger.LogInformation(
-                    "Manager profile {ManagerId} was registered.",
-                    manager.Id);
+                if (account.Disabled)
+                {
+                    return Conflict(new { message = "Enable the Firebase account before appointing a manager." });
+                }
 
-                return CreatedAtAction(
-                    nameof(GetById),
-                    new { id = manager.Id },
-                    manager);
+                if (!string.Equals(account.Email, request.Email, StringComparison.OrdinalIgnoreCase))
+                {
+                    return BadRequest(new { message = "The manager email must match the Firebase account." });
+                }
+
+                if (account.CustomClaims is not null
+                    && account.CustomClaims.TryGetValue("role", out object? role)
+                    && string.Equals(role as string, "admin", StringComparison.OrdinalIgnoreCase))
+                {
+                    return Conflict(new { message = "An administrator cannot be appointed as a manager." });
+                }
+
+                ManagerResponse manager = await _managerAccountService.CreateAsync(
+                    request, cancellationToken);
+
+                _logger.LogInformation("Manager profile {ManagerId} was appointed.", manager.Id);
+
+                return CreatedAtAction(nameof(GetById), new { id = manager.Id }, manager);
+            }
+            catch (FirebaseAuthException exception) when (exception.AuthErrorCode == AuthErrorCode.UserNotFound)
+            {
+                return NotFound(new { message = "The Firebase account does not exist." });
+            }
+            catch (ArgumentException exception)
+            {
+                return BadRequest(new { message = exception.Message });
             }
             catch (InvalidOperationException exception)
             {
@@ -157,5 +137,28 @@ namespace ChommieHub.Api.Controllers
             }
         }
 
+        // The old POST /api/managers/register endpoint was intentionally removed.
+        // Publicly choosing the Manager role must not create privileged access.
+
+        private async Task<(string? UserId, string? Token, ActionResult? Error)>
+            GetAuthenticatedUserAsync()
+        {
+            string authorization = Request.Headers.Authorization.ToString();
+
+            if (!authorization.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+            {
+                return (null, null, Unauthorized(new
+                {
+                    message = "A valid Firebase ID token is required."
+                }));
+            }
+
+            string token = authorization["Bearer ".Length..].Trim();
+            string? uid = await _tokenVerifier.VerifyUserIdAsync(token);
+
+            return string.IsNullOrWhiteSpace(uid)
+                ? (null, null, Unauthorized(new { message = "Invalid or revoked Firebase ID token." }))
+                : (uid, token, null);
+        }
     }
 }

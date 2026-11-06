@@ -9,6 +9,5 @@ namespace ChommieHub.Api.Services
 
         Task<ManagerResponse> CreateAsync(CreateManagerRequest request, CancellationToken cancellationToken = default);
 
-        Task<ManagerResponse> RegisterAsync(string firebaseUid, RegisterManagerRequest request, CancellationToken cancellationToken = default);
     }
 }

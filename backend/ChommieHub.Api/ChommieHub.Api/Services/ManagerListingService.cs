@@ -1,4 +1,4 @@
-﻿using ChommieHub.Api.DTOs;
+using ChommieHub.Api.DTOs;
 using ChommieHub.Api.Models;
 using ChommieHub.Api.Repositories;
 
@@ -139,7 +139,12 @@ namespace ChommieHub.Api.Services
         {
             Manager? manager = await _managerRepository.GetByIdAsync(managerId, cancellationToken);
 
-            return manager ?? throw new KeyNotFoundException("A manager profile is required.");
+            if (manager is null || manager.IsDisabled)
+            {
+                throw new KeyNotFoundException("An active manager profile is required.");
+            }
+
+            return manager;
         }
 
         private async Task<Accommodation> GetOwnAccommodationAsync(

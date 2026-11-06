@@ -1,4 +1,4 @@
-﻿using ChommieHub.Api.DTOs;
+using ChommieHub.Api.DTOs;
 using ChommieHub.Api.Models;
 using ChommieHub.Api.Repositories;
 
@@ -32,7 +32,9 @@ namespace ChommieHub.Api.Services
         {
             Accommodation? accommodation = await _repository.GetByIdAsync(id, cancellationToken);
 
-            return accommodation is null
+            // Public details, room lists and weather lookups must not leak
+            // accommodation drafts or listings that have not been approved.
+            return accommodation is null || !accommodation.IsVisibleToStudents
                 ? null
                 : MapToResponse(accommodation);
         }
@@ -100,7 +102,8 @@ namespace ChommieHub.Api.Services
                 PhoneNumber = accommodation.PhoneNumber,
                 Amenities = accommodation.Amenities,
                 InstitutionArea = accommodation.InstitutionArea,
-                IsActive = accommodation.IsActive
+                IsActive = accommodation.IsActive,
+                ImageUrls = accommodation.ImageUrls
             };
         }
     }

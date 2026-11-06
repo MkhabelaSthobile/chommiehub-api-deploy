@@ -1,4 +1,4 @@
-﻿
+
 using ChommieHub.Api.DTOs;
 using ChommieHub.Api.Services;
 using ChommieHub.Api.Services.Interfaces;
@@ -136,10 +136,17 @@ namespace ChommieHub.Api.Controllers
                 return authorizationError;
             }
 
-            await _shortlistService.AddAsync(
-                studentId,
-                accommodationId,
-                cancellationToken);
+            try
+            {
+                await _shortlistService.AddAsync(
+                    studentId,
+                    accommodationId,
+                    cancellationToken);
+            }
+            catch (InvalidOperationException exception)
+            {
+                return Conflict(new { message = exception.Message });
+            }
 
             _logger.LogInformation(
                 "Student {StudentId} shortlisted accommodation {AccommodationId}.",

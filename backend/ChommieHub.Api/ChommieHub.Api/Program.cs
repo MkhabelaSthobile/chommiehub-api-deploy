@@ -4,6 +4,7 @@ using ChommieHub.Api.Repositories;
 using ChommieHub.Api.Repositories.Interfaces;
 using ChommieHub.Api.Services;
 using ChommieHub.Api.Services.Interfaces;
+using ChommieHub.Api.Storage;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Firestore;
@@ -172,6 +173,9 @@ builder.Services.AddScoped<
 builder.Services.AddScoped<
     FirebaseNotificationService>();
 
+// Optional Azure Blob image service; configured only when credentials exist.
+builder.Services.AddSingleton<AzureAccommodationImageStore>();
+
 // ---------------------------------------------------------
 // Business services
 // ---------------------------------------------------------
@@ -215,6 +219,9 @@ builder.Services.AddScoped<
 builder.Services.AddScoped<
     IInspectionService,
     InspectionService>();
+
+// Community incident, announcement and reporting authorization.
+builder.Services.AddScoped<CommunityAccess>();
 
 // Weather-aware residence operations.
 builder.Services.AddHttpClient<

@@ -20,6 +20,8 @@ namespace ChommieHub.Api.DTOs
 
         public string AccommodationId { get; init; } = string.Empty;
 
+        public bool IsDisabled { get; init; }
+
         public DateTime CreatedAtUtc { get; init; }
 
         public DateTime UpdatedAtUtc { get; init; }

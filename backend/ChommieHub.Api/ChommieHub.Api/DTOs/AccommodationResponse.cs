@@ -1,4 +1,4 @@
-﻿namespace ChommieHub.Api.DTOs
+namespace ChommieHub.Api.DTOs
 {
     /// <summary>
     ///Represents accommodation data returned to API clients.
@@ -22,6 +22,8 @@
         public List<string> Amenities { get; init; } = [];
 
         public string InstitutionArea { get; init; } = string.Empty;
+
+        public List<string> ImageUrls { get; init; } = [];
 
         public bool IsActive { get; init; }
     }

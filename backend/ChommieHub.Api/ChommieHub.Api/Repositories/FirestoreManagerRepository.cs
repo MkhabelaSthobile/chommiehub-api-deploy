@@ -52,9 +52,8 @@ namespace ChommieHub.Api.Repositories
             manager.CreatedAtUtc = DateTime.UtcNow;
             manager.UpdatedAtUtc = DateTime.UtcNow;
 
-            await documentReference.SetAsync(
-                manager,
-                cancellationToken: cancellationToken);
+            // Atomic create prevents accidental overwrites if appointments race.
+            await documentReference.CreateAsync(manager, cancellationToken);
 
             return manager;
         }
