@@ -1,0 +1,12 @@
+{
+  "name": "chommiehub-admin-maintenance",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Local maintainer utility for granting a verified Firebase administrator claim",
+  "scripts": {
+    "grant-admin": "node grant-admin.cjs"
+  },
+  "dependencies": {
+    "firebase-admin": "^13.0.0"
+  }
+}

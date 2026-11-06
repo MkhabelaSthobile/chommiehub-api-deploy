@@ -43,3 +43,10 @@ captures/
 **/*service-account*.json
 **/*firebase-adminsdk*.json
 **/secrets.json
+# Node dependencies for local Firebase administrator maintenance utilities
+node_modules/
+
+# Android release signing material must never be committed.
+*.jks
+*.keystore
+**/key.properties
